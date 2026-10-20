@@ -1,0 +1,53 @@
+{
+  "game_version": "1.128.90.1030",
+  "checked_on": "2026-10-20",
+  "module_loaded": true,
+  "manual_notification_visually_verified": true,
+  "social_notification_visually_verified": true,
+  "observation_errors_in_log": 0,
+  "archive_sha256": "8CD8CB103BE625E80E9CC17AD42AFAC21F7D4271CF7E9920A36B2F1DCFD8BD26",
+  "observations": [
+    {
+      "type": "social",
+      "event_id": "1792482303335-1",
+      "observed_at": 1792482303.3350012,
+      "interaction": "sim_BeAffectionate",
+      "actor": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth"
+      },
+      "target": {
+        "id": "792940683144241176",
+        "name": "Marcel Price"
+      }
+    },
+    {
+      "type": "social",
+      "event_id": "1792482314348-2",
+      "observed_at": 1792482314.3481393,
+      "interaction": "socialMixer_Greetings_Wave",
+      "actor": {
+        "id": "792940683144241176",
+        "name": "Marcel Price"
+      },
+      "target": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth"
+      }
+    },
+    {
+      "type": "social",
+      "event_id": "1792482324470-3",
+      "observed_at": 1792482324.4704983,
+      "interaction": "sim_BeAffectionate",
+      "actor": {
+        "id": "792940683144026896",
+        "name": "Alika Kahananui"
+      },
+      "target": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth"
+      }
+    }
+  ]
+}

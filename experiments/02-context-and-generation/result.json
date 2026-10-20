@@ -1,0 +1,352 @@
+{
+  "game_version": "1.128.90.1030",
+  "checked_on": "2026-10-20",
+  "archive_sha256": "FA65BDF2309F1253D952328926D59193DA8399FDC314ED885A2262948B6C8A70",
+  "model": "openai/gpt-6-luna",
+  "provider": "OpenRouter",
+  "observer_errors_in_log": 0,
+  "context_samples": [
+    {
+      "type": "social",
+      "mode": "fixed",
+      "event_id": "1792483186080-1",
+      "observed_at": 1792483186.0806158,
+      "interaction": "sim_Chat",
+      "actor": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Fine",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Fine",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 0.0,
+        "romance": 0.0
+      }
+    },
+    {
+      "type": "social",
+      "mode": "fixed",
+      "event_id": "1792483207378-2",
+      "observed_at": 1792483207.378343,
+      "interaction": "si_touching_Greeting_Handshake",
+      "actor": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Fine",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Uncomfortable",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 11.96875,
+        "romance": 0.0
+      }
+    },
+    {
+      "type": "social",
+      "mode": "fixed",
+      "event_id": "1792483235186-3",
+      "observed_at": 1792483235.1867573,
+      "interaction": "mixer_social_AttemptToScare_targeted_mischief_skills",
+      "actor": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Fine",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Uncomfortable",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 14.078125,
+        "romance": 0.0
+      }
+    },
+    {
+      "type": "social",
+      "mode": "fixed",
+      "event_id": "1792483256545-4",
+      "observed_at": 1792483256.5452948,
+      "interaction": "social_Funny_PubertyChanges_Joke_Hair_Face",
+      "actor": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Uncomfortable",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Happy",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 16.609375,
+        "romance": 0.0
+      }
+    }
+  ],
+  "generation_requests": [
+    {
+      "type": "social",
+      "mode": "ai",
+      "event_id": "1792483306672-5",
+      "observed_at": 1792483306.6729069,
+      "interaction": "sim_BeAffectionate",
+      "actor": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Uncomfortable",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Happy",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 22.25,
+        "romance": 0.0
+      }
+    },
+    {
+      "type": "social",
+      "mode": "ai",
+      "event_id": "1792483362615-6",
+      "observed_at": 1792483362.615095,
+      "interaction": "sim_BeAffectionate",
+      "actor": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Uncomfortable",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Happy",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 22.25,
+        "romance": 0.0
+      }
+    },
+    {
+      "type": "social",
+      "mode": "ai",
+      "event_id": "1792483374962-7",
+      "observed_at": 1792483374.962568,
+      "interaction": "mixer_Social_GetToKnow_Friendly_STC",
+      "actor": {
+        "id": "792940683143809502",
+        "name": "Mortimer Goth",
+        "traits": [
+          "trait_Outgoing",
+          "trait_Bookworm",
+          "trait_Creative"
+        ],
+        "mood": "Mood_Happy",
+        "mood_intensity": 0
+      },
+      "target": {
+        "id": "792940683128864783",
+        "name": "Alex Keen",
+        "traits": [
+          "trait_Neat",
+          "trait_Adventurous",
+          "trait_Kleptomaniac"
+        ],
+        "mood": "Mood_Uncomfortable",
+        "mood_intensity": 0
+      },
+      "relationship": {
+        "friendship": 22.25,
+        "romance": 0.0
+      }
+    }
+  ],
+  "notification_submissions": [
+    {
+      "event_id": "1792483306672-5",
+      "text": "Alex Keen: I like being near you. There—said it before I could overthink it.\nMortimer Goth: How wonderfully direct. I’m rather glad you did.",
+      "model": "openai/gpt-6-luna",
+      "elapsed_seconds": 5.163,
+      "usage": {
+        "prompt_tokens": 348,
+        "completion_tokens": 175,
+        "total_tokens": 523,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0001223,
+          "upstream_inference_prompt_cost": 3.48E-05,
+          "upstream_inference_completions_cost": 8.75E-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 134,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "type": "displayed",
+      "displayed_at": 1792483312.1465502
+    },
+    {
+      "event_id": "1792483362615-6",
+      "text": "Alex Keen: I’m trying to be affectionate. This feels oddly complicated.\nMortimer Goth: And yet, quite sweet. I may have to write it down.",
+      "model": "openai/gpt-6-luna",
+      "elapsed_seconds": 4.105,
+      "usage": {
+        "prompt_tokens": 348,
+        "completion_tokens": 234,
+        "total_tokens": 582,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0001518,
+          "upstream_inference_prompt_cost": 3.48E-05,
+          "upstream_inference_completions_cost": 0.000117
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 195,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "type": "displayed",
+      "displayed_at": 1792483367.1505253
+    },
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer: I’m always curious what makes someone tick. What do you do for adventure?\nAlex: Climb, explore… that sort of thing. I’m more comfortable when everything’s where it belongs. Usually.",
+      "model": "openai/gpt-6-luna",
+      "elapsed_seconds": 3.891,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 186,
+        "total_tokens": 539,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0001283,
+          "upstream_inference_prompt_cost": 3.53E-05,
+          "upstream_inference_completions_cost": 9.3E-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 136,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "type": "displayed",
+      "displayed_at": 1792483379.1363091
+    }
+  ],
+  "submission_log_note": "The experimental displayed log records show_dialog submission, not immediate on-screen visibility.",
+  "visible_text_verified_event_id": "1792483374962-7",
+  "visible_text_verification": "Opened Notification Wall and read both generated lines in the game. See in-game.jpg.",
+  "session_stopped": true,
+  "limitations": [
+    "Text appears in notifications, not speech bubbles.",
+    "Notification popups follow the user expansion setting and may collapse to titles.",
+    "Other installed mods queue notifications.",
+    "No voice replacement, persistent story memory, or AI-selected world actions tested.",
+    "Snapshot does not yet include age, venue, current objects, or event history."
+  ],
+  "original_save_hashes_verified_after_restoration": true,
+  "final_display": "1280x720, normal windowed; game closed",
+  "new_game_exception_files_during_test": 0
+}
