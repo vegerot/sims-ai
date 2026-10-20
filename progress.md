@@ -141,3 +141,38 @@ Next:
 
 1. Resume the experiment from plan.md and the verified results above; review tone and presentation before choosing production scope.
 2. Address the archive helper's Windows test portability separately from Sims work.
+
+## 2026-10-20 — Read-only save audit
+
+- 🔎 At Max's request, inspected copies of the three original saves to look for gameplay preferences. Used our fresh Banter Lab save as a control; excluded our test household from preference findings. Kept raw saves, the whitelist summaries, and household-specific `findings.md` in ignored `.local/save-analysis/`.
+- 🧪 Parsed DBPF indexes and RefPack resources using the installed save-message schema. A synthetic round trip exposed a bundled protobuf string/bytes problem before any save interpretation. A private in-process adapter fixed tag and float/double decoding; four copied saves then parsed. Recorded the reusable mechanism and interpretation limits in [how-sims-works.md](how-sims-works.md#reading-saves-offline).
+- 📚 The audit supports relationship-aware dialogue and food/social settings. It does not establish a ranking of enjoyment, construction authorship, or operated restaurants. Fresh-save comparison prevented default businesses, milestone records, and rental subdivisions from being miscounted as player activity.
+- 🛡️ Kept the game closed and made no model calls with save contents. All four original/control files and their analysis copies matched their before-analysis hashes afterward; private evidence is in `.local/save-analysis/verification.json`. This new work has not been committed or pushed.
+
+Next:
+
+1. Review the private findings with Max. Keep the agreed banter scope; consider meals/date venues as grounded scene context for the next experiment.
+2. Treat the save audit as evidence about available game state, not a substitute for her own account of what she enjoys. Resolve building authorship or favorite comic moments through observation or conversation if those become important.
+
+## 2026-10-20 — Local Sims repository audit
+
+- 🔎 Ran `findrepo sims`: 19 local repositories. Inspected the strongest source references and recorded the useful entry points in [repo-research.md](repo-research.md). S4CL provides outcome/cancellation and venue-context examples; Lot51 provides lifecycle hooks; Control Any Sim provides a separate reference for selection and travel.
+- 🧪 Ran a small read-only experiment with the existing Sims 4 Workspace readers. Parsed 20,351 tuning instances from a base XML resource and 1,021 from an actual GP03 binary DATA resource, including recipes. Retained metadata, sample IDs, and source hashes in [result.json](experiments/03-local-repo-readers/result.json). Raw game resources and the reproduction helper remain in ignored `.local/research/`.
+- 📚 Corrected the earlier assumption that binary combined tuning would need a larger independent implementation: a working local decoder exists. Numerical skill thresholds and patch/pack/mod override merging are still unverified. Source inspection does not prove live compatibility of lifecycle or outcome hooks.
+- 🛡️ Kept the game closed. Added no runtime dependency, installed no framework, and changed no saves or game files. The working mod remains as previously tested; these are reference findings and a package-reading proof.
+
+Next:
+
+1. Continue small independent experiments: compare real social outcomes/cancellations with starts, then add actual venue/meal context where available.
+2. Test travel/loading cleanup before a birthday release. Use these source references as leads and verify behavior against the installed game.
+
+## 2026-10-20 — Resumed conversation archive prepared
+
+- 📚 Updated the existing [conversation archive](../sims4-ai-birthday-mod-experiments.md) with the save audit and local-source research, preserving all 17 user turns and refreshing the helper's frozen metadata/token snapshot. Updated the Gaming index and project entry point rather than creating a duplicate archive.
+- 🧪 Reran the archive helper's 19 tests: 17 passed; the same two previously documented Grok errors remain on Windows. The archiver was not changed. Metadata, local links, evidence JSON, and the explicit publication scope are checked separately.
+- 🛡️ Raw saves, household-specific private summaries, game-resource dumps, credentials, and downloaded runtimes stay ignored. This archive publishes the bounded conclusions, reusable mechanisms, source map, and package-reader result metadata.
+
+Next:
+
+1. Resume from the experiment plan and latest research entries; keep outcome, context, presentation, and lifecycle tests small and independently reviewable.
+2. Repository history records the requested publication commit; do not treat an archive as a birthday-release milestone.

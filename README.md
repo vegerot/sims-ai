@@ -9,6 +9,7 @@ A birthday gift for October 29, 2026: contextual English banter that matches The
 - [How The Sims works](how-sims-works.md): reusable findings, mechanisms, and evidence.
 - [Glossary](CONTEXT.md): project vocabulary.
 - [Early planning and prior art](planning.md): interview and external research notes.
+- [Local Sims repositories](repo-research.md): source entry points, tested tuning readers, and follow-up experiments.
 
 Resume by reading `plan.md`, then the newest `progress.md` entries. Check the working copy, installed mod, running game, and relevant logs against the handoff before continuing.
 

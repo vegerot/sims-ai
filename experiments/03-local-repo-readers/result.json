@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-20",
+  "experiment": "Read installed tuning resources using the local sims4-workspace implementation",
+  "game_build": "1.128.90.1030",
+  "read_only": true,
+  "results": [
+    {
+      "package": "C:\\Program Files\\EA Games\\The Sims 4\\Data\\Simulation\\SimulationFullBuild0.package",
+      "resource": "62E94D38!00000000!F1352E740C4710BA",
+      "decompressed_bytes": 14527097,
+      "xml_characters": 14527097,
+      "tuning_instances": 20351,
+      "shared_references": 29541,
+      "samples": [
+        {
+          "id": 16705,
+          "name": "statistic_Skill_AdultMajor_HomestyleCooking",
+          "class": "Skill",
+          "skill_level_type": "MAJOR"
+        },
+        {
+          "id": 16701,
+          "name": "statistic_Skill_AdultMajor_GourmetCooking",
+          "class": "Skill",
+          "skill_level_type": "MAJOR"
+        },
+        {
+          "id": 16650,
+          "name": "LTR_Friendship_Main",
+          "class": "RelationshipTrack",
+          "skill_level_type": null
+        },
+        {
+          "id": 16651,
+          "name": "LTR_Romance_Main",
+          "class": "RelationshipTrack",
+          "skill_level_type": null
+        },
+        {
+          "id": 9231,
+          "name": "career_Adult_Culinary",
+          "class": "Career",
+          "skill_level_type": null
+        },
+        {
+          "id": 25441,
+          "name": "Track_Knowledge_B",
+          "class": "AspirationTrack",
+          "skill_level_type": null
+        },
+        {
+          "id": 40647,
+          "name": "Track_Nature_A",
+          "class": "AspirationTrack",
+          "skill_level_type": null
+        }
+      ],
+      "elapsed_seconds": 1.264,
+      "reader_source_sha256": {
+        "util/datamining/package_reader.py": "0827d5f28735732afc1498ecb49e8e425fe6deb7c3685b4808f52820ebc9e3b4",
+        "util/datamining/binary_tuning.py": "852f87d49f9d7f61bdd9c2f8ad39fbd8872301d2cb95c75ba52b482e01001a62",
+        "util/datamining/combined_tuning.py": "78d088fe27f1d461019e637239ea01ef2c1831b2a6fa51584d7c78d4e340b4a4"
+      },
+      "input_format": "XML"
+    },
+    {
+      "package": "C:\\Program Files\\EA Games\\The Sims 4\\GP03\\SimulationFullBuild0.package",
+      "resource": "62E94D38!0000000A!F10287740C1C4EB2",
+      "input_format": "binary DATA",
+      "decompressed_bytes": 854530,
+      "xml_characters": 1090950,
+      "tuning_instances": 1021,
+      "shared_references": 2786,
+      "samples": [
+        {
+          "id": 130560,
+          "name": "recipe_Food_Experimental_Main_CubedSupreme",
+          "class": "Recipe"
+        },
+        {
+          "id": 131615,
+          "name": "recipe_Food_Experimental_Dessert_VerticalBerryCake",
+          "class": "Recipe"
+        },
+        {
+          "id": 130681,
+          "name": "recipe_Food_Gourmet_EggsBenedict-Large",
+          "class": "Recipe"
+        },
+        {
+          "id": 132030,
+          "name": "recipe_Drink_Nectar_RiverblossomCranerletNuala_MenuAndBar",
+          "class": "Recipe"
+        }
+      ],
+      "elapsed_seconds": 1.157,
+      "reader_source_sha256": {
+        "util/datamining/package_reader.py": "0827d5f28735732afc1498ecb49e8e425fe6deb7c3685b4808f52820ebc9e3b4",
+        "util/datamining/binary_tuning.py": "852f87d49f9d7f61bdd9c2f8ad39fbd8872301d2cb95c75ba52b482e01001a62",
+        "util/datamining/combined_tuning.py": "78d088fe27f1d461019e637239ea01ef2c1831b2a6fa51584d7c78d4e340b4a4"
+      }
+    }
+  ],
+  "limits": [
+    "No game launch or new runtime dependency.",
+    "Patch, pack, and mod overrides were not merged.",
+    "No claim of complete format coverage or live callback compatibility.",
+    "Numerical skill thresholds and localized labels were not extracted."
+  ]
+}

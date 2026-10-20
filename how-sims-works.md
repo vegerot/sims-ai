@@ -95,3 +95,26 @@ Prior-art inspection found one [action executor](https://github.com/dnavaria/sim
 ## Evidence artifacts
 
 Targeted bytecode inspection helpers and listings live in ignored `.local/research/`. These may contain game implementation details; keep distributable source separate. Future live screenshots, event samples, API measurements, and corrections should be linked here or from append-only progress entries as they become available.
+
+## Reading saves offline
+
+On this installation, saves are DBPF containers with a type `0x0000000D` resource holding the save's serialized Protocol Buffers message. The installed `Game/Bin/Python/generated.zip` contains `protocolbuffers.FileSerialization_pb2.SaveGameData`, which describes that message. Its schema exposes households, Sims, zones, relationships, careers, skill progress, and business statistics. The DBPF index supplies each resource's stored size, decoded size, and compression type; these saves used RefPack compression (`0xFFFF`). Validate the decompressed size before interpreting the message. References: [Sims4Tools DBPF format](https://github.com/Kuree/Sims4Tools/wiki/DBPF-Format) and [a reference RefPack reader](https://github.com/gbataglini/sims4-workspace/blob/main/util/datamining/refpack.py).
+
+**Observed compatibility problem:** running the installed generated messages and bundled protobuf library under a separate Python 3.7 interpreter initially reported successful parsing but populated no known fields. A tiny synthetic `guid=42` round trip failed too: decoder table keys were strings while incoming tags were bytes. A private in-process adapter converted `encoder.TagBytes` to Latin-1 bytes before generated-module imports and replaced the float/double decoder factories with the bundled `_StructPackDecoder` using `<f`/`<d`. The synthetic round trip and four actual copied saves then parsed. This changes only the analysis process; installed game files remain untouched. `IsInitialized()` alone did not detect the original failure.
+
+Useful interpretation boundaries:
+
+- Restrict preference analysis to played households; premade Sims and venues are not evidence of the player's choices. `is_unplayed`, the active household, and the last played Sim are useful together. One manual save had active household ID `1`, which did not identify the played household; do not rely on that field alone.
+- Compare against a fresh save from the same installation. Default landlord businesses and numerous developmental milestone records also existed in our untouched test household. Counting those as player activity would have been misleading.
+- Relationship tracks store friendship/romance values. Career event records can include readable tuning names. Skill `value` is raw progress, not a displayed level; installed `Skill.convert_to_user_value` uses the tuned `Skill.SKILL_LEVEL_LIST[skill_level_type]` thresholds. Those thresholds are needed for levels and cross-skill comparisons. [Sims4CommunityLibrary's enums](https://github.com/DeviantGameMods/Sims4CommunityLibrary/tree/main/Scripts/sims4communitylib/enums) provide useful ID names but are not a complete catalog of the installed game or custom mods.
+- Business ownership is separate from operation: inspect business type and saved revenue/open-hour data. A venue named "Restaurant" does not prove the player owns or operates a restaurant.
+- Compare lot names only where a stable lot identity has a unique match in both saves. Apartment and rental subdivisions can share identifiers. A changed name or customized venue does not establish whether it was built manually, downloaded from the Gallery, or inherited from an imported world.
+- Save state is not an action log, a record of enjoyment, or a measure of human play time. Autonomy, cheats, imported content, and other mods can contribute to the state.
+
+The read-only experiment used hashed copies in ignored `.local/save-analysis/`, with schema/reference inspection in `.local/research/`. It did not launch the game, send save contents to a model, or write to the original save folder. Keep original saves, account metadata, and household-specific summaries out of the public repository.
+
+## Local source references and tuning readers
+
+`findrepo sims` found useful local implementations, summarized with exact entry points in [repo-research.md](repo-research.md). S4CL distinguishes interaction start, outcome, and cancellation, and exposes venue context; Lot51 provides lifecycle hook examples. These are candidates for more grounded dialogue and cleanup during travel, not locally verified callback behavior yet. Lot51's balloon example uses icons and does not establish arbitrary text above Sims.
+
+The local Sims 4 Workspace reader was tested against actual installed packages: 20,351 base XML tuning instances and 1,021 GP03 binary DATA tuning instances parsed successfully. The latter includes recipe definitions. A binary combined-tuning decoder is therefore already available; no independent binary-format implementation is needed for this tested case. See [the result](experiments/03-local-repo-readers/result.json). Override/load-order merging and complete coverage remain unverified, as do numerical skill thresholds and localized label resolution.
