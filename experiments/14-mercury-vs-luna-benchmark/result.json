@@ -1,0 +1,270 @@
+{
+  "openai/gpt-6-luna (effort=none)": [
+    {
+      "ttft_any_s": 1.458,
+      "ttft_content_s": 1.458,
+      "ttlt_s": 1.844,
+      "text": "Alex Keen: I like your butt.\nMary Greenburg: Well! That’s a bold thing to say to a woman at karaoke. Thanks, I think.",
+      "prompt_tokens": 717,
+      "completion_tokens": 36,
+      "reasoning_tokens": 0,
+      "cost": 8.8803e-05,
+      "event_id": "chat-1792602295682-1",
+      "label": "I like your butt"
+    },
+    {
+      "ttft_any_s": 1.457,
+      "ttft_content_s": 1.457,
+      "ttlt_s": 1.969,
+      "text": "Alex Keen: Finally, a drink. I was beginning to feel suspiciously responsible.\nAnaya Jang: Careful—this one’s literally blazing. Your confidence may need a fire extinguisher.",
+      "prompt_tokens": 1000,
+      "completion_tokens": 45,
+      "reasoning_tokens": 0,
+      "cost": 0.000121275,
+      "event_id": "1792603459836-16",
+      "label": "Wait For Drink"
+    },
+    {
+      "ttft_any_s": 1.307,
+      "ttft_content_s": 1.307,
+      "ttlt_s": 1.902,
+      "text": "Casey Gary: There. Now the karaoke machine isn’t the only thing making a scene.\nAlex Keen: You threw a drink at me and still missed the beat. Impressive, honestly.",
+      "prompt_tokens": 838,
+      "completion_tokens": 43,
+      "reasoning_tokens": 0,
+      "cost": 0.000104247,
+      "event_id": "1792603519538-17",
+      "label": "Throw Drink"
+    },
+    {
+      "ttft_any_s": 1.385,
+      "ttft_content_s": 1.385,
+      "ttlt_s": 1.947,
+      "text": "Anaya Jang: Those colors on the screen are fighting. The blue’s winning, though.\nAlex Keen: I thought you meant the teams. Either way, blue’s got my sandwich’s vote.",
+      "prompt_tokens": 1019,
+      "completion_tokens": 45,
+      "reasoning_tokens": 0,
+      "cost": 0.000123156,
+      "event_id": "1792604484362-29",
+      "label": "Discuss Color Theory"
+    },
+    {
+      "ttft_any_s": 1.39,
+      "ttft_content_s": 1.39,
+      "ttlt_s": 1.863,
+      "text": "Alex Keen: How do you feel?\nAnaya Jang: Flirty, despite that political broadcast. You look bored enough to be an interesting distraction.",
+      "prompt_tokens": 1017,
+      "completion_tokens": 35,
+      "reasoning_tokens": 0,
+      "cost": 0.000118008,
+      "event_id": "chat-1792604682690-31",
+      "label": "How do you feel?"
+    }
+  ],
+  "inception/mercury-3 (effort=none)": [
+    {
+      "ttft_any_s": 0.371,
+      "ttft_content_s": 0.371,
+      "ttlt_s": 0.389,
+      "text": "Alex Keen: I like your butt.  \nMary Greenburg: At my age? Well, at least it still works.",
+      "prompt_tokens": 736,
+      "completion_tokens": 26,
+      "reasoning_tokens": 0,
+      "cost": 8.1873e-05,
+      "event_id": "chat-1792602295682-1",
+      "label": "I like your butt"
+    },
+    {
+      "ttft_any_s": 0.487,
+      "ttft_content_s": 0.487,
+      "ttlt_s": 0.525,
+      "text": "Alex Keen: You look like you’ve been waiting for that drink longer than I have. Want me to flag the bartender?\n\nAnaya Jang: Smooth move. But I’m fine — I’m more caught up in that guitarist anyway.",
+      "prompt_tokens": 1019,
+      "completion_tokens": 50,
+      "reasoning_tokens": 0,
+      "cost": 9.54855e-05,
+      "event_id": "1792603459836-16",
+      "label": "Wait For Drink"
+    },
+    {
+      "ttft_any_s": 0.321,
+      "ttft_content_s": 0.321,
+      "ttlt_s": 0.338,
+      "text": "Casey Gary: You think you're so smooth up there, huh?\n\nAlex Keen: Wow, okay. You got me. Real smooth move.",
+      "prompt_tokens": 851,
+      "completion_tokens": 30,
+      "reasoning_tokens": 0,
+      "cost": 9.4644e-05,
+      "event_id": "1792603519538-17",
+      "label": "Throw Drink"
+    },
+    {
+      "ttft_any_s": 0.472,
+      "ttft_content_s": 0.472,
+      "ttlt_s": 0.487,
+      "text": "Anaya Jang: So the couch is more of a burnt sienna, don't you think? Really grounds the whole... oof.\nAlex Keen: I was just counting the crumbs on my sandwich. But sure, sienna. You okay?",
+      "prompt_tokens": 1081,
+      "completion_tokens": 51,
+      "reasoning_tokens": 0,
+      "cost": 0.0001011681,
+      "event_id": "1792604484362-29",
+      "label": "Discuss Color Theory"
+    },
+    {
+      "ttft_any_s": 0.572,
+      "ttft_content_s": 0.572,
+      "ttlt_s": 0.979,
+      "text": "Alex Keen: Depends. Showering with you is better than that sad meal I choked down.\nAnaya Jang: I feel like making something beautiful. Wanna be my muse?",
+      "prompt_tokens": 1040,
+      "completion_tokens": 37,
+      "reasoning_tokens": 0,
+      "cost": 9.29709e-05,
+      "event_id": "chat-1792604682690-31",
+      "label": "How do you feel?"
+    }
+  ],
+  "inception/mercury-3 (effort=low)": [
+    {
+      "ttft_any_s": null,
+      "ttft_content_s": null,
+      "ttlt_s": 1.074,
+      "text": "",
+      "prompt_tokens": 741,
+      "completion_tokens": 291,
+      "reasoning_tokens": 291,
+      "cost": 0.0001512027,
+      "event_id": "chat-1792602295682-1",
+      "label": "I like your butt"
+    },
+    {
+      "ttft_any_s": 0.824,
+      "ttft_content_s": 0.824,
+      "ttlt_s": 0.847,
+      "text": "Alex Keen: Finally, the bartender saw me. Though I wouldn't mind if this took longer—the view is great.\nAnaya Jang: Ha! Save that charm for the mic. That last singer butchered a classic, you know.",
+      "prompt_tokens": 1019,
+      "completion_tokens": 253,
+      "reasoning_tokens": 200,
+      "cost": 0.0001877436,
+      "event_id": "1792603459836-16",
+      "label": "Wait For Drink"
+    },
+    {
+      "ttft_any_s": null,
+      "ttft_content_s": null,
+      "ttlt_s": 1.312,
+      "text": "",
+      "prompt_tokens": 853,
+      "completion_tokens": 287,
+      "reasoning_tokens": 287,
+      "cost": 0.0001394316,
+      "event_id": "1792603519538-17",
+      "label": "Throw Drink"
+    },
+    {
+      "ttft_any_s": null,
+      "ttft_content_s": null,
+      "ttlt_s": 1.234,
+      "text": "",
+      "prompt_tokens": 1037,
+      "completion_tokens": 286,
+      "reasoning_tokens": 286,
+      "cost": 0.0001356498,
+      "event_id": "1792604484362-29",
+      "label": "Discuss Color Theory"
+    },
+    {
+      "ttft_any_s": null,
+      "ttft_content_s": null,
+      "ttlt_s": 0.969,
+      "text": "",
+      "prompt_tokens": 1065,
+      "completion_tokens": 295,
+      "reasoning_tokens": 295,
+      "cost": 0.0001394019,
+      "event_id": "chat-1792604682690-31",
+      "label": "How do you feel?"
+    }
+  ],
+  "inception/mercury-3 (effort=low, max_tokens=1000)": [
+    {
+      "event_id": "chat-1792602295682-1",
+      "label": "I like your butt",
+      "ttft_content_s": 1.226,
+      "ttlt_s": 1.336,
+      "reasoning_tokens": 181,
+      "cost": 0.000103,
+      "text": "Alex Keen: I like your butt.\nMary Greenburg: Well, that’s… a first. You’re about my grandson’s age, dear."
+    },
+    {
+      "event_id": "1792603459836-16",
+      "label": "Wait For Drink",
+      "ttft_content_s": 1.182,
+      "ttlt_s": 1.227,
+      "reasoning_tokens": 311,
+      "cost": 0.000223,
+      "text": "Alex: Two drinks, coming right up. You're looking cozy over there.\nAnaya: It's the sofa—and the songs. Wait's worth it."
+    },
+    {
+      "event_id": "1792603519538-17",
+      "label": "Throw Drink",
+      "ttft_content_s": 2.212,
+      "ttlt_s": 2.236,
+      "reasoning_tokens": 705,
+      "cost": 0.000289,
+      "text": "Casey: \"That's for the karaoke comment! I don't even know what it was, but I'm still mad!\"\nAlex: \"Brava. You look like a wet cat now—and I mean that fondly.\""
+    },
+    {
+      "event_id": "1792604484362-29",
+      "label": "Discuss Color Theory",
+      "ttft_content_s": 2.162,
+      "ttlt_s": 2.191,
+      "reasoning_tokens": 838,
+      "cost": 0.000343,
+      "text": "Anaya: \"That ad's using split-complementary colors. Sorry, cramps make me babble about art.\"\nAlex: \"It's working. You've got a good eye. Want half my sandwich?\""
+    },
+    {
+      "event_id": "chat-1792604682690-31",
+      "label": "How do you feel?",
+      "ttft_content_s": 0.872,
+      "ttlt_s": 0.884,
+      "reasoning_tokens": 254,
+      "cost": 0.000182,
+      "text": "Alex Keen: How do you feel?\nAnaya Jang: Better now that you're out of the shower—though this TV host keeps yapping about zoning laws."
+    }
+  ],
+  "tts_multilingual_probes": {
+    "google/gemini-3.8-flash": {
+      "status": 404,
+      "error": "No endpoints found that support the requested output modalities: text, audio (OpenRouter only exposes text output for gemini-3.8-flash)"
+    },
+    "openai/gpt-audio-mini": [
+      {
+        "language": "English",
+        "voice": "coral",
+        "ttfa_s": 1.587,
+        "ttlt_s": 2.286,
+        "audio_duration_s": 5.5,
+        "cost": 0.000372,
+        "transcript": "Your confidence is getting on my nerves. There—now we're both wearing the evening."
+      },
+      {
+        "language": "Hebrew",
+        "voice": "shimmer",
+        "ttfa_s": 1.439,
+        "ttlt_s": 2.077,
+        "audio_duration_s": 4.55,
+        "cost": 0.00034,
+        "transcript": "אני רק מנסה לשתות קפה בשקט, למה כולם פה כל כך דרמטיים?"
+      },
+      {
+        "language": "Russian",
+        "voice": "ash",
+        "ttfa_s": 0.931,
+        "ttlt_s": 1.451,
+        "audio_duration_s": 4.6,
+        "cost": 0.000334,
+        "transcript": "Я просто хотел спокойно съесть свой бутерброд, а тут опять драма!"
+      }
+    ]
+  }
+}
