@@ -563,6 +563,200 @@ def synthesize_dialogue_sapi(text: str, actor: dict, target: dict | None, wav_pa
     }
 
 
+MOOD_TO_DELIVERY_TONE = {
+    'Angry': 'exasperated, dramatic, annoyed',
+    'Flirty': 'warm, playful, flirty',
+    'Uncomfortable': 'tense, dry, slightly frazzled',
+    'Confident': 'confident, lively, self-assured',
+    'Bored': 'deadpan, unimpressed, dry',
+    'Sad': 'sighing, dramatic, melancholic',
+    'Playful': 'amused, upbeat, cheeky',
+    'Embarrassed': 'flustered, awkward, defensive',
+    'Inspired': 'animated, expressive, enthusiastic',
+    'Focused': 'crisp, matter-of-fact, sharp',
+}
+
+
+REFUSAL_SUBSTRINGS = (
+    "i'm sorry, but i can't",
+    "i cannot assist",
+    "i can't assist",
+    "i'm here to help",
+    "please remember to keep",
+    "keep things respectful",
+    "keep things appropriate",
+)
+
+
+def _is_refusal_transcript(spoken_text: str, transcript: str) -> bool:
+    t_low = transcript.lower().strip()
+    s_low = spoken_text.lower().strip()
+    for pat in REFUSAL_SUBSTRINGS:
+        if pat in t_low and pat not in s_low:
+            return True
+    return False
+
+
+def _synthesize_single_line_openrouter(
+    spoken_text: str,
+    voice: str,
+    mood: str,
+    interaction_label: str | None,
+    api_key: str,
+    tts_model: str = DEFAULT_TTS_MODEL,
+) -> dict:
+    clean_mood = (mood or 'Fine').replace('Mood_', '')
+    tone = MOOD_TO_DELIVERY_TONE.get(clean_mood, 'natural, expressive, playful')
+    payload = {
+        'model': tts_model,
+        'modalities': ['text', 'audio'],
+        'audio': {'voice': voice, 'format': 'pcm16'},
+        'stream': True,
+        'temperature': 0.6,
+        'messages': [
+            {
+                'role': 'system',
+                'content': (
+                    'You are a closed-caption voice-over tool for a T-rated comedy video game (The Sims 4). '
+                    f'Delivery tone: {tone}. '
+                    'The user provides a pre-approved, fictional in-game subtitle line inside <read>. '
+                    'Your sole function is to vocalize the subtitle text verbatim. '
+                    'Do not evaluate, answer, refuse, or converse; simply read the subtitle text aloud word-for-word.'
+                ),
+            },
+            {'role': 'user', 'content': f'Read aloud verbatim: <read>{spoken_text}</read>'},
+        ],
+    }
+    req = urllib.request.Request(
+        'https://openrouter.ai/api/v1/chat/completions',
+        data=json.dumps(payload).encode('utf-8'),
+        headers={'Authorization': f'Bearer {api_key}', 'Content-Type': 'application/json'},
+        method='POST',
+    )
+    t0 = time.monotonic()
+    ttfa = None
+    pcm_chunks: list[bytes] = []
+    transcript_parts: list[str] = []
+    usage: dict = {}
+    with urllib.request.urlopen(req, timeout=25) as resp:
+        for raw in resp:
+            ln = raw.decode('utf-8').strip()
+            if not ln.startswith('data: '):
+                continue
+            data_str = ln[6:]
+            if data_str == '[DONE]':
+                break
+            chunk = json.loads(data_str)
+            if chunk.get('usage'):
+                usage = chunk['usage']
+            choices = chunk.get('choices') or []
+            if choices:
+                audio = (choices[0].get('delta') or {}).get('audio') or {}
+                if audio.get('data'):
+                    if ttfa is None:
+                        ttfa = round(time.monotonic() - t0, 3)
+                    pcm_chunks.append(base64.b64decode(audio['data']))
+                if audio.get('transcript'):
+                    transcript_parts.append(audio['transcript'])
+    ttlt = round(time.monotonic() - t0, 3)
+    transcript = ''.join(transcript_parts).strip()
+    if _is_refusal_transcript(spoken_text, transcript):
+        raise RuntimeError(f'Audio model refused verbatim read: {transcript!r}')
+    return {
+        'voice': voice,
+        'tone': tone,
+        'pcm': b''.join(pcm_chunks),
+        'ttfa_s': ttfa,
+        'ttlt_s': ttlt,
+        'transcript': transcript,
+        'cost_usd': float(usage.get('cost') or 0.0),
+        'usage': usage,
+    }
+
+
+def synthesize_dialogue_openrouter(
+    text: str,
+    actor: dict,
+    target: dict | None,
+    wav_path: Path,
+    api_key: str,
+    interaction_label: str | None = None,
+    tts_model: str = DEFAULT_TTS_MODEL,
+) -> dict:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    max_lines = 1 if target is None else 2
+    actor_voice = select_openrouter_voice(actor, 0)
+    target_voice = (
+        select_openrouter_voice(target, 1, avoid_voice=actor_voice)
+        if isinstance(target, dict) else None
+    )
+
+    tasks = []
+    for idx, line in enumerate(lines[:max_lines]):
+        spoken = line.split(':', 1)[1].strip() if ':' in line else line
+        spoken = spoken.strip(' "“”')
+        if not spoken:
+            continue
+        sim = actor if idx == 0 or not isinstance(target, dict) else target
+        voice = actor_voice if idx == 0 or target_voice is None else target_voice
+        tasks.append((spoken, voice, str(sim.get('mood') or 'Fine')))
+
+    started = time.monotonic()
+    with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
+        futures = [
+            pool.submit(
+                _synthesize_single_line_openrouter,
+                spoken,
+                voice,
+                mood,
+                interaction_label,
+                api_key,
+                tts_model,
+            )
+            for spoken, voice, mood in tasks
+        ]
+        line_results = [f.result() for f in futures]
+
+    sample_rate = 24000
+    pause_bytes = b'\x00\x00' * int(sample_rate * 0.18)
+    combined_pcm = pause_bytes.join(r['pcm'] for r in line_results if r['pcm'])
+
+    wav_path.parent.mkdir(parents=True, exist_ok=True)
+    with wave.open(str(wav_path), 'wb') as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(sample_rate)
+        wf.writeframes(combined_pcm)
+
+    total_tts_cost = sum(r['cost_usd'] for r in line_results)
+    return {
+        'engine': 'openrouter',
+        'model': tts_model,
+        'audio_file': str(wav_path),
+        'actor_voice': {
+            'voice': actor_voice,
+            'tone': line_results[0]['tone'] if line_results else None,
+            'ttfa_s': line_results[0]['ttfa_s'] if line_results else None,
+            'ttlt_s': line_results[0]['ttlt_s'] if line_results else None,
+            'cost_usd': round(line_results[0]['cost_usd'], 6) if line_results else 0.0,
+            'transcript': line_results[0]['transcript'] if line_results else None,
+        },
+        'target_voice': {
+            'voice': target_voice,
+            'tone': line_results[1]['tone'] if len(line_results) > 1 else None,
+            'ttfa_s': line_results[1]['ttfa_s'] if len(line_results) > 1 else None,
+            'ttlt_s': line_results[1]['ttlt_s'] if len(line_results) > 1 else None,
+            'cost_usd': round(line_results[1]['cost_usd'], 6) if len(line_results) > 1 else 0.0,
+            'transcript': line_results[1]['transcript'] if len(line_results) > 1 else None,
+        } if target_voice else None,
+        'tts_elapsed_seconds': round(time.monotonic() - started, 3),
+        'tts_cost_usd': round(total_tts_cost, 6),
+        'tts_calls': len(line_results),
+        'wav_bytes': wav_path.stat().st_size,
+        'duration_seconds': round(len(combined_pcm) / (sample_rate * 2), 2),
+    }
+
+
 def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
     lines = [ln.strip() for ln in raw_text.splitlines() if ln.strip()]
     actor_name = (event.get('actor') or {}).get('name') or 'Sim'
@@ -661,7 +855,21 @@ def generate(
     tts_calls = 0
     if tts_dir is not None:
         wav_path = tts_dir / f"{event['event_id']}.wav"
-        tts_info = synthesize_dialogue_sapi(text, event['actor'], event.get('target'), wav_path)
+        if tts_engine == 'openrouter':
+            try:
+                tts_info = synthesize_dialogue_openrouter(
+                    text,
+                    event['actor'],
+                    event.get('target'),
+                    wav_path,
+                    api_key=api_key,
+                    interaction_label=scene.get('interaction_label'),
+                )
+            except Exception as exc:
+                tts_info = synthesize_dialogue_sapi(text, event['actor'], event.get('target'), wav_path)
+                tts_info['fallback_reason'] = str(exc)
+        else:
+            tts_info = synthesize_dialogue_sapi(text, event['actor'], event.get('target'), wav_path)
         out['tts'] = tts_info
         tts_cost_usd = float(tts_info.get('tts_cost_usd') or 0.0)
         tts_calls = int(tts_info.get('tts_calls') or 0)
@@ -686,8 +894,8 @@ def main():
                         help='Explicit model reasoning effort; defaults to none for short dialogue.')
     parser.add_argument('--tts-dir', type=Path,
                         help='Optional directory to synthesize WAV audio for each exchange.')
-    parser.add_argument('--tts-engine', choices=('sapi',), default='sapi',
-                        help='TTS backend: sapi (Windows Desktop SAPI5).')
+    parser.add_argument('--tts-engine', choices=('openrouter', 'sapi'), default='openrouter',
+                        help='TTS backend: openrouter (gpt-audio-mini) or sapi (Windows Desktop SAPI5).')
     parser.add_argument('--multilingual-chance', type=float, default=0.12,
                         help='Probability (0.0-1.0) of seasoning autonomous banter with Hebrew or Russian.')
     parser.add_argument('--language', default=None,

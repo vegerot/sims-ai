@@ -1,0 +1,533 @@
+{
+  "throw_drink_en": {
+    "event_id": "1792603519538-17",
+    "event_type": "social",
+    "speaker_count": 2,
+    "language": "English",
+    "text": "Casey Gary: Your karaoke was so confidently awful, I had to add a beverage to the performance.\nAlex Keen: I’m sobering up, and somehow the drink landed before the lyrics did.",
+    "scene_summary": {
+      "interaction_label": "Throw Drink",
+      "player_message": null,
+      "outcome": "SUCCESS",
+      "venue_label": "Karaoke Bar",
+      "actor_activities": null,
+      "target_activities": null
+    },
+    "model": "openai/gpt-6-luna",
+    "reasoning_effort": "none",
+    "finish_reason": "stop",
+    "elapsed_seconds": 2.166,
+    "usage": {
+      "prompt_tokens": 1112,
+      "completion_tokens": 44,
+      "total_tokens": 1156,
+      "cost": 3.30561e-05,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 1109,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 3.339e-05,
+        "upstream_inference_prompt_cost": 1.139e-05,
+        "upstream_inference_completions_cost": 2.2e-05
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    },
+    "tts": {
+      "engine": "openrouter",
+      "model": "openai/gpt-audio-mini",
+      "audio_file": "C:\\Users\\Max\\workspace\\github.com\\vegerot\\ai-conversations\\gaming\\sims-ai\\.local\\tts-exp15\\1792603519538-17.wav",
+      "actor_voice": {
+        "voice": "shimmer",
+        "tone": "exasperated, dramatic, annoyed",
+        "ttfa_s": 1.311,
+        "ttlt_s": 3.775,
+        "cost_usd": 0.000422,
+        "transcript": "Your karaoke was so confidently awful, I had to add a beverage to the performance."
+      },
+      "target_voice": {
+        "voice": "verse",
+        "tone": "confident, lively, self-assured",
+        "ttfa_s": 1.056,
+        "ttlt_s": 1.599,
+        "cost_usd": 0.000357,
+        "transcript": "I’m sobering up, and somehow the drink landed before the lyrics did."
+      },
+      "tts_elapsed_seconds": 3.779,
+      "tts_cost_usd": 0.000779,
+      "tts_calls": 2,
+      "wav_bytes": 555884,
+      "duration_seconds": 11.58
+    },
+    "cost_summary": {
+      "updated_at": 1792608349.586645,
+      "last_exchange": {
+        "chat_usd": 3.3e-05,
+        "tts_usd": 0.000779,
+        "total_usd": 0.000812
+      },
+      "session": {
+        "started_at": 1792608343.07437,
+        "exchanges": 1,
+        "chat_calls": 1,
+        "tts_calls": 2,
+        "chat_usd": 3.3e-05,
+        "tts_usd": 0.000779,
+        "total_usd": 0.000812
+      },
+      "cumulative": {
+        "exchanges": 75,
+        "chat_calls": 75,
+        "tts_calls": 10,
+        "chat_usd": 0.010881,
+        "tts_usd": 0.005833,
+        "total_usd": 0.016714
+      },
+      "openrouter_key": {
+        "label": "sk-or-v1-9f5...d7d",
+        "usage_total_usd": 0.012837,
+        "usage_daily_usd": 0.012837,
+        "limit_usd": 50,
+        "limit_remaining_usd": 49.987163
+      }
+    }
+  },
+  "solo_shout_forbidden_words": {
+    "event_id": "exp15-solo-shout-1",
+    "event_type": "solo_vocal",
+    "speaker_count": 1,
+    "language": "English",
+    "text": "Alex Keen: This karaoke bar is spotless, adventurous, and one forbidden word away from a very confident complaint!",
+    "scene_summary": {
+      "interaction_label": "Shout Forbidden Words",
+      "player_message": null,
+      "outcome": "SUCCESS",
+      "venue_label": "Karaoke Bar",
+      "actor_activities": null,
+      "target_activities": null
+    },
+    "model": "openai/gpt-6-luna",
+    "reasoning_effort": "none",
+    "finish_reason": "stop",
+    "elapsed_seconds": 2.071,
+    "usage": {
+      "prompt_tokens": 893,
+      "completion_tokens": 26,
+      "total_tokens": 919,
+      "cost": 0.000101277,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 0.0001023,
+        "upstream_inference_prompt_cost": 8.93e-05,
+        "upstream_inference_completions_cost": 1.3e-05
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    },
+    "tts": {
+      "engine": "openrouter",
+      "model": "openai/gpt-audio-mini",
+      "audio_file": "C:\\Users\\Max\\workspace\\github.com\\vegerot\\ai-conversations\\gaming\\sims-ai\\.local\\tts-exp15\\exp15-solo-shout-1.wav",
+      "actor_voice": {
+        "voice": "verse",
+        "tone": "confident, lively, self-assured",
+        "ttfa_s": 1.192,
+        "ttlt_s": 1.753,
+        "cost_usd": 0.000514,
+        "transcript": "This karaoke bar is spotless, adventurous, and one forbidden word away from a very confident complaint!"
+      },
+      "target_voice": null,
+      "tts_elapsed_seconds": 1.756,
+      "tts_cost_usd": 0.000514,
+      "tts_calls": 1,
+      "wav_bytes": 367244,
+      "duration_seconds": 7.65
+    },
+    "cost_summary": {
+      "updated_at": 1792608469.766576,
+      "last_exchange": {
+        "chat_usd": 0.000101,
+        "tts_usd": 0.000514,
+        "total_usd": 0.000615
+      },
+      "session": {
+        "started_at": 1792608465.382379,
+        "exchanges": 1,
+        "chat_calls": 1,
+        "tts_calls": 1,
+        "chat_usd": 0.000101,
+        "tts_usd": 0.000514,
+        "total_usd": 0.000615
+      },
+      "cumulative": {
+        "exchanges": 80,
+        "chat_calls": 80,
+        "tts_calls": 17,
+        "chat_usd": 0.011273,
+        "tts_usd": 0.00894,
+        "total_usd": 0.020213
+      },
+      "openrouter_key": {
+        "label": "sk-or-v1-9f5...d7d",
+        "usage_total_usd": 0.018417,
+        "usage_daily_usd": 0.018417,
+        "limit_usd": 50,
+        "limit_remaining_usd": 49.981583
+      }
+    }
+  },
+  "player_ask_self": {
+    "event_id": "exp15-ask-self-1",
+    "event_type": "player_ask_self",
+    "speaker_count": 1,
+    "language": "English",
+    "text": "Alex Keen: I’m uncomfortable because I’m hungry and sitting on a loveseat with suspiciously poor posture; I want a big sandwich.",
+    "scene_summary": {
+      "interaction_label": null,
+      "player_message": "Why are you so uncomfortable right now, and what do you want to eat?",
+      "outcome": "PLAYER_INITIATED",
+      "venue_label": "Karaoke Bar",
+      "actor_activities": [
+        {
+          "id": "seating_Sit",
+          "label": "Sit",
+          "target_label": "Unabashed Loveseat"
+        }
+      ],
+      "target_activities": null
+    },
+    "model": "openai/gpt-6-luna",
+    "reasoning_effort": "none",
+    "finish_reason": "stop",
+    "elapsed_seconds": 1.651,
+    "usage": {
+      "prompt_tokens": 929,
+      "completion_tokens": 31,
+      "total_tokens": 960,
+      "cost": 0.000107316,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 0.0001084,
+        "upstream_inference_prompt_cost": 9.29e-05,
+        "upstream_inference_completions_cost": 1.55e-05
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    },
+    "tts": {
+      "engine": "openrouter",
+      "model": "openai/gpt-audio-mini",
+      "audio_file": "C:\\Users\\Max\\workspace\\github.com\\vegerot\\ai-conversations\\gaming\\sims-ai\\.local\\tts-exp15\\exp15-ask-self-1.wav",
+      "actor_voice": {
+        "voice": "verse",
+        "tone": "tense, dry, slightly frazzled",
+        "ttfa_s": 0.928,
+        "ttlt_s": 1.69,
+        "cost_usd": 0.000503,
+        "transcript": "I’m uncomfortable because I’m hungry and sitting on a loveseat with suspiciously poor posture; I want a big sandwich."
+      },
+      "target_voice": null,
+      "tts_elapsed_seconds": 1.693,
+      "tts_cost_usd": 0.000503,
+      "tts_calls": 1,
+      "wav_bytes": 357644,
+      "duration_seconds": 7.45
+    },
+    "cost_summary": {
+      "updated_at": 1792608356.3719244,
+      "last_exchange": {
+        "chat_usd": 0.000107,
+        "tts_usd": 0.000503,
+        "total_usd": 0.00061
+      },
+      "session": {
+        "started_at": 1792608343.07437,
+        "exchanges": 3,
+        "chat_calls": 3,
+        "tts_calls": 4,
+        "chat_usd": 0.00024,
+        "tts_usd": 0.001686,
+        "total_usd": 0.001926
+      },
+      "cumulative": {
+        "exchanges": 77,
+        "chat_calls": 77,
+        "tts_calls": 12,
+        "chat_usd": 0.011088,
+        "tts_usd": 0.00674,
+        "total_usd": 0.017828
+      },
+      "openrouter_key": {
+        "label": "sk-or-v1-9f5...d7d",
+        "usage_total_usd": 0.012837,
+        "usage_daily_usd": 0.012837,
+        "limit_usd": 50,
+        "limit_remaining_usd": 49.987163
+      }
+    }
+  },
+  "wait_drink_hebrew": {
+    "event_id": "exp15-hebrew-1",
+    "event_type": "social",
+    "speaker_count": 2,
+    "language": "Hebrew (עברית)",
+    "text": "Alex Keen: אני מפוכח מספיק כדי להזמין משקה, ובטוח בעצמי מספיק לא לגנוב את התפריט.\nAnaya Jang: עם הספה הזאת והאווירה, אפילו ההמתנה נשמעת כמו שיר אהבה.",
+    "scene_summary": {
+      "interaction_label": "Wait For Drink",
+      "player_message": null,
+      "outcome": "SUCCESS",
+      "venue_label": "Karaoke Bar",
+      "actor_activities": null,
+      "target_activities": [
+        {
+          "id": "seating_Sit",
+          "label": "Sit",
+          "target_label": "Trash or Treasure Sofa"
+        }
+      ]
+    },
+    "model": "openai/gpt-6-luna",
+    "reasoning_effort": "none",
+    "finish_reason": "stop",
+    "elapsed_seconds": 2.332,
+    "usage": {
+      "prompt_tokens": 1280,
+      "completion_tokens": 60,
+      "total_tokens": 1340,
+      "cost": 4.26393e-05,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 1277,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 4.307e-05,
+        "upstream_inference_prompt_cost": 1.307e-05,
+        "upstream_inference_completions_cost": 3e-05
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    },
+    "tts": {
+      "engine": "openrouter",
+      "model": "openai/gpt-audio-mini",
+      "audio_file": "C:\\Users\\Max\\workspace\\github.com\\vegerot\\ai-conversations\\gaming\\sims-ai\\.local\\tts-exp15\\exp15-hebrew-1.wav",
+      "actor_voice": {
+        "voice": "verse",
+        "tone": "confident, lively, self-assured",
+        "ttfa_s": 1.144,
+        "ttlt_s": 1.718,
+        "cost_usd": 0.00044,
+        "transcript": "אני מפוכח מספיק כדי להזמין משקה, ובטוח בעצמי מספיק לא לגנוב את התפריט."
+      },
+      "target_voice": {
+        "voice": "nova",
+        "tone": "confident, lively, self-assured",
+        "ttfa_s": 0.871,
+        "ttlt_s": 1.36,
+        "cost_usd": 0.000364,
+        "transcript": "עם הספה הזאת והאווירה, אפילו ההמתנה נשמעת כמו שיר אהבה."
+      },
+      "tts_elapsed_seconds": 1.722,
+      "tts_cost_usd": 0.000803,
+      "tts_calls": 2,
+      "wav_bytes": 529484,
+      "duration_seconds": 11.03
+    },
+    "cost_summary": {
+      "updated_at": 1792608360.600831,
+      "last_exchange": {
+        "chat_usd": 4.3e-05,
+        "tts_usd": 0.000803,
+        "total_usd": 0.000846
+      },
+      "session": {
+        "started_at": 1792608343.07437,
+        "exchanges": 4,
+        "chat_calls": 4,
+        "tts_calls": 6,
+        "chat_usd": 0.000283,
+        "tts_usd": 0.002489,
+        "total_usd": 0.002772
+      },
+      "cumulative": {
+        "exchanges": 78,
+        "chat_calls": 78,
+        "tts_calls": 14,
+        "chat_usd": 0.011131,
+        "tts_usd": 0.007543,
+        "total_usd": 0.018674
+      },
+      "openrouter_key": {
+        "label": "sk-or-v1-9f5...d7d",
+        "usage_total_usd": 0.01426,
+        "usage_daily_usd": 0.01426,
+        "limit_usd": 50,
+        "limit_remaining_usd": 49.98574
+      }
+    }
+  },
+  "discuss_color_theory_russian": {
+    "event_id": "exp15-russian-1",
+    "event_type": "social",
+    "speaker_count": 2,
+    "language": "Russian (Русский)",
+    "text": "Anaya Jang: Цвет — это настроение в чистом виде. Сейчас у меня настроение «диван, пожалуйста».\nAlex Keen: Запишу: ты — глубокий бордовый. А мой сэндвич — очень убедительный бежевый.",
+    "scene_summary": {
+      "interaction_label": "Discuss Color Theory",
+      "player_message": null,
+      "outcome": "SUCCESS",
+      "venue_label": "Residential",
+      "actor_activities": [
+        {
+          "id": "seating_Sit",
+          "label": "Sit",
+          "target_label": "Squarely There Modern Loveseat"
+        },
+        {
+          "id": "tv-watch-sports",
+          "label": "Watch Sports",
+          "target_label": "Been There, Watched That TV"
+        }
+      ],
+      "target_activities": [
+        {
+          "id": "generic_consume_food",
+          "label": "Eat",
+          "target_label": "Ham and Cheese Sandwich",
+          "recipe_label": "Ham and Cheese Sandwich"
+        },
+        {
+          "id": "seating_Sit",
+          "label": "Sit",
+          "target_label": "Squarely There Modern Loveseat"
+        },
+        {
+          "id": "carry_holdobject",
+          "target_label": "Ham and Cheese Sandwich",
+          "recipe_label": "Ham and Cheese Sandwich"
+        },
+        {
+          "id": "carrying",
+          "target_label": "Ham and Cheese Sandwich",
+          "recipe_label": "Ham and Cheese Sandwich"
+        }
+      ]
+    },
+    "model": "openai/gpt-6-luna",
+    "reasoning_effort": "none",
+    "finish_reason": "stop",
+    "elapsed_seconds": 2.144,
+    "usage": {
+      "prompt_tokens": 1295,
+      "completion_tokens": 58,
+      "total_tokens": 1353,
+      "cost": 4.17978e-05,
+      "is_byok": false,
+      "prompt_tokens_details": {
+        "cached_tokens": 1292,
+        "cache_write_tokens": 0,
+        "audio_tokens": 0,
+        "video_tokens": 0
+      },
+      "cost_details": {
+        "upstream_inference_cost": 4.222e-05,
+        "upstream_inference_prompt_cost": 1.322e-05,
+        "upstream_inference_completions_cost": 2.9e-05
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "image_tokens": 0,
+        "audio_tokens": 0
+      }
+    },
+    "tts": {
+      "engine": "openrouter",
+      "model": "openai/gpt-audio-mini",
+      "audio_file": "C:\\Users\\Max\\workspace\\github.com\\vegerot\\ai-conversations\\gaming\\sims-ai\\.local\\tts-exp15\\exp15-russian-1.wav",
+      "actor_voice": {
+        "voice": "nova",
+        "tone": "tense, dry, slightly frazzled",
+        "ttfa_s": 1.036,
+        "ttlt_s": 1.695,
+        "cost_usd": 0.000435,
+        "transcript": "Цвет — это настроение в чистом виде. Сейчас у меня настроение «диван, пожалуйста»."
+      },
+      "target_voice": {
+        "voice": "verse",
+        "tone": "natural, expressive, playful",
+        "ttfa_s": 0.936,
+        "ttlt_s": 1.592,
+        "cost_usd": 0.000448,
+        "transcript": "Запишу: ты — глубокий бордовый. А мой сэндвич — очень убедительный бежевый."
+      },
+      "tts_elapsed_seconds": 1.698,
+      "tts_cost_usd": 0.000883,
+      "tts_calls": 2,
+      "wav_bytes": 613484,
+      "duration_seconds": 12.78
+    },
+    "cost_summary": {
+      "updated_at": 1792608364.5536869,
+      "last_exchange": {
+        "chat_usd": 4.2e-05,
+        "tts_usd": 0.000883,
+        "total_usd": 0.000925
+      },
+      "session": {
+        "started_at": 1792608343.07437,
+        "exchanges": 5,
+        "chat_calls": 5,
+        "tts_calls": 8,
+        "chat_usd": 0.000324,
+        "tts_usd": 0.003372,
+        "total_usd": 0.003696
+      },
+      "cumulative": {
+        "exchanges": 79,
+        "chat_calls": 79,
+        "tts_calls": 16,
+        "chat_usd": 0.011172,
+        "tts_usd": 0.008426,
+        "total_usd": 0.019598
+      },
+      "openrouter_key": {
+        "label": "sk-or-v1-9f5...d7d",
+        "usage_total_usd": 0.01426,
+        "usage_daily_usd": 0.01426,
+        "limit_usd": 50,
+        "limit_remaining_usd": 49.98574
+      }
+    }
+  }
+}
