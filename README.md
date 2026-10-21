@@ -80,3 +80,17 @@ python3.15 '.\companion.py' --once '.\.local\scene.json' --tts-dir '.\.local\tts
 12. **[12 — Multitasking activity, object, & food context](experiments/12-activity-and-food-context/result.json):** Verified live extraction and STBL resolution of `sim.si_state` activities, target object catalog names (`"Watch World Culture Network"` on `"Been There, Watched That TV"`, `"Sit"` on `"Squarely There Modern Loveseat"`), `posture_state.carry_targets`, and `crafting_component.get_recipe()` dish names.
 
 13. **[13 — Zero-`.package` Sim Pie-Menu injection](experiments/13-pie-menu-interaction/result.json):** Subclassed a base-game `ImmediateSuperInteraction` (`13142`) at runtime with `pie_menu_priority = 30` and hooked `Zone.on_loading_screen_animation_finished` so clicking your active Sim shows **`Enable English Banter`** / **`Disable English Banter`** on Page 1 of the Pie Menu and clicking any other Sim shows **`Speak to <Name> (English)...`**—with zero `.package` files or console commands required ([Enable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-self.png), [Disable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png)).
+
+## Experiments 14–16: Cost Tracking, OpenRouter Neural TTS (`gpt-audio-mini`), Trilingual Seasoning, Solo Vocalizations (`Shout Forbidden Words`), & `Ask <Sim> a Question`
+
+- **Checked-in project API key & cost ledger ([companion.py](companion.py)):**
+  - Uses `DEFAULT_OPENROUTER_API_KEY` (`$50` cap) by default and maintains `BanterLabData/cost_summary.json` (session + cumulative spend across text and TTS calls, synced with `GET https://openrouter.ai/api/v1/key`).
+- **Realistic trilingual AI voices (`openai/gpt-audio-mini`):**
+  - Default `--tts-engine openrouter` streams 24 kHz neural audio for each Sim using 11 distinct OpenAI voices (`ash`, `echo`, `onyx`, `verse`, `fable` for male Sims; `coral`, `nova`, `shimmer`, `sage`, `ballad`, `alloy` for female Sims) with parallel 2-speaker synthesis, mood-based delivery tone, and a refusal guard that falls back to fixed Desktop SAPI5 (`Microsoft David Desktop` / `Microsoft Zira Desktop`).
+  - `--multilingual-chance 0.12` rolls a deterministic Python probability (88% English, 6% Hebrew `עברית`, 6% Russian `Русский`) and automatically matches Hebrew or Russian when the player types in that language.
+- **Solo vocalizations (`Shout Forbidden Words`, etc.) & higher Simlish replacement rate:**
+  - Filters out unlabelled autonomous wave micro-mixers (`socialMixer_Greetings_Wave`), lowers the social cooldown from `8.0 s` to `3.0 s`, logs every skipped interaction (`type: "skipped"`) and `PlaySound(..., is_vox=True)` call (`type: "vox_attempt"`), and captures 1-Sim vocal actions (`type: "solo_vocal"`).
+- **Two Page-1 Pie Menu controls on your Active Sim:**
+  - Clicking your **Active Sim** shows both **`Enable/Disable English Banter`** and **`Ask <FirstName> a Question (English)...`** (or `banter.ask <question>` in the console).
+  - Clicking **any other Sim** shows **`Speak to <FirstName> (English)...`**.
+  - Added `banter.solo` and `banter.reload` (in-place hot reload of `BanterLab.ts4script`).

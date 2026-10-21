@@ -1,0 +1,44 @@
+{
+  "python_version": "3.7.9 (tags/v3.7.9:13c94747c7, Aug 17 2020, 18:58:18) [MSC v.1900 64 bit (AMD64)]",
+  "pie_menu_installed_sims": 2,
+  "pie_menu_on_active_sim": {
+    "slot_1_priority_30": "Disable English Banter",
+    "slot_2_priority_29": "Ask Alex a Question (English)...",
+    "ask_self_visible_on_self": true
+  },
+  "pie_menu_on_other_sim": {
+    "slot_1_priority_30": "Speak to Anaya (English)...",
+    "ask_self_visible_on_other": false
+  },
+  "solo_shout_forbidden_words_captured": {
+    "event_id": "solo-1792608909001-1",
+    "type": "solo_vocal",
+    "interaction": "si_Trait_Manners_ShoutForbiddenWords",
+    "interaction_stbl": 4013856058,
+    "actor_name": "Alex Keen",
+    "target": null
+  },
+  "unlabelled_wave_skipped_without_consuming_cooldown": {
+    "unlabelled_wave": 1
+  },
+  "vox_attempt_telemetry": {
+    "total": 1,
+    "covered_by_english": 1,
+    "unreplaced": 0
+  },
+  "ask_self_captured": {
+    "event_id": "ask-1792608909004-2",
+    "type": "player_ask_self",
+    "player_message": "Why did you just shout forbidden words?",
+    "actor_name": "Alex Keen",
+    "target": null
+  },
+  "events_logged_types": [
+    "started",
+    "mute_state",
+    "solo_vocal",
+    "skipped",
+    "vox_attempt",
+    "player_ask_self"
+  ]
+}

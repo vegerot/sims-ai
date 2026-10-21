@@ -276,3 +276,13 @@ Next:
 
 1. When Max is awake with speakers unmuted, launch the game with `companion.py --data-directory ... --speak` running and test the zero-console workflow: click your active Sim -> **Enable English Banter**, watch a social interaction, and click another Sim -> **Speak to <Sim> (English)...**.
 2. Choose the final feature set for the October 29 birthday release and transition from the experiment `plan.md` / `progress.md` to the production build plan.
+
+## 2026-10-21 — Experiments 14–16: Mercury 3 vs. Luna benchmark, CostTracker, OpenRouter `gpt-audio-mini` trilingual TTS, solo vocalizations (`Shout Forbidden Words`), & `Ask <Sim> a Question`
+
+- **Completed:**
+  - Benchmarked `inception/mercury-3` (`effort="none"` vs. `effort="low"`) against `openai/gpt-6-luna` (`effort="none"`) across 5 real playtest scenes ([14-mercury-vs-luna-benchmark/result.json](experiments/14-mercury-vs-luna-benchmark/result.json)). Kept `openai/gpt-6-luna` (`effort="none"`) for its stronger comedic timing and cause-and-effect grounding.
+  - Checked in the capped project OpenRouter key (`DEFAULT_OPENROUTER_API_KEY`) and added `CostTracker` in [companion.py](companion.py) (`BanterLabData/cost_summary.json` + live `/api/v1/key` sync).
+  - Upgraded TTS in [companion.py](companion.py) to `openai/gpt-audio-mini` with 11 distinct male/female voices, parallel 2-speaker synthesis, English/Hebrew/Russian seasoning (`--multilingual-chance 0.12`), closed-caption verbatim reader framing, and SAPI5 `" Desktop"` fallback ([15-cost-and-openrouter-tts/result.json](experiments/15-cost-and-openrouter-tts/result.json)).
+  - Updated [src/banter_lab/__init__.py](src/banter_lab/__init__.py) and deployed `BanterLab.ts4script` (`56A32A02C302995AFDA1E34324E4BF9CF295CD1533D08DCB271A47A860F1B8C4`) with `skipped` and `vox_attempt` telemetry, `3.0 s` social cooldown, `unlabelled_wave` filtering, `solo_vocal` capture (`Shout Forbidden Words`), Page-1 `Ask <FirstName> a Question (English)...` on the Active Sim, and `banter.ask` / `banter.solo` / `banter.reload` commands ([16-solo-vocal-and-ask-self/result.json](experiments/16-solo-vocal-and-ask-self/result.json)).
+- **Next:**
+  - Restart The Sims 4 (once, so the newly added `banter.reload`, `Ask <FirstName> a Question`, and `solo_vocal` hooks load from `BanterLab.ts4script`), run `companion.py --data-directory "C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab\BanterLabData" --speak`, and test `Shout Forbidden Words`, `Ask <Sim> a Question`, and trilingual `gpt-audio-mini` voices live!

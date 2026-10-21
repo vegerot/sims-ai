@@ -655,6 +655,37 @@ def _open_talk_dialog(actor_sim, target_sim):
     })
 
 
+def _open_ask_self_dialog(actor_sim):
+    actor_info = actor_sim.sim_info
+
+    def _on_response(dialog):
+        try:
+            text_val = dialog.text_input_responses.get('message', '').strip()
+            if not getattr(dialog, 'accepted', False) or not text_val:
+                _record({'type': 'ask_self_dialog_cancelled', 'observed_at': time.time()})
+                return
+            _submit_player_ask_self(actor_sim, text_val)
+        except Exception:
+            _record({'type': 'error', 'traceback': traceback.format_exc()})
+
+    dialog = _BanterInputDialog.TunableFactory().default(
+        actor_info,
+        title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(
+            'Ask {} {}'.format(actor_info.first_name, actor_info.last_name)),
+        text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(
+            'Ask {} a question in English (or Hebrew / Russian):'.format(actor_info.first_name)),
+    )
+    dialog.add_listener(_on_response)
+    dialog.show_dialog(
+        icon_override=IconInfoData(obj_instance=actor_info),
+    )
+    _record({
+        'type': 'ask_self_dialog_opened',
+        'observed_at': time.time(),
+        'actor': '{} {}'.format(actor_info.first_name, actor_info.last_name).strip(),
+    })
+
+
 def _install_pie_menu_interaction():
     global _pie_interaction_cls, _pie_ask_self_cls
     affordance_mgr = services.affordance_manager()
@@ -721,6 +752,50 @@ def _install_pie_menu_interaction():
         if hasattr(affordance_mgr, '_tuned_classes'):
             affordance_mgr._tuned_classes[_pie_interaction_cls.guid64] = _pie_interaction_cls
 
+    if _pie_ask_self_cls is None:
+        class BanterAskSelfPieMenuInteraction(base_cls):
+            guid64 = 0xBA47E21AB0000002
+            cheat = False
+            debug = False
+            simless = False
+            allow_user_directed = True
+            category = None
+            pie_menu_priority = 29
+
+            @classmethod
+            def _tunable_tests_enabled(cls):
+                return False
+
+            @flexmethod
+            def test(cls, inst, *args, target=DEFAULT, context=DEFAULT, **kwargs):
+                target_obj = inst.target if inst is not None else target
+                ctx = inst.context if inst is not None else context
+                actor_sim = getattr(ctx, 'sim', None) or services.get_active_sim()
+                if target_obj is None or target_obj is not actor_sim:
+                    return TestResult(False, 'Only shown on the Active Sim.')
+                return TestResult.TRUE
+
+            @flexmethod
+            def _get_name(cls, inst, target=DEFAULT, context=DEFAULT, **interaction_parameters):
+                target_obj = inst.target if inst is not None else target
+                first_name = getattr(getattr(target_obj, 'sim_info', target_obj), 'first_name', 'Sim')
+                return LocalizationHelperTuning.get_raw_text('Ask {} a Question (English)...'.format(first_name))
+
+            def _run_interaction_gen(self, timeline):
+                if False:
+                    yield None
+                try:
+                    actor_sim = self.sim or services.get_active_sim()
+                    if actor_sim is not None:
+                        _open_ask_self_dialog(actor_sim)
+                except Exception:
+                    _record({'type': 'error', 'traceback': traceback.format_exc()})
+                return True
+
+        _pie_ask_self_cls = BanterAskSelfPieMenuInteraction
+        if hasattr(affordance_mgr, '_tuned_classes'):
+            affordance_mgr._tuned_classes[_pie_ask_self_cls.guid64] = _pie_ask_self_cls
+
     count = 0
     sim_info_mgr = services.sim_info_manager()
     if sim_info_mgr is None:
@@ -730,7 +805,7 @@ def _install_pie_menu_interaction():
         if sim is None:
             continue
         sim_cls = type(sim)
-        for cls_to_add in (_pie_interaction_cls,):
+        for cls_to_add in (_pie_interaction_cls, _pie_ask_self_cls):
             if hasattr(sim_cls, '_super_affordances') and cls_to_add not in sim_cls._super_affordances:
                 sim_cls._super_affordances = sim_cls._super_affordances + (cls_to_add,)
             if hasattr(sim, '_super_affordances') and cls_to_add not in sim._super_affordances:
@@ -761,6 +836,33 @@ def _submit_player_chat(actor_sim, target_sim, message_text):
         'actor': _sim_snapshot(actor_sim),
         'target': _sim_snapshot(target_sim),
         'relationship': _relationship_snapshot(actor_sim.sim_info, target_sim.sim_info),
+    }
+    _pending = dict(event, zone_id=services.current_zone_id())
+    _record(event)
+    return event
+
+
+def _submit_player_ask_self(actor_sim, question_text):
+    global _event_count, _pending
+    _ensure_poller_alarm()
+    _event_count += 1
+    _mark_english_for_sims(actor_sim)
+    venue = _venue_snapshot()
+    event = {
+        'type': 'player_ask_self',
+        'mode': 'ai',
+        'hook_stage': 'player',
+        'outcome': 'PLAYER_INITIATED',
+        'player_message': question_text,
+        'event_id': 'ask-{}-{}'.format(int(time.time() * 1000), _event_count),
+        'observed_at': time.time(),
+        'interaction': 'player_ask_active_sim',
+        'interaction_stbl': None,
+        'is_super': False,
+        'venue': venue['id'],
+        'venue_stbl': venue['stbl'],
+        'actor': _sim_snapshot(actor_sim),
+        'target': None,
     }
     _pending = dict(event, zone_id=services.current_zone_id())
     _record(event)
@@ -953,6 +1055,26 @@ def say_command(*words, _connection=None):
     output('Sent to {} {}: "{}" (event={})'.format(
         target_sim.sim_info.first_name, target_sim.sim_info.last_name,
         message_text, event['event_id']))
+
+
+@sims4.commands.Command('banter.ask', command_type=sims4.commands.CommandType.Live)
+def ask_self_command(*words, _connection=None):
+    """Ask the active Sim a direct question in English (or open the Ask Self modal if no question given)."""
+    output = sims4.commands.CheatOutput(_connection)
+    active_sim = services.get_active_sim()
+    if active_sim is None:
+        output('No active Sim found.')
+        return
+    question_text = ' '.join(words).strip()
+    if not question_text:
+        _open_ask_self_dialog(active_sim)
+        output('Opened Ask Self dialog for {} {}.'.format(
+            active_sim.sim_info.first_name, active_sim.sim_info.last_name))
+        return
+    event = _submit_player_ask_self(active_sim, question_text)
+    output('Asked {} {}: "{}" (event={})'.format(
+        active_sim.sim_info.first_name, active_sim.sim_info.last_name,
+        question_text, event['event_id']))
 
 
 @sims4.commands.Command('banter.solo', command_type=sims4.commands.CommandType.Live)

@@ -231,3 +231,10 @@ Inspecting `interactions/base/interaction.pyc`, `interactions/choices.pyc`, `obj
 - Overriding `@flexmethod def test(cls, inst, *args, target=DEFAULT, context=DEFAULT, **kwargs)` to return `TestResult.TRUE` when `target.is_sim` bypasses the base tuning's object state tests.
 - Overriding `@flexmethod def _get_name(...)` with `LocalizationHelperTuning.get_raw_text(...)` renders `"Enable English Banter"` / `"Disable English Banter"` when clicking the active Sim, and `"Speak to <FirstName> (English)..."` when clicking any other Sim.
 - Wrapping `Zone.on_loading_screen_animation_finished` attaches the class to `type(sim)._super_affordances` (`object_sim`) automatically when any lot finishes loading, so the player never needs to open the cheat console (`Ctrl+Shift+C`). [Results](experiments/13-pie-menu-interaction/result.json), [Enable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-self.png), [Disable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png).
+
+## Desktop SAPI5 vs. WinRT OneCore voice registries & OpenRouter `gpt-audio-mini`
+
+- Windows maintains two separate TTS voice registries:
+  - `Windows.Media.SpeechSynthesis` (WinRT OneCore) registers `"Microsoft David"`, `"Microsoft Zira"`, and `"Microsoft Mark"`.
+  - `System.Speech.Synthesis.SpeechSynthesizer` (Desktop SAPI5) only registers **`"Microsoft David Desktop"`** and **`"Microsoft Zira Desktop"`**. Passing `<voice name="Microsoft Zira">` without the `" Desktop"` suffix in SAPI5 SSML causes a silent fallback to `Microsoft David Desktop`.
+- On OpenRouter, `google/gemini-3.8-flash` only exposes `audio` as an input modality (`HTTP 404` on audio output), whereas `openai/gpt-audio-mini` supports streaming 24 kHz 16-bit mono PCM (`modalities: ["text", "audio"]`, `audio: {"voice": ..., "format": "pcm16"}`, `stream: true`) in English, Hebrew, and Russian. Framing the system prompt as a closed-caption voice-over reader for a T-rated comedy game (`Read aloud verbatim: <read>...</read>`) prevents conversational replies.
