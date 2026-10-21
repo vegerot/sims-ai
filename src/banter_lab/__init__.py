@@ -51,7 +51,7 @@ _audio_probe = None
 _pie_interaction_cls = None
 _pie_ask_self_cls = None
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
-_COOLDOWN_SECONDS = 8.0
+_COOLDOWN_SECONDS = 3.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate')
 _UNLABELLED_WAVES = ('socialMixer_Greetings_Wave', 'nonTouching_Unpaired_Greeting_Wave')
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
@@ -459,6 +459,9 @@ def _observe(interaction, hook_stage='start', outcome_result=None):
     global _last_shown, _event_count, _pending
     actor, target = _social_participants(interaction)
     if actor is None:
+        solo_actor = _solo_vocal_actor(interaction)
+        if solo_actor is not None:
+            _observe_solo_vocal(interaction, solo_actor, hook_stage=hook_stage, outcome_result=outcome_result)
         return
     if _mute_simlish:
         _apply_mute_to_info(actor.sim_info)
@@ -472,6 +475,9 @@ def _observe(interaction, hook_stage='start', outcome_result=None):
         _record_skip('passive_container', interaction, actor, target)
         return
     interaction_stbl = _string_hash(getattr(interaction, 'display_name', None), actor, target)
+    if interaction_name in _UNLABELLED_WAVES and not interaction_stbl:
+        _record_skip('unlabelled_wave', interaction, actor, target)
+        return
     if _pending is not None:
         _record_skip('pending_in_flight', interaction, actor, target,
                      {'pending_event_id': _pending.get('event_id')})
@@ -947,6 +953,42 @@ def say_command(*words, _connection=None):
     output('Sent to {} {}: "{}" (event={})'.format(
         target_sim.sim_info.first_name, target_sim.sim_info.last_name,
         message_text, event['event_id']))
+
+
+@sims4.commands.Command('banter.solo', command_type=sims4.commands.CommandType.Live)
+def solo_vocal_command(*words, _connection=None):
+    """Trigger a solo vocal outburst (defaults to Shout Forbidden Words) on the active Sim."""
+    global _event_count, _pending
+    output = sims4.commands.CheatOutput(_connection)
+    active_sim = services.get_active_sim()
+    if active_sim is None:
+        output('No active Sim found.')
+        return
+    _ensure_poller_alarm()
+    _event_count += 1
+    _mark_english_for_sims(active_sim)
+    action_name = ' '.join(words).strip() or 'si_Trait_Manners_ShoutForbiddenWords'
+    stbl_val = 4013856058 if 'forbidden' in action_name.lower() else None
+    venue = _venue_snapshot()
+    event = {
+        'type': 'solo_vocal',
+        'mode': 'ai',
+        'hook_stage': 'start',
+        'outcome': 'SUCCESS',
+        'event_id': 'solo-{}-{}'.format(int(time.time() * 1000), _event_count),
+        'observed_at': time.time(),
+        'interaction': action_name,
+        'interaction_stbl': stbl_val,
+        'is_super': True,
+        'venue': venue['id'],
+        'venue_stbl': venue['stbl'],
+        'actor': _sim_snapshot(active_sim),
+        'target': None,
+    }
+    _pending = dict(event, zone_id=services.current_zone_id())
+    _record(event)
+    output('Triggered solo vocal {} for {} {} (event={})'.format(
+        action_name, active_sim.sim_info.first_name, active_sim.sim_info.last_name, event['event_id']))
 
 
 @sims4.commands.Command('banter.talk', command_type=sims4.commands.CommandType.Live)
