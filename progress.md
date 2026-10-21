@@ -176,3 +176,103 @@ Next:
 
 1. Resume from the experiment plan and latest research entries; keep outcome, context, presentation, and lifecycle tests small and independently reviewable.
 2. Repository history records the requested publication commit; do not treat an archive as a birthday-release milestone.
+
+## 2026-10-20 — Engineering walkthrough, Python 3.15, and reasoning comparison
+
+- 📚 Resumed from the plan and progress log, inspected the current source, and taught the working social-hook → external generation → notification path. Max then clarified the long-term target: replace all Simlish with contextual spoken English. Recorded that goal without treating full speech coverage as a proven birthday scope.
+- 🔎 Inspected outcome selection, completion, and cancellation entry points in the installed bytecode. The proposed outcome trace was interrupted before any probe code was added or deployed. These callbacks remain untested in live gameplay.
+- 🧪 Verified native Python 3.7 annotations and deferred annotations with the actual compiler runtime. Inspected the installed console parser's runtime use of annotations; recorded why command argument types should remain concrete. Found a community template that generates game API stubs; no stripping or stub-generation dependency was added.
+- 🐍 Verified the existing `python3.15` command resolves Python 3.15.0. Updated companion launch instructions and ran its CLI plus six real generation requests under that interpreter. `py -3.15` failed to resolve the uv-managed interpreter, so it is not the documented command. The game's 3.7 compiler and installed archive were unchanged.
+- ⏱️ Found that the earlier calls omitted reasoning settings. Added explicit `none` as the companion default and a comparison flag. A six-call alternating experiment reported default reasoning tokens 89/121/110 versus zero for all three `none` calls. Median request times were 2.476 versus 2.728 seconds respectively: no demonstrated latency gain. Preserved the reproduction script, outputs, usage, and limitations in [experiment 04](experiments/04-reasoning-latency/result.json).
+- 🧑‍💻 At Max's request, read Anthropic's learning-output-style README and injected instructions. Adopt its session behavior: explain project-specific tradeoffs, handle obvious setup directly, and invite small meaningful code contributions at design decisions. Installed no hook or plugin. Controlled Folder Access was discussed but not changed.
+- 🛡️ Kept the game closed, made no requests using original save data, and changed no installed game files. Model calls used only the already-public disposable Alex/Mortimer scene. The Python 3.15 full live bridge and voice replacement remain unverified.
+
+Next:
+
+1. Continue the learning session. Give Max a focused implementation opportunity when a meaningful dialogue-selection or stale-reply policy is chosen, with surrounding code and a clear contract prepared first.
+2. Choose the next independent experiment from outcome grounding, dialogue selection, or speech playback/suppression. Full speech replacement needs coverage and timing evidence beyond the current social text hook.
+3. Before a live test, preserve current save contents including the shared autosave. Re-test the full bridge under Python 3.15 and verify the modified reasoning setting in-game.
+
+## 2026-10-20 — Requested CFA exception blocked by computer-use tool
+
+- 🛡️ Max explicitly requested using Settings to disable Controlled Folder Access for Sims. Read-only `Get-MpPreference` confirmed CFA remains enabled (`1`); this unelevated process could not inspect allowed-app exclusions. No security setting was changed.
+- 🖥️ The computer-use launch of Settings exposed no targetable window. After checking current windows and locating the installed Windows Security executable, the computer-use tool rejected its launch with `product policy blocks this app`. Stopped that action rather than working around the tool restriction.
+- 🐍 Confirmed the companion's actual interpreter path is `C:\Users\Max\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe`. Modern annotations in companion-only Python 3.15 code are independent of the game module's Python 3.7 constraints.
+
+Next:
+
+1. If Max manually grants the companion access, verify a small write probe before changing bridge paths. The existing bridge continues to work without that change.
+2. Continue the selected mod experiment and learning session; the CFA tool block does not prevent workspace development.
+
+## 2026-10-20 — CFA path correction and fixed-audio research
+
+- 🧪 After Max reported making the manual change, Python 3.15 still could not create a small probe file in `BanterLabData`. Defender event 1123 explicitly reported the blocked executable as `C:\Users\Max\AppData\Roaming\uv\python\cpython-3.15.0-windows-x86_64-none\python.exe`. The previously supplied `cpython-3.15-...` path was uv's version alias; it did not identify the resolved path shown by Defender. CFA remains enabled. Kept the existing workspace reply location and bridge configuration; no protected probe file was created.
+- 🔎 Inspected installed audio bytecode and found per-target `PlaySound` start/stop operations, an `is_vox` parameter, and `PROPX` audio resource references. Checked an EA developer's voice-resource explanation and the TS4 Sound Tool creator's replacement workflow. Recorded mechanisms and limits in [how-sims-works.md](how-sims-works.md#audio-entry-points-for-a-fixed-speech-experiment).
+- 🎙️ Proposed the next independent proof: one fixed English greeting replacing one known Simlish cue. No audio playback, selective suppression, package override, or external audio-tool compatibility has been tested. The game remained closed; no audio tool or game-file change was installed.
+
+Next:
+
+1. Identify one current greeting cue/resource and test fixed English playback, then replacement or selective suppression in Banter Lab. Back up saves including the shared autosave before launching.
+2. Keep generated speech and broader cue coverage downstream of the fixed-audio mechanism proof. Prepare a focused user coding contribution when an actual selection or timing policy is needed.
+3. If Max allows the resolved Python executable through CFA, repeat the small write probe before simplifying bridge paths. This does not block the audio investigation.
+
+## 2026-10-20 — Python 3.15 protected-folder access verified
+
+- ✅ After Max added the Python entries and requested a retry, the resolved Python 3.15.0 executable successfully created a uniquely named file in `Mods/BanterLab/BanterLabData`, atomically replaced it, read its UTF-8 JSON contents, and deleted it. The probe left no files behind. This establishes the needed companion write access in that directory.
+- 📚 The separate workspace reply location is no longer required by this tested filesystem restriction. The current bridge configuration has not been changed; simplifying it is a separate small change.
+
+Next:
+
+1. Continue the fixed-audio experiment. When updating the bridge, it is now possible to place replies beside events and verify the simpler path in-game.
+
+## 2026-10-20 — Fixed greeting asset packaged; live comparison started
+
+- 🎙️ Prepared our own English `Oh. Hello.` WAV with Windows SAPI/Zira and MP3 with ffmpeg. Resolved 48 base-game greeting/voice configurations using FNV-1 64-bit hashes. The chosen Female Voice 1 uncomfortable-greeting configuration also appears in `ClientDeltaBuild1.package`; the sound editor showed its patched six-sample list.
+- 🛠️ At Max's explicit approval, launched TS4 Sound Tool 1.1.29. Its missing codec required a separate download; the original Bitbucket download is unavailable. The creator-linked patched 0.7.0 codec initially failed with missing `libmpg123.dll` (`0xC0000135`). A complete open-source codec release supplied the dependency. A 22.05 kHz import failed; a 44.1 kHz stereo MP3 with patched 0.7.0 imported successfully. Codec and input format changed together, so their individual effects were not isolated.
+- 🧪 Saved a private greeting package and used the existing s4pi API to retain exactly two resources: configuration `FD04E3BE!00000000!AE9960DCFFD5C32E` and our sample `01A527DB!001407EC!2A95B32D1417C761`. Independent package reading passed. The packaged sample decoded back to a 44.1 kHz stereo MP3, duration 2.429 seconds; this proves conversion and package structure, not in-game playback.
+- ⌨️ Added manual `banter.audio hello`, `control`, and `stop` commands. They request a fixed audio resource through `PlaySound`; they do not generate speech or choose a social. The request log deliberately does not claim audible playback.
+- 🛡️ With the game closed, copied and SHA-256 verified all 38 current save/version files to ignored `.local/save-backups/audio-20261020-230352`. Preserved the prior script archive there. Installed the test script (`CCAA7C48133FA360AD3DFFA970ECFD1537D3743DD83C4CFA21BA79C36C752E1F`) and two-resource package (`C4F8C929DD05E87457FAD52674CF49F9D7E72612D24993610AFC23E199AB6E36`). Relaunched the game; its new dormant `loaded` log confirms script import.
+
+Next:
+
+1. Load only Banter Lab, request the untouched control cue and overridden English cue, and distinguish the sound request from a human-confirmed audible result.
+2. Close without saving later test state, restore/check original save contents and shared autosave against this snapshot, and remove the temporary always-active audio package after testing.
+3. Keep realtime generation/loading and interruption behavior as separate experiments. A static package does not establish runtime loading of freshly generated speech.
+
+## 2026-10-21 — Overnight experiments 05–09 verified on secondary monitor (muted)
+
+- 🖥️ Positioned The Sims 4 on the secondary 1440p monitor (`DISPLAY1`, `(3920, 399)`) and verified that a second `SetWindowPos` after crossing the `150% -> 100%` DPI boundary restores the exact `1280×720` DirectX client rect. Left system volume muted throughout so Max could sleep undisturbed.
+- 🎙️ **Experiment 05 (Fixed speech package):** Loaded `Banter Lab` and ran `banter.audio control` (`0x04A64CD44542ACEC`) and `banter.audio hello` (`0xAE9960DCFFD5C32E`). While hardware speakers stayed muted, verified digital rendering from `TS4_x64.exe` via `IAudioMeterInformation` session peaks and pre-endpoint-mute WASAPI loopback capture (`r = 0.9790` 25 ms envelope correlation, `r = 0.9726` 10 ms envelope correlation, and `|r| = 0.6462` 16 kHz sample-level correlation across 38,034 samples vs. `r = 0.4673` for control). Removed the temporary `BanterLabGreeting.package` from `Mods/BanterLab` afterward. See [result.json](experiments/05-fixed-speech/result.json) and [console screenshot](experiments/05-fixed-speech/in-game-console.png).
+- 🎯 **Experiment 06 (Social outcomes, cancellations, and passive containers):** Wrapped `store_result_for_outcome`, `_trigger_interaction_complete_test_event`, and `cancel` alongside `_trigger_interaction_start_event`. Discovered that `sim_Chat` (`13998`) and `sim_BeAffectionate` (`13991`, STBL display name `"Chat"`) are passive `SocialSuperInteraction` conversation containers rather than affectionate mixers, explaining the earlier false-positive romantic prompt at `romance = 0`. Live `banter.trace` measurements showed `store_result_for_outcome` fires **30–37 ms** after `start` and **4.4 seconds before** animation completion, allowing `banter.ai` (now defaulting to `outcome`) to include the verified `OutcomeResult` (`SUCCESS` / `FAILURE`) while still displaying dialogue mid-animation. See [result.json](experiments/06-social-outcomes/result.json) and [in-game screenshot](experiments/06-social-outcomes/in-game-outcome-banter.png).
+- 📚 **Experiment 07 (Rich scene context, 176k-string STBL resolver, and simplified bridge):** Added a pure-stdlib DBPF v2.0 + RefPack + ZLIB + STBL v5 reader to `companion.py` that loads all 165,095 official English strings from 141 `Strings_ENG_US.package` files plus 11,171 strings from `Mods/*.package` (cached in `.local/stbl_en_us.json`, 0.36 s load). Verified live resolution of interaction labels (`"Respectful Introduction"`, `"Discuss Local Fishing Spots"`, `"Discuss Logic Puzzles"`), traits, active visible moodlets and their reasons (`"Emotionally Mindful"`, `"Feeling Great"`), venue (`"Residential"`), relationship bits (`"Neighbor"`, `"Good Compatibility"`, `"Acquaintances"`), Sim `age`/`gender`/`voice_actor`/`voice_pitch`, bounded per-zone `recent_dialogue` continuity, and direct reply delivery via `BanterLabData/reply.json` without `bridge.json`. See [result.json](experiments/07-rich-scene-context/result.json).
+- 💬 **Experiment 08 (Dual-portrait auto-expanded speech UI):** Configured `UiDialogNotification` with `expand_behavior = FORCE_EXPAND`, `visual_type = SPEECH`, `information_level = SIM`, `icon_override = IconInfoData(obj_instance=actor_info)`, and `secondary_icon_override = IconInfoData(obj_instance=target_info)`. Verified live in-game that banter cards automatically expand in the top-right corner showing both Sims' portraits and the full dialogue without opening the Notification Wall. See [result.json](experiments/08-notification-presentation/result.json) and [popup screenshot](experiments/08-notification-presentation/dual-portrait-speech-popup.png).
+- 🔊 **Experiment 09 (Companion per-Sim spoken banter synthesis):** Added `--tts-dir` and `--speak` to `companion.py`, mapping each Sim's `gender`, `voice_actor`, and `voice_pitch` to distinct voices (`Microsoft Zira` for female Sims; `Microsoft David` and `Microsoft Mark` alternated by `voice_actor` for male Sims) and rendering two-speaker SSML WAV clips in **0.60–0.82 seconds** during the live Banter Lab conversation. See [result.json](experiments/09-spoken-banter/result.json).
+- 🛡️ Closed the game without saving, deployed the refined `BanterLab.ts4script` (`3A743B2C5B5FFB578C889EE93017A0E63E8BFB861CA82DD6D90BEEDC2B3282D5`), and restored/verified all **38 save files** (including the shared autosave) against the pre-test SHA-256 manifest (`audio-20261020-230352`).
+
+Next:
+
+1. When Max is awake with audio unmuted, optionally run `companion.py --data-directory ... --speak` (with in-game `voiceslevel = 0` if suppressing Simlish) or drop `dist/BanterLabGreeting.package` into `Mods/BanterLab` to judge the spoken audio by ear.
+2. Review the verified capabilities (outcome-aware banter, STBL-resolved context + moodlets + venue + relationship bits, scene continuity, dual-portrait auto-expanding speech UI, and companion TTS) and select the production birthday mod scope so we can replace the experiment `plan.md` and `progress.md` with the production build plan.
+
+## 2026-10-21 — Experiments 10–12 verified: runtime Simlish mute, in-game player chat modal, activity/object context, and 33 ms warm TTS
+
+- 🔇 **Experiment 10 (Dynamic per-Sim Simlish suppression in Python):** Decoded `sim_info.voice_actor` as the 32-bit FNV-1 hash of the 2–3 character voice suffix (`'ma'` -> `1685527063`, `'mb'` -> `1685527060`, `'fa'` -> `1802970394`, `'fd'` -> `1802970399`, `'cb'` -> `1853303382`). Found that assigning `0` triggers a C++ fallback to `'fa'` (`1802970394`), whereas assigning `0x7FFFFFFF` (`2147483647`) and distributing `SetVoiceActor` stores verbatim and silences `is_vox=True` cues. In a TV-free room (`objects.destroy` on the test TV), `banter.audio vox` (`vo_expr_greet_angry_25f`, `is_vox=True`) dropped from a **`0.0415`** `TS4_x64.exe` session peak unmuted down to the **`0.0040`** ambient floor under `banter.mute on`, while preserving `1685527063` in `_sim_snapshot` and restoring on `banter.mute off` / `banter.stop`. See [result.json](experiments/10-simlish-suppression/result.json) and [console screenshot](experiments/10-simlish-suppression/in-game-vox-mute-console.png).
+- 🗣️ **Experiment 11 (Direct player-to-Sim conversation + 33 ms warm TTS):** Added `banter.say <message>` and `banter.talk` (subclassing `UiDialogTextInputOkCancel` to open a native in-game text-input modal with the active Sim's portrait). Tested live with Geoffrey Landgraab (`banter.say`) and Rieko Okada (`banter.talk` modal: typed `"Is my living room minimalist or just empty?"`, clicked OK, and verified Rieko's in-character reply `"Empty. But in a fancy way, because you have a loveseat."` in the dual-portrait speech popup). Replaced per-call PowerShell TTS spawning with a warmed-up persistent worker in `companion.py`, reducing two-speaker WAV synthesis time from `0.60–0.82 s` to **`0.033–0.135 s` (33–135 ms)**. See [result.json](experiments/11-player-conversation/result.json), [modal screenshot](experiments/11-player-conversation/in-game-talk-modal.png), [reply screenshot](experiments/11-player-conversation/in-game-talk-reply.png), and [`banter.say` screenshot](experiments/11-player-conversation/in-game-player-say.png).
+- 🛋️ **Experiment 12 (Multitasking activity, carried object, and recipe STBL context):** Added `_sim_activities(sim)` inspecting `sim.si_state`, `sim.posture_state.carry_targets`, `target.catalog_name`, and `crafting_component.get_recipe().get_recipe_name()`. Verified live resolution of `"Watch World Culture Network"` on `"Been There, Watched That TV"`, `"Watch Sports"`, and `"Sit"` on `"Squarely There Modern Loveseat"`, which Rieko Okada referenced directly in her reply. See [result.json](experiments/12-activity-and-food-context/result.json).
+- 🛡️ Closed the game without saving, deployed the updated `BanterLab.ts4script` (`4C7EE1E42BBF6D8D8E8D6292C26B635E9B36715C3ED696083FB8BB93C110164B`), and restored/verified all **38 save files** against the pre-test SHA-256 manifest (`audio-20261020-230352`).
+
+Next:
+
+1. When Max is awake with speakers unmuted, test `companion.py --data-directory ... --speak` alongside `banter.ai` + `banter.mute on` and `banter.talk` to evaluate the spoken English banter and in-game Simlish suppression by ear.
+2. Decide which verified capabilities (automatic outcome-aware banter, STBL-resolved scene/moodlet/activity/food/venue context, dual-portrait auto-expanding speech UI, `banter.talk` player conversation modal, `banter.mute` runtime Simlish suppression, and 33 ms companion TTS) belong in the production October 29 birthday mod, then replace the experiment `plan.md` and `progress.md` with the production build plan.
+
+## 2026-10-21 — Experiment 13 verified: zero-`.package` Page-1 Sim Pie-Menu controls on lot load
+
+- 🥧 **Experiment 13 (Zero-`.package` Sim Pie-Menu injection):** Subclassed `services.affordance_manager().get(13142)` (`ImmediateSuperInteraction`) at runtime in Python 3.7 with `cheat = False`, `debug = False`, `allow_user_directed = True`, `category = None`, `pie_menu_priority = 30`, `@flexmethod def test(...) -> TestResult.TRUE`, and `@flexmethod def _get_name(...)`. Hooked `Zone.on_loading_screen_animation_finished` so the interaction attaches to `object_sim._super_affordances` automatically when a lot loads.
+- ✅ Verified live in `Banter Lab` with zero console commands entered: clicking Alex Keen displayed **`Enable English Banter`** on Page 1 of his radial Pie Menu; clicking it toggled `_enabled = True`, and clicking Alex Keen again displayed **`Disable English Banter`**. Fixed the `_connection is not None` guard in `start_ai` and `stop` so Pie-Menu execution completes cleanly without a console connection. See [result.json](experiments/13-pie-menu-interaction/result.json), [Enable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-self.png), and [Disable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png).
+- 🛡️ Closed the game without saving, deployed `BanterLab.ts4script` (`5386228270B92AEC8713FC375D7C391CAA018BDBB82088090D167258DB0E4A21`), and restored/verified all **38 save files** against the pre-test SHA-256 manifest (`audio-20261020-230352`).
+
+Next:
+
+1. When Max is awake with speakers unmuted, launch the game with `companion.py --data-directory ... --speak` running and test the zero-console workflow: click your active Sim -> **Enable English Banter**, watch a social interaction, and click another Sim -> **Speak to <Sim> (English)...**.
+2. Choose the final feature set for the October 29 birthday release and transition from the experiment `plan.md` / `progress.md` to the production build plan.

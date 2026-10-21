@@ -1,0 +1,45 @@
+{
+  "experiment": "Rich live scene context and pure-stdlib STBL string-table resolution across base game, packs, and mods",
+  "game_build": "1.128.90.1030",
+  "stbl_resolver": {
+    "implementation": "Pure Python 3.15 stdlib DBPF v2.0 + RefPack (0x10FB/0x50FB) + ZLIB + STBL v5 parser in companion.py",
+    "game_packages_scanned": 141,
+    "game_strings_loaded": 165095,
+    "total_strings_with_mods": 176266,
+    "cold_build_seconds": 2.042,
+    "cached_load_seconds": 0.357,
+    "token_formatting": [
+      "{0.SimFirstName} / {1.SimFirstName}",
+      "{0.SimName} / {1.SimName}",
+      "{M0.x}{F0.y} / {M1.x}{F1.y} gender switches",
+      "HTML tag stripping (<font ...>) and '(should not be seen)' debug string filtering"
+    ]
+  },
+  "verified_live_context_fields": {
+    "sim": [
+      "age (e.g. YOUNGADULT, ADULT)",
+      "gender (e.g. MALE, FEMALE)",
+      "voice_actor (uint32 actor hash, e.g. 1685527063, 1802970399)",
+      "voice_pitch (float in [-1.0, 1.0], e.g. -0.36, -0.18)",
+      "traits + trait_stbls -> resolved trait_labels (e.g. ['Geek', 'Bookworm', 'Clumsy'], ['Neat', 'Adventurous', 'Kleptomaniac'])",
+      "mood + mood_intensity -> mood_label (e.g. 'Uncomfortable', 'Fine')",
+      "visible buffs + name_stbl + reason_stbl -> active_buffs (e.g. {'name': 'Emotionally Mindful', 'reason': '(From Being Emotionally Mindful)'}, {'name': 'Feeling Great', 'reason': '(From High Needs)'})"
+    ],
+    "scene_and_relationship": [
+      "interaction + interaction_stbl -> interaction_label (e.g. 'Respectful Introduction', 'Discuss Local Fishing Spots', 'Discuss Logic Puzzles')",
+      "venue + venue_stbl -> venue_label (e.g. 'Residential' from 0xFCB54D6B)",
+      "friendship and romance scores",
+      "relationship bits + bit_stbls -> bit_labels (e.g. ['Neighbor', 'Good Compatibility', 'Casual Discussion', 'Acquaintances', 'Pleasant Conversation'])",
+      "bounded per-zone recent_dialogue buffer (last 3 exchanges) preventing repeated introductions"
+    ]
+  },
+  "bridge_simplification_verified": {
+    "direct_reply_path": "C:\\Users\\Max\\OneDrive\\Documents\\Electronic Arts\\The Sims 4\\Mods\\BanterLab\\BanterLabData\\reply.json",
+    "bridge_json_required": false,
+    "live_roundtrips_verified": 4
+  },
+  "limits": [
+    "Some internal tracker buffs or interactions do not define a user-facing STBL string ID and fall back to their tuning class name.",
+    "Complex nested localization tokens (such as dynamic object counts or career level numbers) are stripped rather than evaluated outside the game."
+  ]
+}

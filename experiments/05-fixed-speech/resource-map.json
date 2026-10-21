@@ -1,0 +1,320 @@
+{
+  "experiment": "Fixed English speech: offline resource mapping and test clip",
+  "game_build": "1.128.90.1030",
+  "package": "Data\\Client\\ClientFullBuild1.package",
+  "resource_counts": {
+    "FD04E3BE": 36245,
+    "01A527DB": 27993,
+    "01EEF63A": 9
+  },
+  "config_matches": [
+    {
+      "name": "vo_expr_greet_angry_25f_ma",
+      "resource": "FD04E3BE!00000000!04A641D4454299BD",
+      "bytes": 106,
+      "sha256": "85193220244cf669dcaec4873006b8defef03d454fd16df93c0033563ae3f588"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_mb",
+      "resource": "FD04E3BE!00000000!04A641D4454299BE",
+      "bytes": 106,
+      "sha256": "322b06a4cf31d1725f93f6616e59ec6788e601d0b9ad4f21e4bf7a577c48e598"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_mc",
+      "resource": "FD04E3BE!00000000!04A641D4454299BF",
+      "bytes": 106,
+      "sha256": "dbd41c846983021ee4ccd8ded2fd3f9fbbfa351c324d7c481bb33a6b250f5239"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_fa",
+      "resource": "FD04E3BE!00000000!04A64CD44542ACEC",
+      "bytes": 106,
+      "sha256": "1a32bc4efa41051244a0c0011a1a66e31b124404ea5d9e97654196bfdc57d331"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_fc",
+      "resource": "FD04E3BE!00000000!04A64CD44542ACEE",
+      "bytes": 98,
+      "sha256": "29be906009f585b52e5da96df9b0d4119990ff0df2cf1fbc1762b786b95522eb"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_fd",
+      "resource": "FD04E3BE!00000000!04A64CD44542ACE9",
+      "bytes": 98,
+      "sha256": "3ad394893e43bae9266516d524d417a0c0afa80fcd843046a83ec9d2329c80c2"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_tma",
+      "resource": "FD04E3BE!00000000!290390B1B0169CCF",
+      "bytes": 122,
+      "sha256": "3fd72f9551556a4b1660cb2d55f75d544fdbfb2d0d329cc32df7ff0b9f551fc5"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_tmb",
+      "resource": "FD04E3BE!00000000!290390B1B0169CCC",
+      "bytes": 138,
+      "sha256": "8d64c75e6ba1bd89a5cb99bc9408b5e9f250cdc747412e767b503280873383fa"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_tmc",
+      "resource": "FD04E3BE!00000000!290390B1B0169CCD",
+      "bytes": 98,
+      "sha256": "3d9217e48ae512ca1dfc70eabee40c2f228c7b8e7bf8f8aebf91c70a58b893fe"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_tfa",
+      "resource": "FD04E3BE!00000000!290387B1B0168D02",
+      "bytes": 114,
+      "sha256": "4585eb532aa3bdd83f85e2886cf16dc502e7d5100579fa5b1ac0e9fd85b5965b"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_tfc",
+      "resource": "FD04E3BE!00000000!290387B1B0168D00",
+      "bytes": 98,
+      "sha256": "2bee2b060d2e4b35e3c27f7c36d3299a549c9412d58c42676e4504abaa65ae76"
+    },
+    {
+      "name": "vo_expr_greet_angry_25f_tfd",
+      "resource": "FD04E3BE!00000000!290387B1B0168D07",
+      "bytes": 114,
+      "sha256": "e5284707d4497f4c5072a4ae653300f9d81007087da5028bbdaef947472e2619"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_ma",
+      "resource": "FD04E3BE!00000000!AE9969DCFFD5D2FB",
+      "bytes": 106,
+      "sha256": "dd648fecd37d4360bdd78dea87caf48312710e5263b974fd98a3b82b9705aaeb"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_mb",
+      "resource": "FD04E3BE!00000000!AE9969DCFFD5D2F8",
+      "bytes": 106,
+      "sha256": "16cec02653b160ca53cb94149da883784d106762f1ad3a9cbcea4b0ad3b7b428"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_mc",
+      "resource": "FD04E3BE!00000000!AE9969DCFFD5D2F9",
+      "bytes": 114,
+      "sha256": "e8303c821788fb937e3eaaa1ed1b54bb127d5222091fe481c675847e0bd31f1a"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_fa",
+      "resource": "FD04E3BE!00000000!AE9960DCFFD5C32E",
+      "bytes": 114,
+      "sha256": "5a81231eecbd68591c87ed6e8a613ce523acc210604aaeb0899717c3ea315db2"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_fc",
+      "resource": "FD04E3BE!00000000!AE9960DCFFD5C32C",
+      "bytes": 130,
+      "sha256": "3a304f3d7f1f39920c5bf24be7d93df25e6172325c5766535f94468ab66930ff"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_fd",
+      "resource": "FD04E3BE!00000000!AE9960DCFFD5C32B",
+      "bytes": 106,
+      "sha256": "9a6032fd8b26418bee2b4c64852bf62fd419a6d9642fba27e09e345f191f72ed"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_tma",
+      "resource": "FD04E3BE!00000000!8433B586B8131B59",
+      "bytes": 106,
+      "sha256": "5195e35bcd6f9fa22e9f870bb12c527e69ec502ec05c9f18f5f3f554683c755c"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_tmb",
+      "resource": "FD04E3BE!00000000!8433B586B8131B5A",
+      "bytes": 114,
+      "sha256": "ec6a4c64e6e3c5b88328b0dffa97f67401ec77ab13121a3038e4b42ba0cf8f50"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_tmc",
+      "resource": "FD04E3BE!00000000!8433B586B8131B5B",
+      "bytes": 106,
+      "sha256": "346017886797b638e00ec543133f26d5da97b5c0952bb3853ba589d0bce74ae6"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_tfa",
+      "resource": "FD04E3BE!00000000!8433B086B81312D8",
+      "bytes": 114,
+      "sha256": "4483f6442646e2311845e82a7238e2ba304505235af888bea135561846f88dda"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_tfc",
+      "resource": "FD04E3BE!00000000!8433B086B81312DA",
+      "bytes": 154,
+      "sha256": "ba731ca1bc5ba47d665147ecae5fbd7fabea7eae2dea6e547e1f3fcc26945f52"
+    },
+    {
+      "name": "vo_expr_greet_uncomfortable_45f_tfd",
+      "resource": "FD04E3BE!00000000!8433B086B81312DD",
+      "bytes": 122,
+      "sha256": "889e0c9f61b5d2819a99156a72f22613abf5b1dcdf927688c6362987306b5998"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_ma",
+      "resource": "FD04E3BE!00000000!E06E8F8D3FC13BE5",
+      "bytes": 114,
+      "sha256": "6c5db421407ea529b07faadd82fc4ad1273fd39f0c9406c67bebd5c22e52b734"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_mb",
+      "resource": "FD04E3BE!00000000!E06E8F8D3FC13BE6",
+      "bytes": 106,
+      "sha256": "b440fe9d6228da841314a22cd509193c4faa98dd5ed59d428c8fa8148936dc8f"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_mc",
+      "resource": "FD04E3BE!00000000!E06E8F8D3FC13BE7",
+      "bytes": 106,
+      "sha256": "7eb90dd04e65de2284a3f8135f2ee966040fe00a781951c1158ed8b59b4001c8"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_fa",
+      "resource": "FD04E3BE!00000000!E06E8A8D3FC13364",
+      "bytes": 114,
+      "sha256": "8bd637b73bbeebccfb978598ec7790e17273bd16516f325f6f07a1429099ee01"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_fc",
+      "resource": "FD04E3BE!00000000!E06E8A8D3FC13366",
+      "bytes": 154,
+      "sha256": "f1767e3ceaeef9ae01eb71ad6601eb5877725e016a40ff8989c6024454c72b7c"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_fd",
+      "resource": "FD04E3BE!00000000!E06E8A8D3FC13361",
+      "bytes": 106,
+      "sha256": "7b205a2676f03afb425f0252727f1c4ccd687cab7c259215452ca5756e0f1aa6"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_tma",
+      "resource": "FD04E3BE!00000000!1D37DA035571D127",
+      "bytes": 122,
+      "sha256": "cf8d9a3c1573cad68571f5084c2f8543193c797e34800c99a877ffbf085943da"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_tmb",
+      "resource": "FD04E3BE!00000000!1D37DA035571D124",
+      "bytes": 106,
+      "sha256": "d4d6d9609e244a924fa5aa3b129516a368cc7dfd5ee2916d55a1306da6e4d3ae"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_tmc",
+      "resource": "FD04E3BE!00000000!1D37DA035571D125",
+      "bytes": 122,
+      "sha256": "ac538bba897aacbf3a26aeea686b9588e8518baa7aab79dc592600432387dd38"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_tfa",
+      "resource": "FD04E3BE!00000000!1D37E1035571DD4A",
+      "bytes": 114,
+      "sha256": "7d4c81a44c10a02fd5a6b8a48d4c3b55838a6ef4247976b75d630347d1e15009"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_tfc",
+      "resource": "FD04E3BE!00000000!1D37E1035571DD48",
+      "bytes": 186,
+      "sha256": "19ae2626c874bf6cf6dd863ba4c59e1fa86bcfa02a51de67a50108cd8bab27b7"
+    },
+    {
+      "name": "vo_expr_greet_bored_40f_tfd",
+      "resource": "FD04E3BE!00000000!1D37E1035571DD4F",
+      "bytes": 122,
+      "sha256": "d09a4ef4e977414ae18b4703dd6ec8ad865403a8071b2bcc94d8a5382f7f7817"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_ma",
+      "resource": "FD04E3BE!00000000!CC91186261716938",
+      "bytes": 138,
+      "sha256": "168b55923ddc370e7b51f829e4dc08ee06012b427248a173ffb4158e823158da"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_mb",
+      "resource": "FD04E3BE!00000000!CC9118626171693B",
+      "bytes": 122,
+      "sha256": "4b41ae76dce451bb83788cce4867b8c0e6319605a145a1a74a902d5b3fe2f1f3"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_mc",
+      "resource": "FD04E3BE!00000000!CC9118626171693A",
+      "bytes": 114,
+      "sha256": "a41f5981942f7ce672b9ec6b13b6eb16e96264b120515ecb2c6cdb44a3d2155c"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_fa",
+      "resource": "FD04E3BE!00000000!CC911D62617171B9",
+      "bytes": 122,
+      "sha256": "552854310714a875c4c4af40beb5f0c0807f77f08fdf752befab4a462a2420a2"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_fc",
+      "resource": "FD04E3BE!00000000!CC911D62617171BB",
+      "bytes": 98,
+      "sha256": "3819b66e0b019f09103f06debe37591dfc6c280b0702b9f65b1f8396a221d395"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_fd",
+      "resource": "FD04E3BE!00000000!CC911D62617171BC",
+      "bytes": 106,
+      "sha256": "aef8f8670a6f2972759f96efb749d7ace8879e81bdcf38f5379b85dcd2589b13"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_tma",
+      "resource": "FD04E3BE!00000000!0C43872B93F7B578",
+      "bytes": 122,
+      "sha256": "6ef79d22b6f6756327070eeb391f00780dc27c346848d5de63bf4b231e269104"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_tmb",
+      "resource": "FD04E3BE!00000000!0C43872B93F7B57B",
+      "bytes": 98,
+      "sha256": "e94ba281838250239a5423e3ceaf16a89ded263c779e9e61dc3e725dffe5b551"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_tmc",
+      "resource": "FD04E3BE!00000000!0C43872B93F7B57A",
+      "bytes": 98,
+      "sha256": "7d2698354b3c6f4cef9b214f4f440521fa95c90974142d2991d0b6caaa9be8f7"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_tfa",
+      "resource": "FD04E3BE!00000000!0C438C2B93F7BDF9",
+      "bytes": 106,
+      "sha256": "3066ba0f5095744a29b1f697e301e98e694e7aaccafac6085501be9981b1cf78"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_tfc",
+      "resource": "FD04E3BE!00000000!0C438C2B93F7BDFB",
+      "bytes": 106,
+      "sha256": "34c16a34ca0c8257ec7520ee015c9dd0b21359837604792e6c52e48ef52156d1"
+    },
+    {
+      "name": "vo_expr_greet_sad_25f_tfd",
+      "resource": "FD04E3BE!00000000!0C438C2B93F7BDFC",
+      "bytes": 122,
+      "sha256": "3f419ecc5ce9d3ade8b5334ff7dce199950248593fc056d9a893996ebaec158a"
+    }
+  ],
+  "english_test_clip": {
+    "text": "Oh. Hello.",
+    "voice": "Microsoft Zira Desktop - English (United States)",
+    "duration_seconds": 2.299,
+    "sample_rate": 22050,
+    "channels": 1,
+    "sample_width_bytes": 2
+  },
+  "sound_tool": {
+    "release": "1.1.29",
+    "creator_page": "https://modthesims.info/d/639090/ts4-sound-tool.html",
+    "archive_sha256": "8DF99B31AC5E14A6E81A836BCC775E67B38BBAA2A3371CB8B982BDBEA662C0BF",
+    "downloaded": true
+  },
+  "limits": [
+    "Base resources only; patch and mod overrides have not been resolved.",
+    "Cue names were found in base animation clips; no live cue trigger was observed.",
+    "No packaged English resource, replacement, selective suppression, or gameplay test yet.",
+    "Sound Tool is an offline asset utility, not TTS or a selected runtime dependency."
+  ]
+}

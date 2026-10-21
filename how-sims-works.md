@@ -113,8 +113,121 @@ Useful interpretation boundaries:
 
 The read-only experiment used hashed copies in ignored `.local/save-analysis/`, with schema/reference inspection in `.local/research/`. It did not launch the game, send save contents to a model, or write to the original save folder. Keep original saves, account metadata, and household-specific summaries out of the public repository.
 
+## Audio entry points for a fixed speech experiment
+
+Inspection of installed `audio/primitive.pyc` found `PlaySound(target, sound_id, sound_name, is_vox, joint_name_hash, play_on_active_sim_only, immediate)`. Its `start()` constructs a sound-start message and sends a `SOUND_START` operation through the game's distributor. `stop()` detaches or stops that sound operation. `TunablePlayAudio` takes a `PROPX` resource key. These are game sound-resource entry points; this inspection does not establish arbitrary WAV-path playback, interception of animation-triggered speech, or selective suppression of existing Simlish.
+
+An [EA developer's audio-format explanation](https://forums.ea.com/discussions/the-sims-4-mods-and-custom-content-en/i-have-a-few-questions-about-the-audio-configuration-fd04e3be-type-/396903) describes voice prefixes, voice/age suffixes, audio configuration resources (`0xFD04E3BE`), and varied samples. This is an older primary-source explanation, so conventions need checking against current resources. The [TS4 Sound Tool creator](https://modthesims.info/d/639090/) documents cloning a sound event, importing replacement audio, and saving a package. Creator documentation establishes a prior-art workflow, not that the tool or replacement works with this installation.
+
+A useful independent next proof is one fixed English greeting in place of one known Simlish cue. First establish audio playback and replacement/suppression, then add generated speech. Fixed audio removes model and speech-synthesis latency from that mechanism test. No audio tool, package, or playback change was installed for this source inspection.
+
 ## Local source references and tuning readers
 
 `findrepo sims` found useful local implementations, summarized with exact entry points in [repo-research.md](repo-research.md). S4CL distinguishes interaction start, outcome, and cancellation, and exposes venue context; Lot51 provides lifecycle hook examples. These are candidates for more grounded dialogue and cleanup during travel, not locally verified callback behavior yet. Lot51's balloon example uses icons and does not establish arbitrary text above Sims.
 
 The local Sims 4 Workspace reader was tested against actual installed packages: 20,351 base XML tuning instances and 1,021 GP03 binary DATA tuning instances parsed successfully. The latter includes recipe definitions. A binary combined-tuning decoder is therefore already available; no independent binary-format implementation is needed for this tested case. See [the result](experiments/03-local-repo-readers/result.json). Override/load-order merging and complete coverage remain unverified, as do numerical skill thresholds and localized label resolution.
+
+## Type annotations and independent Python versions
+
+The Python 3.7 compiler/runtime used for our script archive successfully ran function annotations with `str`, `typing.List`, `typing.Dict`, and `typing.Optional`. It also successfully deferred an undefined `SimInfo` annotation with `from __future__ import annotations`, consistent with [Python 3.7's PEP 563 documentation](https://docs.python.org/3.7/whatsnew/3.7.html#pep-563-postponed-evaluation-of-annotations). Native annotations do not require a stripping stage. Use syntax and typing APIs supported by that runtime; newer grammar such as `type Alias = ...` cannot be made compatible merely by deferring annotations.
+
+There is a specific runtime consumer to preserve: inspection of installed `sims4/commands.pyc` found that `Command.named_command` calls `inspect.getfullargspec`, `parse_args` reads `spec.annotations`, and `_parse_arg` invokes the annotated type to convert input. Our console commands should therefore retain concrete runtime annotations such as `first_name: str`. Do not enable deferred annotations across that module without checking the command parser. This is a bytecode finding; no deliberately broken command was installed or tested.
+
+The community [Sims4ScriptingTemplate](https://github.com/mycroftjr/Sims4ScriptingTemplate) includes `type_hints.py` for generating game API stubs with mypy/protoc. Stubs can improve editor/type-checker knowledge without being loaded by the game. This is a source example, not a survey establishing which workflow is most common.
+
+The external companion now runs with the already installed Python 3.15.0, independently of the game's Python 3.7 bytecode. On this PC `python3.15` works; the legacy `py -3.15` command does not resolve the uv-managed interpreter. The CLI and six real HTTP generation requests succeeded under 3.15. This did not relaunch the game or re-test the entire in-game bridge under the new interpreter.
+
+## Reasoning effort and latency
+
+The first live generation experiment omitted reasoning configuration. Its three responses reported 134, 195, and 136 reasoning tokens, so those were not reasoning-disabled measurements. The live OpenRouter catalog subsequently reported that `openai/gpt-6-luna` defaults to medium reasoning and supports `none`. [OpenRouter's reasoning guide](https://openrouter.ai/docs/guides/best-practices/reasoning-tokens) distinguishes disabling reasoning from merely excluding its returned text.
+
+The companion now sends `reasoning: {"effort": "none"}` by default, with a `--reasoning-effort` override, and records the effort and finish reason. In a six-call alternating comparison with the same captured test scene and prompt, omitted/default reasoning used 89, 121, and 110 reasoning tokens; explicit `none` reported zero for all three calls. Median request times were 2.476 seconds for default and 2.728 seconds for none. [Results and limits](experiments/04-reasoning-latency/result.json).
+
+This verifies the parameter and removes reasoning work, but does not demonstrate faster responses in this small sample. Provider routing/cache state, network variation, and output lengths were uncontrolled. The timer covers the HTTP request/response; the companion's 0.25-second polling and game's 0.5-second polling occur outside it. Future speech generation/playback adds another latency path. Dialogue quality was not systematically evaluated.
+
+## Fixed audio override and digital loopback verification
+
+Base-game voice configurations (`0xFD04E3BE`) map 64-bit FNV-1 cue hashes (such as `vo_expr_greet_uncomfortable_45f_fa` -> `0xAE9960DCFFD5C32E`) to EA Layer 3 audio sample resources (`0x01A527DB`). Patch packages such as `ClientDeltaBuild1.package` can override those configurations with updated sample lists.
+
+Using TS4 Sound Tool 1.1.29 with the creator-linked no-silence-removal `ealayer3 0.7.0` codec and `libmpg123.dll` from Destrospean's release, a 44.1 kHz stereo MP3 of `"Oh. Hello."` imported cleanly and round-tripped back to MP3 (duration 2.429 seconds). Trimming the resulting package with `s4pi` left exactly two resources: the overridden configuration `FD04E3BE!00000000!AE9960DCFFD5C32E` and the English sample `01A527DB!001407EC!2A95B32D1417C761`.
+
+In live gameplay (`Banter Lab`), `PlaySound(services.get_active_sim(), sound_id=..., is_vox=False, immediate=True).start()` triggered both the untouched control cue (`0x04A64CD44542ACEC`) and the overridden greeting (`0xAE9960DCFFD5C32E`). Because system speakers remained muted overnight, digital output from `TS4_x64.exe` was verified through Windows Core Audio `IAudioMeterInformation` per-process session peaks and pre-endpoint-mute WASAPI loopback capture (`AUDCLNT_STREAMFLAGS_LOOPBACK`):
+
+- The overridden `hello` probe produced a two-utterance session peak profile on `TS4_x64.exe`: `"Oh."` peaked at `0.1056` (`0.75–1.00 s`), dropped to `0.0020` across the preserved `0.65 s` pause (`1.05–1.70 s`), and peaked at `0.1253` on `"Hello."` (`1.75–2.30 s`).
+- The captured loopback waveform correlated with our source `"Oh. Hello."` clip at **`r = 0.9790`** (25 ms RMS envelope), **`r = 0.9726`** (10 ms RMS envelope), and **`|r| = 0.6462`** (direct 16 kHz sample-by-sample waveform correlation across 38,034 samples), compared with `r = 0.4673` for the untouched Simlish control cue. [Results](experiments/05-fixed-speech/result.json), [console screenshot](experiments/05-fixed-speech/in-game-console.png).
+
+Static `.package` overrides are indexed when the game starts, so they do not provide runtime injection of freshly synthesized dialogue during play. The temporary override package was removed after verification.
+
+## Social interaction lifecycle, outcomes, and passive containers
+
+Inspecting `interactions/base/interaction.pyc`, `interactions/utils/outcome.pyc`, and combined tuning revealed two structural facts about social interactions:
+
+1. **Passive conversation containers vs. social mixers:** `sim_Chat` (`13998`, STBL `0x482BA41C` -> `"Chat with {1.SimFirstName}"`) and `sim_BeAffectionate` (`13991`, STBL `0xDB04B08F` -> `"Chat"`) are `SocialSuperInteraction` containers that keep Sims grouped in a conversation while individual `SocialMixerInteraction` actions run inside them. Despite its legacy internal name, `sim_BeAffectionate` has the user-facing display name `"Chat"` and runs during ordinary non-romantic conversations (`romance = 0.0`). Filtering `('sim_Chat', 'sim_BeAffectionate')` prevents the model from mistaking the container name for an affectionate action.
+2. **Outcome timing relative to start and completion:** Wrapping `_trigger_interaction_start_event`, `store_result_for_outcome(self, outcome, result)`, `_trigger_interaction_complete_test_event`, and `cancel` in live Banter Lab gameplay showed that `store_result_for_outcome` fires **30–37 ms** after `start`, whereas `complete` fires several seconds later when the animation finishes (for example, `mixer_social_DiscussLocalFishingSpots`: `start` at `+0.000 s`, `outcome = SUCCESS` at `+0.037 s`, displayed AI banter at `+3.175 s`, and `complete` at `+7.619 s`). Triggering generation on `store_result_for_outcome` supplies the verified `OutcomeResult` (`SUCCESS` or `FAILURE`) while still displaying the banter mid-animation. [Results](experiments/06-social-outcomes/result.json), [in-game screenshot](experiments/06-social-outcomes/in-game-outcome-banter.png).
+
+## String-table (STBL) resolution and richer scene context
+
+Although `LocalizationHelperTuning` returns `LocalizedString` protobuf messages rather than Python strings inside the game, every `TunableLocalizedStringFactory._Wrapper` exposes `._string_id` and every `LocalizedString` protobuf exposes `.hash` (the 32-bit FNV-32 key into `Strings_ENG_US.package`, resource type `0x220557DA`).
+
+A 90-line pure-stdlib DBPF v2.0 + RefPack (`0x10FB`/`0x50FB`) + ZLIB + STBL v5 reader in `companion.py` loads all **165,095** official English strings across the 141 installed `Strings_ENG_US.package` files in **2.04 seconds** (plus 11,171 additional strings from `Mods/*.package`, cached in `.local/stbl_en_us.json` for **0.36-second** startup). In live gameplay, this resolves:
+
+- **Interaction labels:** e.g. `3744887214` -> `"Respectful Introduction"`, `701032414` -> `"Discuss Local Fishing Spots"`, `838640678` -> `"Discuss Logic Puzzles"`.
+- **Trait labels:** e.g. `3818473410` -> `"Geek"`, `3765179452` -> `"Bookworm"`, `2182590620` -> `"Clumsy"`, `2332510722` -> `"Neat"`, `1495053396` -> `"Adventurous"`, `3554440226` -> `"Kleptomaniac"`.
+- **Active visible buffs and reasons:** iterating `sim.sim_info.Buffs` where `buff.visible` is true captures `buff.buff_name` and `buff.buff_reason` / `default_buff_reason` STBL keys, resolving live moodlets such as `"Emotionally Mindful"` (`"(From Being Emotionally Mindful)"`) and `"Feeling Great"` (`"(From High Needs)"`).
+- **Venue and relationship bits:** `services.current_zone().venue_service.active_venue` resolves `4239733099` -> `"Residential"`, and `relationship_tracker.get_all_bits(target_sim_id)` resolves `"Neighbor"`, `"Good Compatibility"`, `"Acquaintances"`, and `"Pleasant Conversation"`.
+- **Sim voice metadata:** `sim_info.age`, `sim_info.gender`, `sim_info.voice_actor`, and `sim_info.voice_pitch` are captured on every Sim snapshot. [Results](experiments/07-rich-scene-context/result.json).
+
+## Dual-portrait auto-expanded speech notifications
+
+In Experiment 02, `UiDialogNotification.TunableFactory().default(...)` used the default `expand_behavior = USER_SETTING (0)` and `visual_type = INFORMATION (0)`, which allowed notification toasts to collapse to titles.
+
+Setting `expand_behavior = UiDialogNotificationExpandBehavior.FORCE_EXPAND (1)`, `visual_type = UiDialogNotificationVisualType.SPEECH (1)`, and `information_level = UiDialogNotificationLevel.SIM (1)`, and passing `icon_override = IconInfoData(obj_instance=actor_info)` plus `secondary_icon_override = IconInfoData(obj_instance=target_info)` to `dialog.show_dialog(...)` causes the notification to pop open automatically in the top-right corner as a blue speech card displaying **both Sims' portraits** and the full two-line exchange. [Results](experiments/08-notification-presentation/result.json), [in-game screenshot](experiments/08-notification-presentation/dual-portrait-speech-popup.png).
+
+## Companion per-Sim spoken English banter
+
+To synthesize spoken English for dynamically generated lines without restarting the game or rebuilding `.package` files, `companion.py` maps each Sim's `gender`, `voice_actor`, and `voice_pitch` to a distinct voice (`Microsoft Zira` for female Sims; `Microsoft David` and `Microsoft Mark` alternated by `voice_actor` for male Sims so two male Sims in a conversation never share the same voice) and scales SSML `<prosody pitch>` from `voice_pitch`. Both lines are rendered in a single SSML pass (`0.60–0.82 seconds`) to a WAV file before `reply.json` is written. When `--speak` is passed, `companion.py` waits for the game's `_ReplyPoller` to record `{"type": "displayed"}` in `events.jsonl` and plays the WAV asynchronously via `winsound.PlaySound` so speech starts when the visual card appears. [Results](experiments/09-spoken-banter/result.json).
+
+## Multi-monitor DPI scaling note
+
+When moving the windowed game across monitors with different DPI scaling (for example, from a 4K primary monitor at 150% DPI to a 1440p secondary monitor at 100% DPI), the first `SetWindowPos` call crosses the monitor boundary and triggers `WM_DPICHANGED`, which rescales the client area to `846×461`. Calling `SetWindowPos` a second time once the window is on the target monitor restores the exact `1280×720` DirectX client rect so mouse coordinates align 1:1.
+
+## Dynamic per-Sim Simlish voice suppression (`voice_actor` FNV-32 suffixes)
+
+Disassembling `sims/sim_info_base_wrapper.pyc`, `audio/object_voice_actor_state.pyc`, and `server_commands/object_commands.pyc` revealed how the game resolves and overrides per-Sim Simlish voices:
+
+- **`sim_info.voice_actor` is an FNV-32 suffix hash:** Each Sim's `voice_actor` property holds the 32-bit FNV-1 hash of their 2- or 3-letter voice suffix:
+  - `'ma'` -> `1685527063` (`0x64771a17`, e.g. Alex Keen)
+  - `'mb'` -> `1685527060` (`0x64771a14`, e.g. Geoffrey Landgraab)
+  - `'mc'` -> `1685527061` (`0x64771a15`)
+  - `'fa'` -> `1802970394` (`0x6b77251a`, Female Voice A, and the C++ default fallback when `voice_actor` is set to `0`)
+  - `'fc'` -> `1802970392` (`0x6b772518`)
+  - `'fd'` -> `1802970399` (`0x6b77251f`, e.g. Liberty Lee)
+  - `'ca'` / `'cb'` -> `1853303381` / `1853303382` (`0x6e772a55` / `0x6e772a56`, Child Voices A/B, e.g. Rieko Okada)
+- **Why `0` falls back while `0x7FFFFFFF` silences `is_vox=True` cues:** Assigning `info.voice_actor = 0` causes the C++ setter to assign the default `'fa'` hash (`1802970394`). Assigning a non-zero unmapped 32-bit integer (`0x7FFFFFFF` = `2147483647`) and distributing `SetVoiceActor` on both `SimInfo` and the live `Sim` instance (`Distributor.instance().add_op(sim, SetVoiceActor(actor_hash))`) stores `2147483647` verbatim.
+- **Controlled `is_vox=True` measurement:** With the living-room TV removed (`objects.destroy`), `PlaySound(active_sim, sound_id=0, sound_name='vo_expr_greet_angry_25f', is_vox=True, immediate=True).start()` produced a `TS4_x64.exe` session peak of **`0.0415`** unmuted (`voice_actor = 1685527063`), dropped 10× to the **`0.0040`** ambient floor under `banter.mute on` (`voice_actor = 2147483647`), and preserved the true `voice_actor` (`1685527063`) in `_sim_snapshot` for companion TTS voice selection. Under `clock.pause`, simulation audio channels are paused (`MaxSessionPeak = 0.0` even with `immediate=True`). [Results](experiments/10-simlish-suppression/result.json), [console screenshot](experiments/10-simlish-suppression/in-game-vox-mute-console.png).
+
+## Direct player-to-Sim conversation (`banter.say` and `banter.talk` modal)
+
+Subclassing `UiDialogTextInputOkCancel` (`ui/ui_dialog_generic.pyc`) and overriding `on_text_input` plus `build_msg` (`msg.text_input.add().text_input_name = 'message'`) provides a native Sims 4 text-input modal without external library dependencies:
+
+- `banter.talk` opens the in-game modal displaying the active Sim's portrait, header (`Alex Keen → Rieko Okada`), and text field. Submitting `OK` sends a `player_chat` event through the companion and displays the target Sim's in-character reply in the dual-portrait speech banner.
+- `banter.say <message>` sends a `player_chat` event directly from the cheat console.
+- Keeping a warm persistent PowerShell `System.Speech` worker in `companion.py` reduced two-speaker SSML WAV synthesis latency from `0.60–0.82 seconds` down to **`0.033–0.135 seconds` (33–135 ms)**. [Results](experiments/11-player-conversation/result.json), [modal screenshot](experiments/11-player-conversation/in-game-talk-modal.png), [reply screenshot](experiments/11-player-conversation/in-game-talk-reply.png), [`banter.say` screenshot](experiments/11-player-conversation/in-game-player-say.png).
+
+## Multitasking activities, carried objects, and recipe STBL context
+
+Sims frequently perform social mixers while seated, watching TV, reading, cooking, or carrying food/drinks:
+
+- Iterating `sim.si_state` captures active non-social `SuperInteraction`s (`display_name` STBL hash) and their target objects (`target.catalog_name` STBL hash), resolving live labels such as `"Watch World Culture Network"` on `"Been There, Watched That TV"` and `"Sit"` on `"Squarely There Modern Loveseat"`.
+- Iterating `sim.posture_state.carry_targets` (`left`, `right`, and `back` hands) captures carried objects even when the body posture is `sim-stand`, and `target.crafting_component.get_recipe().get_recipe_name()` extracts the STBL key for crafted dishes and drinks. [Results](experiments/12-activity-and-food-context/result.json).
+
+## Zero-`.package` Sim Pie-Menu injection (`BanterPieMenuInteraction`)
+
+Adding custom interactions to the Sim Pie Menu normally requires shipping XML tuning resources inside a `.package` file so `services.affordance_manager()` can construct a tuned `ImmediateSuperInteraction` class.
+
+Inspecting `interactions/base/interaction.pyc`, `interactions/choices.pyc`, `objects/script_object.pyc`, and `zone.pyc` showed that a script mod can instead subclass an already-loaded base-game `ImmediateSuperInteraction` (`services.affordance_manager().get(13142)`) at runtime in Python 3.7:
+
+- Setting `cheat = False`, `debug = False`, `simless = False`, `allow_user_directed = True`, `category = None`, and `pie_menu_priority = 30` (the maximum EP14 priority) places the interaction on **Page 1** of the radial Pie Menu without holding Shift.
+- Overriding `@flexmethod def test(cls, inst, *args, target=DEFAULT, context=DEFAULT, **kwargs)` to return `TestResult.TRUE` when `target.is_sim` bypasses the base tuning's object state tests.
+- Overriding `@flexmethod def _get_name(...)` with `LocalizationHelperTuning.get_raw_text(...)` renders `"Enable English Banter"` / `"Disable English Banter"` when clicking the active Sim, and `"Speak to <FirstName> (English)..."` when clicking any other Sim.
+- Wrapping `Zone.on_loading_screen_animation_finished` attaches the class to `type(sim)._super_affordances` (`object_sim`) automatically when any lot finishes loading, so the player never needs to open the cheat console (`Ctrl+Shift+C`). [Results](experiments/13-pie-menu-interaction/result.json), [Enable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-self.png), [Disable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png).

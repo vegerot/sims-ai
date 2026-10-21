@@ -1,0 +1,25 @@
+{
+  "experiment": "Dual-portrait auto-expanded speech notification banner via UiDialogNotification options and IconInfoData",
+  "game_build": "1.128.90.1030",
+  "mechanism": {
+    "expand_behavior": "UiDialogNotification.UiDialogNotificationExpandBehavior.FORCE_EXPAND (1)",
+    "visual_type": "UiDialogNotification.UiDialogNotificationVisualType.SPEECH (1)",
+    "information_level": "UiDialogNotification.UiDialogNotificationLevel.SIM (1)",
+    "primary_icon": "icon_override=IconInfoData(obj_instance=actor_sim_info)",
+    "secondary_icon": "secondary_icon_override=IconInfoData(obj_instance=target_sim_info)"
+  },
+  "verified_in_game_behavior": [
+    "Notification toast expands automatically in the top-right corner without opening the Notification Wall.",
+    "Displays the Actor Sim's portrait at the top left alongside the 'Actor ↔ Target' header.",
+    "Renders the full two-line banter exchange immediately inside the speech-styled blue card.",
+    "Displays the Target Sim's portrait and name in the secondary footer of the same card."
+  ],
+  "screenshots": [
+    "experiments/08-notification-presentation/dual-portrait-speech-popup.png",
+    "experiments/06-social-outcomes/in-game-outcome-banter.png"
+  ],
+  "limits": [
+    "If another mod queues multiple persistent startup notifications at zone load, The Sims 4's toast queue displays them in FIFO order before reaching later toasts unless the wall is cleared or earlier toasts expire.",
+    "Notifications remain in the top-right corner rather than floating in 3D world space above Sim heads."
+  ]
+}

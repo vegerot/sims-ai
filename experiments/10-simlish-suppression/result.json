@@ -1,0 +1,90 @@
+{
+  "experiment": "Dynamic per-Sim Simlish voice suppression in pure Python via voice_actor FNV-32 suffix overrides",
+  "game_build": "1.128.90.1030",
+  "voice_actor_fnv32_suffix_table": {
+    "ma": {
+      "fnv32": 1685527063,
+      "hex": "0x64771a17",
+      "observed_sim": "Alex Keen"
+    },
+    "mb": {
+      "fnv32": 1685527060,
+      "hex": "0x64771a14",
+      "observed_sim": "Geoffrey Landgraab"
+    },
+    "mc": {
+      "fnv32": 1685527061,
+      "hex": "0x64771a15"
+    },
+    "fa": {
+      "fnv32": 1802970394,
+      "hex": "0x6b77251a",
+      "note": "Also the C++ default fallback when voice_actor is assigned 0"
+    },
+    "fc": {
+      "fnv32": 1802970392,
+      "hex": "0x6b772518"
+    },
+    "fd": {
+      "fnv32": 1802970399,
+      "hex": "0x6b77251f",
+      "observed_sim": "Liberty Lee"
+    },
+    "ca": {
+      "fnv32": 1853303381,
+      "hex": "0x6e772a55"
+    },
+    "cb": {
+      "fnv32": 1853303382,
+      "hex": "0x6e772a56",
+      "observed_sim": "Rieko Okada"
+    },
+    "tma": {
+      "fnv32": 1047316853,
+      "hex": "0x3e6cc975"
+    },
+    "tfa": {
+      "fnv32": 963428692,
+      "hex": "0x396cc154"
+    }
+  },
+  "key_mechanism_findings": [
+    {
+      "finding": "sim_info.voice_actor is the FNV-32 hash of the 2-3 character voice suffix",
+      "detail": "When PlaySound(..., is_vox=True) or an animation voice event fires, the client appends the Sim voice suffix (_ma, _mb, _fa, _fd, _cb, etc.) to the cue name before hashing the 64-bit resource ID."
+    },
+    {
+      "finding": "Assigning 0 to voice_actor triggers a C++ fallback to fa (1802970394), whereas 0x7FFFFFFF (2147483647) stores verbatim and silences vox cues",
+      "detail": "In our first test, assigning info.voice_actor = 0 caused _base.voice_actor to reassign 1802970394 (fnv32(\"fa\")). Assigning a non-zero unmapped integer (0x7FFFFFFF = 2147483647) stored 2147483647 verbatim, preserved the true voice_actor (1685527063) in _original_voice_actors for companion TTS selection, and silenced is_vox=True playback."
+    },
+    {
+      "finding": "Paused clock stops simulation audio channels even when immediate=True",
+      "detail": "Under clock.pause, PlaySound(..., immediate=True) produced MaxSessionPeak=0.0 across the entire window."
+    }
+  ],
+  "live_vox_measurements_tv_removed": {
+    "cue_tested": "vo_expr_greet_angry_25f (is_vox=True)",
+    "unmuted_stepA": {
+      "voice_actor_raw": 1685527063,
+      "max_session_peak": 0.0415,
+      "loopback_rms": 0.002891
+    },
+    "muted_stepB_banter_mute_on": {
+      "voice_actor_raw": 2147483647,
+      "voice_actor_preserved_in_snapshot": 1685527063,
+      "max_session_peak": 0.004,
+      "loopback_rms": 0.000851,
+      "note": "Dropped 10x to the ~0.002-0.004 ambient room floor; no Simlish utterance peak occurred."
+    },
+    "restored_stepE_set_voice_actor_ma": {
+      "voice_actor_raw": 1685527063,
+      "max_session_peak": 0.0096,
+      "loopback_rms": 0.000949
+    }
+  },
+  "screenshot": "experiments/10-simlish-suppression/in-game-vox-mute-console.png",
+  "limits": [
+    "Digital session peak suppression was verified while hardware speakers stayed muted overnight; human-ear listening during full social conversations remains to be checked when Max is awake.",
+    "Non-vox sound effects (footsteps, objects, ambient audio) remain unaffected by voice_actor."
+  ]
+}

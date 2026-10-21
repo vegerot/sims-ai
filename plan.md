@@ -2,7 +2,7 @@
 
 ## Goal
 
-Learn how to produce enjoyable English dialogue for actual Sims social interactions, then use the findings to plan a small, dependable birthday gift for October 29, 2026.
+The long-term goal is to replace Simlish speech with contextual spoken English throughout gameplay. Learn how to produce enjoyable English dialogue for actual Sims social interactions, then use the findings to plan a small, dependable birthday gift for October 29, 2026. The birthday scope will be selected from experiments; full speech replacement is not yet a proven release target.
 
 Her priorities are relationships and drama, dream homes/restaurants, and food. Match The Sims' energy: distinct personalities and relationships, with playful and occasionally absurd situations. Food is relevant when it is part of the scene; it is not a mandatory theme.
 

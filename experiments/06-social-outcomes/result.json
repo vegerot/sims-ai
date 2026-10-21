@@ -1,0 +1,84 @@
+{
+  "experiment": "Social interaction lifecycle hooks (start, store_result_for_outcome, complete, cancel) and outcome-triggered banter",
+  "game_build": "1.128.90.1030",
+  "hooks_verified": [
+    "Interaction._trigger_interaction_start_event",
+    "Interaction.store_result_for_outcome",
+    "Interaction._trigger_interaction_complete_test_event",
+    "Interaction.cancel"
+  ],
+  "key_mechanism_findings": [
+    {
+      "finding": "Passive conversation containers vs. concrete social mixers",
+      "detail": "sim_Chat (13998, display_name 0x482BA41C 'Chat with {1.SimFirstName}') and sim_BeAffectionate (13991, display_name 0xDB04B08F 'Chat') are passive SocialSuperInteraction containers that hold Sims in a conversation group. Earlier start-hook runs treated the internal name 'sim_BeAffectionate' as an affectionate action even at romance=0. Filtering passive containers and resolving STBL display names eliminates that false positive."
+    },
+    {
+      "finding": "Outcome decision timing precedes animation completion by several seconds",
+      "detail": "In live Banter Lab traces, store_result_for_outcome fired 30-37 ms after _trigger_interaction_start_event on social mixers (for example, mixer_social_RespectfulIntroduction_greetings: start at +0.000s, outcome SUCCESS at +0.030s, complete at +2.390s; mixer_social_DiscussLocalFishingSpots: start at +0.000s, outcome SUCCESS at +0.037s, displayed reply at +3.175s, complete at +7.619s). Triggering generation at store_result_for_outcome supplies the verified OutcomeResult (SUCCESS or FAILURE) while still delivering dialogue mid-animation."
+    },
+    {
+      "finding": "Cancellation hook captures FinishingType",
+      "detail": "Interaction.cancel recorded live cancellation events with finishing_type='DISPLACED' when mixer_social_DiscussLogicalPuzzles_targeted_Friendly_alwaysOn_skills ended as the conversation transitioned."
+    }
+  ],
+  "live_trace_counts": {
+    "trace_events_recorded": 25,
+    "outcome_triggered_ai_socials": 4,
+    "displayed_in_game_replies": 4,
+    "observer_errors_logged": 0
+  },
+  "outcome_comparison_samples": [
+    {
+      "interaction": "mixer_social_AttemptToScare_targeted_mischief_skills",
+      "interaction_label": "Scare",
+      "outcome": "FAILURE",
+      "elapsed_seconds": 3.153,
+      "text": "Mortimer: Boo! I was going for ominous.\nAlex: You startled me into noticing that crooked picture. Fix it."
+    },
+    {
+      "interaction": "mixer_social_AttemptToScare_targeted_mischief_skills",
+      "interaction_label": "Scare",
+      "outcome": "SUCCESS",
+      "elapsed_seconds": 1.768,
+      "text": "Mortimer: A successful scare, and you’re still grading the décor. Impressive.\nAlex: I’m rattled, not blind. That frame’s begging to be straightened."
+    }
+  ],
+  "live_in_game_exchanges": [
+    {
+      "event_id": "1792575800769-1",
+      "interaction": "mixer_social_RespectfulIntroduction_greetings",
+      "interaction_label": "Respectful Introduction",
+      "outcome": "SUCCESS",
+      "outcome_type": "InteractionOutcomeSingle",
+      "friendship": 0,
+      "elapsed_seconds": 3.165,
+      "tts_elapsed_seconds": 0.824,
+      "text": "Liberty: Hi, I’m Liberty. Nice to meet you—sorry, I nearly introduced myself to that lamp.\nAlex: Alex. Nice to meet you too. The lamp seems neat, at least."
+    },
+    {
+      "event_id": "1792575816317-2",
+      "interaction": "mixer_social_DiscussLocalFishingSpots_targeted_friendly_alwaysOn_neighbor",
+      "interaction_label": "Discuss Local Fishing Spots",
+      "outcome": "SUCCESS",
+      "outcome_type": "InteractionOutcomeTestBased",
+      "friendship": 12.66,
+      "elapsed_seconds": 1.943,
+      "tts_elapsed_seconds": 0.799,
+      "text": "Liberty: There’s a good fishing spot nearby—quiet, scenic, and only mildly threatening to my balance.\nAlex: I’m in. I’ll bring a tidy tackle box; you can keep an eye on the scenery."
+    },
+    {
+      "event_id": "1792575835315-3",
+      "interaction": "mixer_social_DiscussLogicalPuzzles_targeted_Friendly_alwaysOn_skills",
+      "interaction_label": "Discuss Logic Puzzles",
+      "outcome": "SUCCESS",
+      "friendship": 17.65,
+      "elapsed_seconds": 2.087,
+      "text": "Liberty: Logic puzzles are fun because every clue fits somewhere. Unlike my feet, apparently.\nAlex: You’re good at them. And I can keep the pieces in a neat little pile."
+    }
+  ],
+  "screenshot": "experiments/06-social-outcomes/in-game-outcome-banter.png",
+  "limits": [
+    "Not every interaction uses test-based outcomes; some greetings use InteractionOutcomeSingle, and some reaction super-interactions lack a display_name string ID.",
+    "High-autonomy rejection outcomes depend on Sim mood and relationship state unless forced or triggered by player-chosen risky socials."
+  ]
+}

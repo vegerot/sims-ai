@@ -1,0 +1,29 @@
+{
+  "experiment": "Zero-.package Sim Pie-Menu injection via runtime ImmediateSuperInteraction subclassing and Zone.on_loading_screen_animation_finished",
+  "game_build": "1.128.90.1030",
+  "mechanism": {
+    "base_class_cloned": "services.affordance_manager().get(13142) (Cheat_MakeDirty ImmediateSuperInteraction)",
+    "subclass_overrides": [
+      "guid64 = 0xBA47E21AB0000001",
+      "cheat = False, debug = False, simless = False, allow_user_directed = True",
+      "category = None (top-level Pie Menu slice), pie_menu_priority = 30 (maximum EP14 priority)",
+      "test(cls, inst, ...) -> TestResult.TRUE when target.is_sim",
+      "_get_name(cls, inst, ...) -> \"Enable English Banter\" / \"Disable English Banter\" on active Sim; \"Speak to <FirstName> (English)...\" on other Sims",
+      "_run_interaction_gen(self, timeline) -> toggles start_ai(\"outcome\") / stop() on self-click, or opens _BanterInputDialog(self.sim, self.target) on NPC click"
+    ],
+    "automatic_zone_registration": "Wraps Zone.on_loading_screen_animation_finished to attach BanterPieMenuInteraction to type(sim)._super_affordances (object_sim) and instanced Sims automatically on lot load."
+  },
+  "verified_live_behavior": [
+    "On lot load with zero console commands entered, events.jsonl recorded {\"type\": \"pie_menu_installed\", \"sims\": 6}.",
+    "Clicking Alex Keen in live gameplay displayed \"Enable English Banter\" at the top-right of Page 1 of the radial Pie Menu.",
+    "Clicking \"Enable English Banter\" toggled _enabled=True, and clicking Alex Keen a second time displayed \"Disable English Banter\" in the same Pie Menu slot.",
+    "Fixed CheatOutput(_connection=None) guard in start_ai and stop so Pie-Menu execution completes cleanly without a console connection."
+  ],
+  "screenshots": [
+    "experiments/13-pie-menu-interaction/in-game-pie-menu-self.png",
+    "experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png"
+  ],
+  "limits": [
+    "Dynamic raw-text pie menu labels work without an STBL resource because LocalizationHelperTuning.get_raw_text wraps the string in RAW_TEXT ({0.String})."
+  ]
+}

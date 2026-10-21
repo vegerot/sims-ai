@@ -13,17 +13,22 @@ A birthday gift for October 29, 2026: contextual English banter that matches The
 
 Resume by reading `plan.md`, then the newest `progress.md` entries. Check the working copy, installed mod, running game, and relevant logs against the handoff before continuing.
 
-## First experiment
+## In-game script mod (`src/banter_lab`)
 
-`src/banter_lab` observes social interactions involving the active household. It is dormant until explicitly started in the game's cheat console (`Ctrl+Shift+C`):
+`src/banter_lab` observes social interactions involving the active household and supports direct player-to-Sim conversation. It is dormant until explicitly used in the game's cheat console (`Ctrl+Shift+C`):
 
 | Command | Effect |
 | --- | --- |
-| `banter.test` | Show a manual English notification. |
-| `banter.start` | Capture real scene context and show clearly labeled fixed test lines. |
-| `banter.ai` | Request generated banter; start the companion first. |
-| `banter.stop` | Stop observing and cancel reply polling. |
-| `banter.status` | Print state and log active/nearby Sims for debugging. |
+| `banter.test` | Show a manual dual-portrait auto-expanded speech notification. |
+| `banter.start` / `banter.start outcome` | Capture real scene context and show clearly labeled fixed test lines on `start` or `outcome`. |
+| `banter.ai` / `banter.ai start` | Request generated banter (defaults to `outcome` trigger so the model receives `SUCCESS`/`FAILURE`); start the companion first. |
+| `banter.talk` | Open a native in-game text-input modal to speak as your active Sim to a nearby Sim and receive an in-character reply. |
+| `banter.say <message>` | Send a player-authored line directly from the console to the conversing or nearest Sim. |
+| `banter.mute on` / `off` | Dynamically silence or restore Simlish `voice_actor` (`0x7FFFFFFF`) on instanced Sims while preserving true `voice_actor` metadata for companion TTS. |
+| `banter.trace on` / `off` | Record social `start`, `outcome`, `complete`, and `cancel` lifecycle timings in `events.jsonl` without model calls. |
+| `banter.audio hello` / `control` / `vox` / `stop` | Manual fixed-resource or `is_vox=True` audio probe; `hello` needs the separate greeting override package. |
+| `banter.stop` | Stop observing, disable tracing, restore any muted Simlish voices, and cancel reply polling. |
+| `banter.status` | Print state and log active/nearby Sims, STBL hashes, activities, and venue for debugging. |
 | `banter.summon Bella Goth` | Test-save setup: request that a named NPC enter the zone. This changes the test scene; it does not prove arrival. |
 
 Build using Python 3.7, matching the installed game:
@@ -34,28 +39,44 @@ Build using Python 3.7, matching the installed game:
 
 The archive is `dist/BanterLab.ts4script`. Local tools, generated archives, game-context logs, and private test artifacts are ignored. No model credential belongs in the script archive.
 
-Restart the game after replacing the archive. On this PC it is installed in `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs are in its `BanterLabData` child directory. Controlled Folder Access initially blocked deployment; Max granted access and the subsequent shell copy succeeded. No security settings were changed by the agent.
+Restart the game after replacing the archive. On this PC it is installed in `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs and the default `reply.json` live in its `BanterLabData` child directory.
 
-## Generation companion
+## Generation companion (`companion.py`)
 
-The companion reads new AI-mode scene events, calls OpenRouter using `OPENROUTER_API_KEY` from its environment, and atomically writes one reply file in the experiment workspace. `BanterLabData/bridge.json` gives the game the absolute `reply_file` path. This keeps the Python 3.13 companion from needing write access to protected Documents. The game polls that file from its own alarm callback; it never waits for an HTTP request. One request is outstanding at a time; old/expired or wrong-zone replies are discarded. API errors stop generated mode rather than pretending a fixed line was generated.
+The companion runs with the installed Python 3.15 using only the standard library:
+
+- **STBL resolution:** Automatically reads all 141 installed `Strings_ENG_US.package` files (165,095 official English strings) plus `Mods/*.package` STBL resources (176,266 total strings, cached in `.local/stbl_en_us.json`) to resolve interaction names, traits, active visible moodlets/buffs and their reasons, ongoing multitasking activities (`sim.si_state`) and carried objects/recipes (`posture_state.carry_targets`), venue types, and relationship bits before calling the model.
+- **Outcome, player chat, & scene continuity:** Handles both observed social interactions (with verified `OutcomeResult` `SUCCESS`/`FAILURE`) and player-initiated chats (`banter.talk` / `banter.say`), with a bounded per-zone `recent_dialogue` buffer (last 3 exchanges).
+- **Warm per-Sim spoken English synthesis (`--tts-dir` / `--speak`):** Assigns distinct voices using each Sim's in-game `gender`, `voice_actor`, and `voice_pitch`, renders a two-voice WAV via a persistent warmed-up PowerShell `System.Speech` worker in **33–135 ms**, and (when `--speak` is passed) plays it asynchronously via `winsound.PlaySound` the moment the game logs `displayed`.
 
 ```powershell
-py -3.13 '.\companion.py' `
+python3.15 '.\companion.py' `
   --data-directory 'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab\BanterLabData' `
-  --reply-file 'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\.local\bridge\reply.json'
+  --tts-dir '.\.local\tts' `
+  --speak
 ```
 
-Then enter `banter.ai` in-game. Stop with `banter.stop` and stop the companion with Ctrl+C. `prompt.txt` is reread for each request, so writing experiments do not require restarting the game. The initial model choice is `openai/gpt-6-luna`, confirmed in the live OpenRouter catalog; `--model` allows an explicit experiment with another model.
+Then enter `banter.ai` (and optionally `banter.mute on` to silence in-game Simlish) or `banter.talk` in-game. Stop with `banter.stop` and stop the companion with Ctrl+C. `prompt.txt` is reread for each request, so writing experiments do not require restarting the game.
 
 To generate from one captured scene without running the bridge:
 
 ```powershell
-py -3.13 '.\companion.py' --once '.\.local\scene.json'
+python3.15 '.\companion.py' --once '.\.local\scene.json' --tts-dir '.\.local\tts'
 ```
 
-The first working slice is verified: live social hooks, personality/mood/relationship context, three generated exchanges through the companion, and complete generated text visible in the Notification Wall. [Result and samples](experiments/02-context-and-generation/result.json), [in-game screenshot](experiments/02-context-and-generation/in-game.jpg).
+## Verified experiments
 
-Presentation remains experimental: popup cards may collapse to titles, and other installed mods can queue notifications ahead of dialogue. Provider calls took about 4–5 seconds in the live test. The normal path passed; timeout, provider-error, pause, and travel behavior still need dedicated checks before calling this birthday-ready.
+1. **[01 — Social hook](experiments/01-social-hook/):** Verified `_trigger_interaction_start_event` and in-game notifications in the disposable `Banter Lab` save.
+2. **[02 — Context and generation](experiments/02-context-and-generation/result.json):** First end-to-end live generation round-trip ([screenshot](experiments/02-context-and-generation/in-game.jpg)).
+3. **[03 — Local repo readers](experiments/03-local-repo-readers/result.json):** Read-only verification of XML and binary `DATA` combined-tuning decoders across installed packages.
+4. **[04 — Reasoning latency](experiments/04-reasoning-latency/result.json):** Verified explicit `reasoning: {"effort": "none"}` under Python 3.15 (zero reasoning tokens).
+5. **[05 — Fixed English speech package](experiments/05-fixed-speech/result.json):** Packaged a two-resource override for `vo_expr_greet_uncomfortable_45f_fa` (`0xAE9960DCFFD5C32E`) and verified digital rendering in-game via Windows Core Audio session peaks and WASAPI loopback capture (`r = 0.9790` envelope correlation, `|r| = 0.6462` 16 kHz waveform correlation across 38,034 samples) while system speakers remained muted ([console screenshot](experiments/05-fixed-speech/in-game-console.png)).
+6. **[06 — Social outcomes & lifecycle timing](experiments/06-social-outcomes/result.json):** Verified `store_result_for_outcome`, `_trigger_interaction_complete_test_event`, and `cancel` in live gameplay; found that `store_result_for_outcome` fires 30–37 ms after `start` and several seconds before animation completion, and filtered passive `sim_Chat` / `sim_BeAffectionate` containers ([in-game screenshot](experiments/06-social-outcomes/in-game-outcome-banter.png)).
+7. **[07 — Rich scene context & STBL resolver](experiments/07-rich-scene-context/result.json):** Built a pure-stdlib DBPF + RefPack + STBL resolver (176,266 strings) and verified live resolution of interaction labels, traits, visible buffs/reasons, venue types, relationship bits, Sim voice metadata, and direct `BanterLabData/reply.json` delivery.
+8. **[08 — Dual-portrait auto-expanded speech UI](experiments/08-notification-presentation/result.json):** Verified `FORCE_EXPAND` + `SPEECH` visual type + dual `IconInfoData` portraits so banter automatically expands in the top-right corner showing both Sims' faces ([screenshot](experiments/08-notification-presentation/dual-portrait-speech-popup.png)).
+9. **[09 — Companion per-Sim spoken banter](experiments/09-spoken-banter/result.json):** Verified dynamic two-voice SSML WAV synthesis mapped from each Sim's `gender`, `voice_actor`, and `voice_pitch`, synchronized to the game's `displayed` event.
+10. **[10 — Dynamic per-Sim Simlish suppression](experiments/10-simlish-suppression/result.json):** Decoded `sim_info.voice_actor` FNV-32 suffix hashes (`ma`, `mb`, `fa`, `fd`, `cb`) and verified that `banter.mute on` (`voice_actor = 0x7FFFFFFF`) silences `is_vox=True` Simlish voice playback (`0.0415` peak -> `0.0040` ambient floor) while preserving original `voice_actor` metadata and restoring on `banter.mute off` / `banter.stop` ([console screenshot](experiments/10-simlish-suppression/in-game-vox-mute-console.png)).
+11. **[11 — Direct player-to-Sim conversation](experiments/11-player-conversation/result.json):** Verified both `banter.say` and a native in-game `UiDialogTextInputOkCancel` modal (`banter.talk`), plus a warm persistent TTS worker that cut WAV synthesis latency to **33–135 ms** ([modal screenshot](experiments/11-player-conversation/in-game-talk-modal.png), [reply screenshot](experiments/11-player-conversation/in-game-talk-reply.png), [`banter.say` screenshot](experiments/11-player-conversation/in-game-player-say.png)).
+12. **[12 — Multitasking activity, object, & food context](experiments/12-activity-and-food-context/result.json):** Verified live extraction and STBL resolution of `sim.si_state` activities, target object catalog names (`"Watch World Culture Network"` on `"Been There, Watched That TV"`, `"Sit"` on `"Squarely There Modern Loveseat"`), `posture_state.carry_targets`, and `crafting_component.get_recipe()` dish names.
 
-The plan and progress files describe this experiment phase. Max expects to replace them when the production build starts; retain useful Sims findings separately.
+13. **[13 — Zero-`.package` Sim Pie-Menu injection](experiments/13-pie-menu-interaction/result.json):** Subclassed a base-game `ImmediateSuperInteraction` (`13142`) at runtime with `pie_menu_priority = 30` and hooked `Zone.on_loading_screen_animation_finished` so clicking your active Sim shows **`Enable English Banter`** / **`Disable English Banter`** on Page 1 of the Pie Menu and clicking any other Sim shows **`Speak to <Name> (English)...`**—with zero `.package` files or console commands required ([Enable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-self.png), [Disable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png)).

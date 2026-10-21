@@ -1,0 +1,74 @@
+{
+  "experiment": "Direct player-to-Sim conversation via banter.say and native in-game UiDialogTextInputOkCancel modal (banter.talk)",
+  "game_build": "1.128.90.1030",
+  "mechanisms_verified": [
+    "banter.say <message>: sends a player_chat event from the active Sim to the currently conversing or nearest instanced Sim.",
+    "banter.talk [first last]: opens a native Sims 4 UiDialogTextInputOkCancel modal with the active Sim portrait, prompt header, and text input field; submitting OK triggers player_chat generation and displays the dual-portrait speech notification."
+  ],
+  "persistent_tts_worker_optimization": {
+    "mechanism": "companion.py now keeps a warm persistent PowerShell System.Speech worker across requests instead of spawning a new process per exchange.",
+    "warm_first_call_seconds": 0.071,
+    "in_game_synthesis_seconds": [
+      0.135,
+      0.033,
+      0.054
+    ],
+    "speedup_vs_cold_spawn": "~10-20x faster than the previous 0.60-0.82s per-call subprocess spawn."
+  },
+  "live_in_game_samples": [
+    {
+      "event_id": "chat-1792578012085-1",
+      "entry_point": "banter.say",
+      "actor": "Alex Keen",
+      "target": "Geoffrey Landgraab",
+      "player_message": "i'm trying to watch world culture network on this tiny tv, want to join me?",
+      "actor_activities_resolved": [
+        {
+          "label": "Watch World Culture Network",
+          "target_label": "Been There, Watched That TV"
+        },
+        {
+          "label": "Sit",
+          "target_label": "Squarely There Modern Loveseat"
+        }
+      ],
+      "text": "Alex Keen: i'm trying to watch world culture network on this tiny tv, want to join me?\nGeoffrey Landgraab: Certainly. Though I may need to sit very still to fit in the picture.",
+      "llm_elapsed_seconds": 3.512,
+      "tts_elapsed_seconds": 0.135,
+      "voices": {
+        "actor": "Microsoft Mark (-5%)",
+        "target": "Microsoft David (-4%)"
+      },
+      "screenshot": "experiments/11-player-conversation/in-game-player-say.png"
+    },
+    {
+      "event_id": "chat-1792578161129-2",
+      "entry_point": "banter.talk (in-game UiDialogTextInputOkCancel modal)",
+      "actor": "Alex Keen",
+      "target": "Rieko Okada (CHILD, Cheerful, voice_pitch +0.4367)",
+      "player_message": "Is my living room minimalist or just empty?",
+      "actor_activities_resolved": [
+        {
+          "label": "Watch World Culture Network",
+          "target_label": "Been There, Watched That TV"
+        },
+        {
+          "label": "Sit",
+          "target_label": "Squarely There Modern Loveseat"
+        }
+      ],
+      "text": "Alex Keen: Is my living room minimalist or just empty?\nRieko Okada: Empty. But in a fancy way, because you have a loveseat.",
+      "llm_elapsed_seconds": 2.267,
+      "tts_elapsed_seconds": 0.033,
+      "voices": {
+        "actor": "Microsoft Mark (-5%)",
+        "target": "Microsoft Zira (+7%)"
+      },
+      "modal_screenshot": "experiments/11-player-conversation/in-game-talk-modal.png",
+      "reply_screenshot": "experiments/11-player-conversation/in-game-talk-reply.png"
+    }
+  ],
+  "limits": [
+    "banter.talk is currently triggered via console command rather than a pie-menu affordance on clicked Sims; adding a pie-menu SuperInteraction tuning resource is a separate optional step."
+  ]
+}

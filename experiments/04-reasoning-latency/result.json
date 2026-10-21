@@ -1,0 +1,236 @@
+{
+  "experiment": "Python 3.15: provider-default reasoning versus explicit none",
+  "python": "3.15.0 (main, Oct 14 2026, 01:12:50) [MSC v.1951 64 bit (AMD64)]",
+  "scene": {
+    "type": "social",
+    "mode": "ai",
+    "event_id": "1792483374962-7",
+    "observed_at": 1792483374.962568,
+    "interaction": "mixer_Social_GetToKnow_Friendly_STC",
+    "actor": {
+      "id": "792940683143809502",
+      "name": "Mortimer Goth",
+      "traits": [
+        "trait_Outgoing",
+        "trait_Bookworm",
+        "trait_Creative"
+      ],
+      "mood": "Mood_Happy",
+      "mood_intensity": 0
+    },
+    "target": {
+      "id": "792940683128864783",
+      "name": "Alex Keen",
+      "traits": [
+        "trait_Neat",
+        "trait_Adventurous",
+        "trait_Kleptomaniac"
+      ],
+      "mood": "Mood_Uncomfortable",
+      "mood_intensity": 0
+    },
+    "relationship": {
+      "friendship": 22.25,
+      "romance": 0.0
+    }
+  },
+  "prompt_sha256": "0bdf468f56a9d15d6d7d38f964fbb054bf405fd20b70a5650dec886b773b1b3d",
+  "calls": [
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer Goth: Tell me, Alex—what sort of adventure makes you feel most alive?\nAlex Keen: One where I know exactly where everything is afterward. Mostly.",
+      "model": "openai/gpt-6-luna",
+      "reasoning_effort": null,
+      "finish_reason": "stop",
+      "elapsed_seconds": 4.317,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 129,
+        "total_tokens": 482,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 9.98e-05,
+          "upstream_inference_prompt_cost": 3.53e-05,
+          "upstream_inference_completions_cost": 6.45e-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 89,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer: I’d like to get to know you, Alex. What do you do when you’re not tidying up the universe?\nAlex: I’m adventurous, actually. And I’m trying not to fidget in this conversation.",
+      "model": "openai/gpt-6-luna",
+      "reasoning_effort": "none",
+      "finish_reason": "stop",
+      "elapsed_seconds": 2.728,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 52,
+        "total_tokens": 405,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 6.13e-05,
+          "upstream_inference_prompt_cost": 3.53e-05,
+          "upstream_inference_completions_cost": 2.6e-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer: I’m Mortimer. What do you like doing when you’re not keeping things in order?\nAlex: Alex. I like a little adventure—though this room is making me oddly uncomfortable.",
+      "model": "openai/gpt-6-luna",
+      "reasoning_effort": "none",
+      "finish_reason": "stop",
+      "elapsed_seconds": 2.976,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 45,
+        "total_tokens": 398,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 5.78e-05,
+          "upstream_inference_prompt_cost": 3.53e-05,
+          "upstream_inference_completions_cost": 2.25e-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer Goth: I’m curious—what do you like doing when you’re not keeping things in order?\nAlex Keen: Going somewhere new. Talking about myself is a little less thrilling.",
+      "model": "openai/gpt-6-luna",
+      "reasoning_effort": null,
+      "finish_reason": "stop",
+      "elapsed_seconds": 2.042,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 165,
+        "total_tokens": 518,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0001178,
+          "upstream_inference_prompt_cost": 3.53e-05,
+          "upstream_inference_completions_cost": 8.25e-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 121,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer: I’d like to know you better. What counts as an adventure to you?\nAlex: One with a clear exit—and nothing left out of place.",
+      "model": "openai/gpt-6-luna",
+      "reasoning_effort": null,
+      "finish_reason": "stop",
+      "elapsed_seconds": 2.476,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 149,
+        "total_tokens": 502,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0001098,
+          "upstream_inference_prompt_cost": 3.53e-05,
+          "upstream_inference_completions_cost": 7.45e-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 110,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    },
+    {
+      "event_id": "1792483374962-7",
+      "text": "Mortimer: I’d like to get to know you better. What do you enjoy when you’re not tidying or exploring?\nAlex: Depends who’s asking. But I’m listening—just don’t ask me to sit still.",
+      "model": "openai/gpt-6-luna",
+      "reasoning_effort": "none",
+      "finish_reason": "stop",
+      "elapsed_seconds": 2.53,
+      "usage": {
+        "prompt_tokens": 353,
+        "completion_tokens": 51,
+        "total_tokens": 404,
+        "cost": 0,
+        "is_byok": true,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 6.08e-05,
+          "upstream_inference_prompt_cost": 3.53e-05,
+          "upstream_inference_completions_cost": 2.55e-05
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  ],
+  "median_seconds": {
+    "provider_default": 2.476,
+    "none": 2.728
+  },
+  "limits": [
+    "Three requests per condition; descriptive comparison, not a latency SLA.",
+    "Same scene and prompt; outputs vary and provider routing/cache state is uncontrolled.",
+    "Elapsed time covers the model request and response, not game polling or speech.",
+    "Dialogue quality has not been systematically evaluated."
+  ]
+}

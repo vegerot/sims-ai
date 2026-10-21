@@ -1,0 +1,39 @@
+{
+  "experiment": "Live multitasking activity (sim.si_state), carried object (posture_state.carry_targets), catalog object name, and crafting recipe STBL context",
+  "game_build": "1.128.90.1030",
+  "mechanisms": {
+    "si_state": "Iterates sim.si_state for non-social, non-idle SuperInteractions and extracts display_name STBL key plus target.catalog_name STBL key.",
+    "carry_targets": "Iterates sim.posture_state.carry_targets (left, right, back hands) to capture held plates, drinks, books, or tools even when the body posture is sim-stand.",
+    "crafting_recipe": "Inspects target_obj.crafting_component.get_recipe().get_recipe_name() to extract the STBL key of crafted dishes and drinks."
+  },
+  "verified_live_activity_resolutions": [
+    {
+      "id": "tv_watch_CulturalWorld",
+      "stbl": 3798631206,
+      "resolved_label": "Watch World Culture Network",
+      "target": "object_tvSurfaceLOW1x1_01",
+      "target_stbl": 4003463171,
+      "resolved_target_label": "Been There, Watched That TV"
+    },
+    {
+      "id": "tv-watch-sports",
+      "stbl": 3318412661,
+      "resolved_label": "Watch Sports",
+      "target": "object_tvSurfaceLOW1x1_01",
+      "target_stbl": 4003463171,
+      "resolved_target_label": "Been There, Watched That TV"
+    },
+    {
+      "id": "seating_Sit",
+      "stbl": 431264188,
+      "resolved_label": "Sit",
+      "target": "Part(object_sitLoveseatSC2x1_01)",
+      "target_stbl": 2644428156,
+      "resolved_target_label": "Squarely There Modern Loveseat"
+    }
+  ],
+  "impact_on_dialogue": "In Experiment 11 (chat-1792578161129-2), Rieko Okada referenced Alex Keen sitting on his loveseat (\"Empty. But in a fancy way, because you have a loveseat.\") directly from the resolved seating_Sit target_label.",
+  "limits": [
+    "Cooking interactions that end before a social starts are no longer in si_state unless the Sim is carrying the resulting plate/dish in posture_state.carry_targets or eating it."
+  ]
+}

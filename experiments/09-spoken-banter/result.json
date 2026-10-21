@@ -1,0 +1,76 @@
+{
+  "experiment": "Dynamic per-Sim multi-voice English speech synthesis in the Python 3.15 companion",
+  "mechanism": {
+    "voice_selection": "Maps Sim gender ('FEMALE' -> Microsoft Zira, 'MALE' -> Microsoft David / Microsoft Mark alternated by voice_actor so two male Sims in a conversation never share the same voice) and scales SSML <prosody pitch> from the Sim's in-game voice_pitch float.",
+    "synthesis_pipeline": "Single-pass SSML <speak> document combining both speaker turns with a 180ms inter-speaker break, rendered to WAV by companion.py before writing reply.json.",
+    "playback_synchronization": "When --speak is enabled, companion.py waits for the game's _ReplyPoller to write {'type': 'displayed', 'event_id': ...} to events.jsonl and plays the pre-rendered WAV asynchronously via winsound.PlaySound so audio starts at the exact moment the visual speech card appears.",
+    "simlish_suppression_path": "Setting 'voiceslevel = 0' in Options.ini (the in-game Voices audio slider) silences Simlish vocalizations on the game's voice mixer channel while preserving sound effects, music, ambient audio, and mouth animations."
+  },
+  "verified_live_runs": [
+    {
+      "event_id": "1792575800769-1",
+      "actor": {
+        "name": "Liberty Lee",
+        "gender": "FEMALE",
+        "voice_pitch": -0.18,
+        "assigned_voice": "Microsoft Zira",
+        "pitch_percent": -3
+      },
+      "target": {
+        "name": "Alex Keen",
+        "gender": "MALE",
+        "voice_pitch": -0.36,
+        "assigned_voice": "Microsoft David",
+        "pitch_percent": -5
+      },
+      "llm_elapsed_seconds": 3.165,
+      "tts_elapsed_seconds": 0.824,
+      "wav_bytes": 592208
+    },
+    {
+      "event_id": "1792575816317-2",
+      "actor": {
+        "name": "Liberty Lee",
+        "gender": "FEMALE",
+        "voice_pitch": -0.18,
+        "assigned_voice": "Microsoft Zira",
+        "pitch_percent": -3
+      },
+      "target": {
+        "name": "Alex Keen",
+        "gender": "MALE",
+        "voice_pitch": -0.36,
+        "assigned_voice": "Microsoft David",
+        "pitch_percent": -5
+      },
+      "llm_elapsed_seconds": 1.943,
+      "tts_elapsed_seconds": 0.799,
+      "wav_bytes": 561556
+    },
+    {
+      "event_id": "test-outcome-success",
+      "actor": {
+        "name": "Mortimer Goth",
+        "gender": "MALE",
+        "voice_pitch": -0.25,
+        "assigned_voice": "Microsoft Mark",
+        "pitch_percent": -4
+      },
+      "target": {
+        "name": "Alex Keen",
+        "gender": "MALE",
+        "voice_pitch": 0.15,
+        "assigned_voice": "Microsoft David",
+        "pitch_percent": 2
+      },
+      "llm_elapsed_seconds": 1.768,
+      "tts_elapsed_seconds": 0.595,
+      "wav_bytes": 468296
+    }
+  ],
+  "limits": [
+    "Local Windows SAPI voices (Zira, David, Mark) are fast (~0.6-0.8s) and offline, but sound more robotic than neural cloud TTS.",
+    "Companion audio plays as 2D stereo via winsound rather than 3D positional game audio.",
+    "In-game 'voiceslevel = 0' silences all Simlish across the lot rather than muting only the two conversing Sims."
+  ]
+}
