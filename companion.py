@@ -417,11 +417,179 @@ def _summarize_rel_tags(
     return tags
 
 
+def humanize_extra_trait(tname: str) -> tuple[str | None, str | None]:
+    if not tname:
+        return None, None
+    t = tname.strip()
+    tl = t.lower()
+
+    m_pref = re.match(r'^trait_simpreference_(likes|dislikes)_([a-z0-9]+)_([a-z0-9_]+)$', tl)
+    if m_pref:
+        kind = m_pref.group(1)
+        orig_item = t.split('_', 4)[-1]
+        readable_item = re.sub(r'([a-z])([A-Z])', r'\1 \2', orig_item).replace('_', ' ')
+        readable_cat = re.sub(r'([a-z])([A-Z])', r'\1 \2', t.split('_', 3)[3])
+        if readable_cat.lower() in ('music', 'color', 'decor'):
+            label = f'{readable_item} ({readable_cat.lower()})'
+        else:
+            label = readable_item
+        return ('likes' if kind == 'likes' else 'dislikes'), label
+
+    m_attr = re.match(r'^trait_attraction_([a-z0-9]+)_([a-z0-9_]+)_(turnon|turnoff)$', tl)
+    if m_attr:
+        parts = t.split('_')
+        direction = 'turn_ons' if parts[-1].lower() == 'turnon' else 'turn_offs'
+        cat = re.sub(r'([a-z])([A-Z])', r'\1 \2', parts[2])
+        item = re.sub(r'([a-z])([A-Z])', r'\1 \2', '_'.join(parts[3:-1])).replace('_', ' ')
+        return direction, f'{item} ({cat.lower()})'
+
+    if tl.startswith('trait_fear_'):
+        fear_name = re.sub(r'([a-z])([A-Z])', r'\1 \2', t[len('trait_Fear_'):]).replace('_', ' ')
+        return 'notable_traits', f'Fear of {fear_name}'
+
+    if 'basemental:adhd' in tl or tl == 'adhd':
+        return 'notable_traits', 'ADHD'
+    if 'basemental:autonomy_cannabis' in tl:
+        return 'notable_traits', 'Cannabis user'
+    if 'basemental:parent_yell_at_teen' in tl:
+        return 'notable_traits', 'Yelled at teen over drugs/behavior'
+    if 'basemental:parentalreactions_suspicious' in tl:
+        return 'notable_traits', 'Suspicious parent'
+    m_ww = re.match(r'^turbodriver:wickedwhims_trait_personality_archetype_([a-z]+)_([a-z]+)$', tl)
+    if m_ww:
+        arch, deg = m_ww.groups()
+        return 'notable_traits', f'{arch.title()} personality archetype ({deg})'
+    if 'wickedwhims_trait_nudity_sleepnaked' in tl:
+        return 'notable_traits', 'Sleeps naked'
+
+    notable_map = {
+        'trait_familiesim': 'Domestic (Family Sim)',
+        'trait_familysim': 'Domestic (Family Sim)',
+        'trait_quick_learner': 'Quick Learner',
+        'trait_essenceofflavor': 'Essence of Flavor (foodie/chef)',
+        'trait_business_savvy': 'Business Savvy',
+        'trait_hometurf': 'Home Turf',
+        'trait_collector': 'Collector',
+        'trait_animal_attraction': 'Animal Affection',
+        'trait_lovestruck': 'Lovestruck',
+        'trait_gradeschool_a': 'Grade School A-Student',
+        'trait_gradeschool_b': 'Grade School B-Student',
+        'trait_gradeschool_c': 'Grade School C-Student',
+        'trait_gradeschool_d': 'Grade School D-Student',
+        'trait_gradeschool_f': 'Grade School F-Student',
+    }
+    if tl in notable_map:
+        return 'notable_traits', notable_map[tl]
+
+    return None, None
+
+
+def humanize_career(career: dict, sim: dict, partner: dict | None = None) -> str | None:
+    if not isinstance(career, dict):
+        return None
+    track_label = resolve_stbl(career.get('track_stbl'), sim, partner)
+    title_label = resolve_stbl(career.get('title_stbl'), sim, partner)
+    cid = str(career.get('id') or '')
+    tid = str(career.get('track_id') or '')
+    fallback_map = {
+        'career_adult_culinary': 'Culinary',
+        'career_adult_styleinfluencer': 'Style Influencer (Trend Setter)',
+        'careers_adult_critic': 'Critic',
+        'career_adult_sexworkercareer': 'Sex Worker',
+        'careers_adult_gardener': 'Gardener',
+        'career_adult_entertainer': 'Entertainer',
+        'career_oddjob': 'Odd Jobs',
+        'career_teen_highschool': 'High School Student',
+        'careers_adult_freelancer_no_agency': 'Freelancer',
+    }
+    base_name = track_label or fallback_map.get(cid.lower())
+    if not base_name and cid:
+        cleaned_cid = re.sub(r'^careers?_(Adult|Teen)_', '', cid, flags=re.I)
+        cleaned_cid = re.sub(r'Career$', '', cleaned_cid)
+        base_name = re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned_cid).replace('_', ' ').strip()
+    if not base_name and tid:
+        base_name = re.sub(r'([a-z])([A-Z])', r'\1 \2', tid).replace('_', ' ').strip()
+    if not base_name:
+        return None
+    lvl = int(career.get('level') or 0)
+    parts = [base_name]
+    if title_label and title_label.lower() != base_name.lower():
+        parts.append(f'({title_label})')
+    if lvl > 0:
+        parts.append(f'Level {lvl}')
+    if career.get('at_work'):
+        parts.append('[currently at work]')
+    return ' '.join(parts)
+
+
+def humanize_skill(skill: dict, sim: dict, partner: dict | None = None) -> str | None:
+    if not isinstance(skill, dict):
+        return None
+    label = resolve_stbl(skill.get('stbl'), sim, partner)
+    sid = str(skill.get('id') or '')
+    if not label and sid:
+        sl = sid.lower()
+        skill_map = {
+            'homestylecooking': 'Homestyle Cooking',
+            'gourmetcooking': 'Gourmet Cooking',
+            'bartending': 'Mixology / Bartending',
+            'cannabis_rollingskill': 'Cannabis Rolling',
+            'sexpertise': 'Sexpertise',
+            'videogaming': 'Video Gaming',
+            'crossstitch': 'Cross-Stitch',
+            'localculture': 'Local Culture',
+        }
+        for k, v in skill_map.items():
+            if k in sl:
+                label = v
+                break
+        if not label:
+            cleaned_sid = re.sub(r'^(statistic_)?Skill_(Adult(Major|Minor)_)?', '', sid, flags=re.I)
+            cleaned_sid = re.sub(r'_Skill$', '', cleaned_sid, flags=re.I)
+            label = re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned_sid).replace('_', ' ').strip()
+    if not label:
+        return None
+    lvl = int(skill.get('level') or 0)
+    pts = float(skill.get('points') or 0.0)
+    if lvl > 0:
+        return f'{label} (Level {lvl})'
+    if pts > 0:
+        return f'{label} ({int(round(pts))} pts)'
+    return label
+
+
+def humanize_aspiration(asp_id: str | None, asp_stbl: int | None, sim: dict, partner: dict | None = None) -> str | None:
+    label = resolve_stbl(asp_stbl, sim, partner)
+    if label:
+        return label
+    if not asp_id:
+        return None
+    asp_map = {
+        'track_family_superparent': 'Super Parent',
+        'track_family_a': 'Successful Lineage',
+        'track_animal_a': 'Friend of the Animals',
+        'track_food_b': 'Master Chef / Mixologist',
+        'track_knowledge_a': 'Renaissance Sim',
+        'track_knowledge_b': 'Computer Whiz',
+        'track_knowledge_c': 'Nerd Brain',
+        'track_location_a': 'City Native',
+        'track_location_beachbum': 'Beach Life',
+        'track_fortune_multiunit_legendarylandlord': 'Five-Star Property Owner (Landlord)',
+        'track_nature_a': 'Freelance Botanist',
+    }
+    al = asp_id.lower()
+    if al in asp_map:
+        return asp_map[al]
+    cleaned = re.sub(r'^Track_', '', asp_id, flags=re.I)
+    return re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned).replace('_', ' ').strip()
+
+
 def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     cleaned = {
         k: v for k, v in sim.items()
         if k not in (
-            'id', 'trait_stbls', 'buffs', 'activities',
+            'id', 'trait_stbls', 'extra_traits', 'aspiration', 'aspiration_stbl',
+            'careers', 'skills', 'buffs', 'activities',
             'voice_actor', 'voice_actor_muted', 'voice_pitch', 'social_connections',
         )
     }
@@ -433,6 +601,35 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     ]
     if trait_labels:
         cleaned['trait_labels'] = trait_labels
+    asp_label = humanize_aspiration(sim.get('aspiration'), sim.get('aspiration_stbl'), sim, partner)
+    if asp_label:
+        cleaned['aspiration'] = asp_label
+    career_labels = [
+        cl for cl in (humanize_career(c, sim, partner) for c in sim.get('careers', []) or [])
+        if cl
+    ]
+    if career_labels:
+        cleaned['careers'] = career_labels
+    skill_labels = [
+        sl for sl in (humanize_skill(sk, sim, partner) for sk in sim.get('skills', []) or [])
+        if sl
+    ]
+    if skill_labels:
+        cleaned['top_skills'] = skill_labels[:6]
+    extra_buckets: dict[str, list[str]] = {
+        'notable_traits': [],
+        'likes': [],
+        'dislikes': [],
+        'turn_ons': [],
+        'turn_offs': [],
+    }
+    for et in sim.get('extra_traits', []) or []:
+        bkey, blabel = humanize_extra_trait(et)
+        if bkey and blabel and blabel not in extra_buckets[bkey]:
+            extra_buckets[bkey].append(blabel)
+    for bkey, items in extra_buckets.items():
+        if items:
+            cleaned[bkey] = items[:8]
     active_buffs = []
     for b in sim.get('buffs', []):
         name = resolve_stbl(b.get('name_stbl'), sim, partner)

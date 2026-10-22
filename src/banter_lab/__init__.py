@@ -446,6 +446,67 @@ def _sim_activities(sim):
     return activities[:4]
 
 
+def _sim_careers(info):
+    careers_out = []
+    tracker = getattr(info, 'career_tracker', None)
+    if tracker is None:
+        return careers_out
+    try:
+        career_dict = getattr(tracker, 'careers', None) or {}
+        for career in career_dict.values():
+            cid = getattr(career, '__name__', type(career).__name__)
+            track = getattr(career, 'current_track_tuning', None)
+            level_tuning = getattr(career, 'current_level_tuning', None)
+            careers_out.append({
+                'id': cid,
+                'track_id': getattr(track, '__name__', None) if track is not None else None,
+                'track_stbl': _string_hash(getattr(track, 'get_career_name', None), info) if track is not None else None,
+                'title_stbl': _string_hash(getattr(level_tuning, 'get_title', None), info) if level_tuning is not None else None,
+                'level': int(getattr(career, 'user_level', 0) or 0),
+                'at_work': bool(getattr(career, 'currently_at_work', False)),
+            })
+    except Exception:
+        pass
+    return careers_out[:3]
+
+
+def _sim_skills(info):
+    skills_out = []
+    tracker = getattr(info, 'commodity_tracker', None)
+    if tracker is None or not hasattr(tracker, 'get_all_commodities'):
+        return skills_out
+    try:
+        for stat in tracker.get_all_commodities():
+            if not getattr(stat, 'is_skill', False):
+                continue
+            stat_cls = getattr(stat, 'stat_type', type(stat))
+            sid = getattr(stat_cls, '__name__', type(stat).__name__)
+            try:
+                user_val = int(stat.get_user_value() or 0)
+            except Exception:
+                user_val = 0
+            try:
+                raw_val = round(float(stat.get_value() or 0.0), 1)
+            except Exception:
+                raw_val = 0.0
+            if user_val < 2 and raw_val < 500.0:
+                continue
+            skills_out.append((
+                -user_val,
+                -raw_val,
+                {
+                    'id': sid,
+                    'stbl': _string_hash(getattr(stat_cls, 'stat_name', None), info),
+                    'level': user_val,
+                    'points': raw_val,
+                },
+            ))
+    except Exception:
+        pass
+    skills_out.sort(key=lambda item: (item[0], item[1]))
+    return [item[2] for item in skills_out[:6]]
+
+
 def _sim_snapshot(sim):
     info = sim.sim_info
     mood = info.get_mood()
@@ -455,6 +516,27 @@ def _sim_snapshot(sim):
         stbl = _string_hash(getattr(trait, 'display_name', None), info)
         if stbl:
             trait_stbls.append(stbl)
+    personality_names = {trait.__name__ for trait in traits}
+    extra_traits = []
+    try:
+        for eq_trait in getattr(info.trait_tracker, 'equipped_traits', ()):
+            tname = getattr(eq_trait, '__name__', None)
+            if tname and tname not in personality_names:
+                extra_traits.append(tname)
+    except Exception:
+        pass
+    asp = getattr(info, 'primary_aspiration', None)
+    asp_id = getattr(asp, '__name__', None) if asp is not None else None
+    asp_stbl = _string_hash(getattr(asp, 'display_name', None), info) if asp is not None else None
+    funds = None
+    try:
+        ff = getattr(info, 'family_funds', None)
+        if ff is not None and hasattr(ff, 'money'):
+            funds = int(ff.money)
+        elif getattr(info, 'household', None) is not None and getattr(info.household, 'funds', None) is not None:
+            funds = int(info.household.funds.money)
+    except Exception:
+        funds = None
     buffs = []
     buff_component = getattr(info, 'Buffs', None)
     if buff_component is not None:
@@ -477,6 +559,12 @@ def _sim_snapshot(sim):
         'voice_pitch': round(float(getattr(info, 'voice_pitch', 0.0)), 4),
         'traits': [trait.__name__ for trait in traits],
         'trait_stbls': trait_stbls,
+        'extra_traits': extra_traits,
+        'aspiration': asp_id,
+        'aspiration_stbl': asp_stbl,
+        'household_funds': funds,
+        'careers': _sim_careers(info),
+        'skills': _sim_skills(info),
         'mood': mood.__name__ if mood else None,
         'mood_intensity': info.get_mood_intensity(),
         'buffs': buffs[:5],
