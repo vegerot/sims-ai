@@ -15,21 +15,21 @@ Resume by reading `plan.md`, then the newest `progress.md` entries. Check the wo
 
 ## In-game script mod (`src/banter_lab`)
 
-`src/banter_lab` observes social interactions involving the active household and supports direct player-to-Sim conversation. It is dormant until explicitly used in the game's cheat console (`Ctrl+Shift+C`):
+`src/banter_lab` observes social interactions involving the active household and supports direct player-to-Sim conversation. Click your active Sim for **Enable/Disable English Banter** and **Ask <Sim> a Question (English)...**; click another Sim for **Speak to <Sim> (English)...**. On lot load it starts `companion.py` from this repository with `--parent-pid`, so no terminal is needed.
+
+Console commands (`Ctrl+Shift+C`):
 
 | Command | Effect |
 | --- | --- |
-| `banter.test` | Show a manual dual-portrait auto-expanded speech notification. |
-| `banter.start` / `banter.start outcome` | Capture real scene context and show clearly labeled fixed test lines on `start` or `outcome`. |
-| `banter.ai` / `banter.ai start` | Request generated banter (defaults to `outcome` trigger so the model receives `SUCCESS`/`FAILURE`); start the companion first. |
-| `banter.talk` | Open a native in-game text-input modal to speak as your active Sim to a nearby Sim and receive an in-character reply. |
-| `banter.say <message>` | Send a player-authored line directly from the console to the conversing or nearest Sim. |
-| `banter.mute on` / `off` | Dynamically silence or restore Simlish `voice_actor` (`0x7FFFFFFF`) on instanced Sims while preserving true `voice_actor` metadata for companion TTS. |
-| `banter.trace on` / `off` | Record social `start`, `outcome`, `complete`, and `cancel` lifecycle timings in `events.jsonl` without model calls. |
-| `banter.audio hello` / `control` / `vox` / `stop` | Manual fixed-resource or `is_vox=True` audio probe; `hello` needs the separate greeting override package. |
-| `banter.stop` | Stop observing, disable tracing, restore any muted Simlish voices, and cancel reply polling. |
-| `banter.status` | Print state and log active/nearby Sims, STBL hashes, activities, and venue for debugging. |
-| `banter.summon Bella Goth` | Test-save setup: request that a named NPC enter the zone. This changes the test scene; it does not prove arrival. |
+| `banter.ai` / `banter.stop` | Turn English banter on / off (same as the pie menu). |
+| `banter.talk <first> <last>` | Open the text box to speak as your active Sim to a Sim on this lot. |
+| `banter.ask [question]` | Ask your active Sim a question (no question opens the text box). |
+| `banter.mute on` / `off` | Silence or restore Simlish `voice_actor` (`0x7FFFFFFF`). |
+| `banter.status` | Print state, skip counts, and cost; log a full snapshot to `events.jsonl`. |
+| `banter.logs [on|off|tail]` | Mirror companion log lines into the console. |
+| `banter.reload` | Hot-reload `BanterLab.ts4script`. |
+
+Experiment-only commands (`banter.start`, `trace`, `test`, `audio`, `summon`, `say`, `solo`, `menu`) were removed on 2026-10-22; their results live in `experiments/` and git history.
 
 Build using Python 3.7, matching the installed game:
 
@@ -37,31 +37,22 @@ Build using Python 3.7, matching the installed game:
 & '.\.local\python37\python.exe' '.\build.py'
 ```
 
-The archive is `dist/BanterLab.ts4script`. Local tools, generated archives, game-context logs, and private test artifacts are ignored. No model credential belongs in the script archive.
-
-Restart the game after replacing the archive. On this PC it is installed in `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs and the default `reply.json` live in its `BanterLabData` child directory.
+The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs and `reply.json` live in its `BanterLabData` child directory. Rebuild after any game update: `BanterLabUI.package` ships patched copies of `Notifications.gfx` and `Dialog.gfx`.
 
 ## Generation companion (`companion.py`)
 
-The companion runs with the installed Python 3.15 using only the standard library:
+Python 3.15, standard library only. The game starts it; it exits when the game exits, and a lock file (`.local/companion.lock`) keeps a single instance.
 
-- **STBL resolution:** Automatically reads all 141 installed `Strings_ENG_US.package` files (165,095 official English strings) plus `Mods/*.package` STBL resources (176,266 total strings, cached in `.local/stbl_en_us.json`) to resolve interaction names, traits, active visible moodlets/buffs and their reasons, ongoing multitasking activities (`sim.si_state`) and carried objects/recipes (`posture_state.carry_targets`), venue types, and relationship bits before calling the model.
-- **Outcome, player chat, & scene continuity:** Handles both observed social interactions (with verified `OutcomeResult` `SUCCESS`/`FAILURE`) and player-initiated chats (`banter.talk` / `banter.say`), with a bounded per-zone `recent_dialogue` buffer (last 3 exchanges).
-- **Warm per-Sim spoken English synthesis (`--tts-dir` / `--speak`):** Assigns distinct voices using each Sim's in-game `gender`, `voice_actor`, and `voice_pitch`, renders a two-voice WAV via a persistent warmed-up PowerShell `System.Speech` worker in **33–135 ms**, and (when `--speak` is passed) plays it asynchronously via `winsound.PlaySound` the moment the game logs `displayed`.
+- Tails `events.jsonl`, calls `openai/gpt-6-luna` (`reasoning: none`) through OpenRouter, and writes `reply.json`.
+- Resolves interaction, trait, buff, venue, and relationship names from the game's string tables (`.local/stbl_en_us.json` cache).
+- Synthesizes each line with `openai/gpt-audio-mini` in parallel. A line the audio model refuses or doesn't read verbatim stays silent; the text still shows.
+- Plays the WAV when the game logs `displayed`.
+- Cost: the session cost is the sum of per-call `usage.cost`; the total is the dedicated key's usage on OpenRouter (`cost_summary.json`).
 
-```powershell
-python3.15 '.\companion.py' `
-  --data-directory 'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab\BanterLabData' `
-  --tts-dir '.\.local\tts' `
-  --speak
-```
-
-Then enter `banter.ai` (and optionally `banter.mute on` to silence in-game Simlish) or `banter.talk` in-game. Stop with `banter.stop` and stop the companion with Ctrl+C. `prompt.txt` is reread for each request, so writing experiments do not require restarting the game.
-
-To generate from one captured scene without running the bridge:
+Generate text for one captured event (offline prompt experiments, no audio):
 
 ```powershell
-python3.15 '.\companion.py' --once '.\.local\scene.json' --tts-dir '.\.local\tts'
+python3.15 '.\companion.py' --once '.\.local\scene.json'
 ```
 
 ## Verified experiments

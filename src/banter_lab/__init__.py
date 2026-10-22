@@ -1,7 +1,8 @@
 """Observe actual socials and solo vocalizations, support player-to-Sim and Ask-Self chat, and display contextual dialogue.
 
-Dormant until enabled via Pie Menu or console (`banter.ai`, `banter.start`, `banter.talk`, `banter.say`, `banter.ask`, `banter.solo`).
-Model calls, cost tracking, and OpenRouter gpt-audio-mini speech synthesis run in the external Python 3.15 companion.
+Enabled from the Sim Pie Menu (or `banter.ai` / `banter.stop` in the console).
+Model calls and OpenRouter gpt-audio-mini speech synthesis run in the external Python 3.15 companion,
+which this module starts automatically.
 """
 
 import functools
@@ -21,76 +22,48 @@ from distributor.shared_messages import IconInfoData
 from distributor.system import Distributor
 import services
 import sims4.commands
-from audio.primitive import PlaySound
 from event_testing.results import TestResult
 from interactions import ParticipantType
 from interactions.base.interaction import Interaction
-from interactions.base.super_interaction import SuperInteraction
 from sims4.utils import flexmethod
 from singletons import DEFAULT
 from zone import Zone
 from relationships.relationship_track import RelationshipTrack
-from sims.sim_spawner import SimSpawner
 from sims4.localization import LocalizationHelperTuning
 from ui.ui_dialog_generic import UiDialogTextInputOkCancel
 from ui.ui_dialog_notification import UiDialogNotification
 
 
 _enabled = True
-_trace = False
 _mute_simlish = True
 _original_voice_actors = {}
-_last_shown = 0.0
-_last_solo_shown = 0.0
 _event_count = 0
-_mode = 'ai'
-_trigger_on = 'outcome'
 _pending = None
 _alarm = None
 _reply_path = None
-_audio_probe = None
 _pie_interaction_cls = None
 _pie_ask_self_cls = None
+# importlib.reload re-executes this module in the same namespace, so keep the running companion handle.
+_companion_proc = globals().get('_companion_proc')
+_last_companion_spawn = 0.0
+_seen_errors = set()
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
-_COOLDOWN_SECONDS = 3.0
+_PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate')
 _UNLABELLED_WAVES = ('socialMixer_Greetings_Wave', 'nonTouching_Unpaired_Greeting_Wave')
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
+# STBL keys of the "Shout Forbidden Words" variants. Add other solo vocal actions only after observing them live.
 _SOLO_VOCAL_STBLS = (4013856058, 961384365, 3515527490, 2952163771)
-_SOLO_VOCAL_SUBSTRINGS = (
-    'forbiddenwords',
-    'shoutforbidden',
-    'practicespeech',
-    'practiceacting',
-    'practiceroutine',
-    'sing',
-    'karaoke',
-    'microphone',
-    'complain',
-    'talktoself',
-    'talk_to_self',
-    'tantrum',
-    'cryitout',
-    'yellat',
-)
 _skip_counts = {}
-_vox_stats = {'total': 0, 'covered_by_english': 0, 'unreplaced': 0}
-_last_english_by_sim = {}
 _console_logging = True
 _console_log_offset = None
 _last_connection = None
-_last_companion_spawn_attempt = 0.0
 # Zip-imported modules have a path inside the .ts4script archive.
 _mod_directory = os.path.dirname(__file__.split('.ts4script', 1)[0])
 _data_directory = os.path.join(_mod_directory, 'BanterLabData')
-_REPO_COMPANION_PATH = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\companion.py'
-_PYTHON_CANDIDATES = (
-    r'C:\Users\Max\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe',
-    r'C:\Users\Max\.local\bin\python3.15.exe',
-    os.path.expanduser(r'~\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe'),
-    os.path.expanduser(r'~\.local\bin\python3.15.exe'),
-    os.path.expanduser(r'~\AppData\Local\Programs\Python\Python314\python.exe'),
-)
+_COMPANION_PATH = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\companion.py'
+# Controlled Folder Access allows this interpreter to write to Documents.
+_PYTHON = r'C:\Users\Max\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe'
 
 
 class _BanterInputDialog(UiDialogTextInputOkCancel):
@@ -117,6 +90,15 @@ def _record(record):
         stream.write(json.dumps(record, ensure_ascii=False) + '\n')
 
 
+def _record_error():
+    """Log a traceback once per session so a wrong game-API guess is visible instead of silently empty."""
+    tb = traceback.format_exc()
+    if tb in _seen_errors:
+        return
+    _seen_errors.add(tb)
+    _record({'type': 'error', 'observed_at': time.time(), 'traceback': tb})
+
+
 def _string_hash(value, *tokens):
     if value is None:
         return None
@@ -139,72 +121,59 @@ def _string_hash(value, *tokens):
     return None
 
 
+def _sim_name(sim_or_info):
+    info = getattr(sim_or_info, 'sim_info', sim_or_info)
+    return '{} {}'.format(info.first_name, info.last_name).strip()
+
+
 def _settings_path():
     return os.path.join(_data_directory, 'settings.json')
 
 
 def _save_settings():
-    try:
-        os.makedirs(_data_directory, exist_ok=True)
-        payload = {
-            'enabled': bool(_enabled),
-            'mute_simlish': bool(_mute_simlish),
-            'mode': str(_mode),
-            'trigger_on': str(_trigger_on),
-            'console_logging': bool(_console_logging),
-            'updated_at': time.time(),
-        }
-        tmp_path = _settings_path() + '.tmp'
-        with open(tmp_path, 'w', encoding='utf-8') as stream:
-            json.dump(payload, stream, indent=2)
-        os.replace(tmp_path, _settings_path())
-    except Exception:
-        pass
+    os.makedirs(_data_directory, exist_ok=True)
+    payload = {
+        'enabled': bool(_enabled),
+        'mute_simlish': bool(_mute_simlish),
+        'console_logging': bool(_console_logging),
+        'updated_at': time.time(),
+    }
+    tmp_path = _settings_path() + '.tmp'
+    with open(tmp_path, 'w', encoding='utf-8') as stream:
+        json.dump(payload, stream, indent=2)
+    os.replace(tmp_path, _settings_path())
 
 
 def _load_settings():
-    global _enabled, _mute_simlish, _mode, _trigger_on, _console_logging
-    path = _settings_path()
-    if not os.path.exists(path):
+    global _enabled, _mute_simlish, _console_logging
+    if not os.path.exists(_settings_path()):
         _save_settings()
         return
-    try:
-        with open(path, encoding='utf-8-sig') as stream:
-            data = json.load(stream)
-        if isinstance(data, dict):
-            _enabled = bool(data.get('enabled', True))
-            _mute_simlish = bool(data.get('mute_simlish', True))
-            _mode = str(data.get('mode') or 'ai')
-            _trigger_on = str(data.get('trigger_on') or 'outcome')
-            _console_logging = bool(data.get('console_logging', True))
-    except Exception:
-        pass
+    with open(_settings_path(), encoding='utf-8-sig') as stream:
+        data = json.load(stream)
+    _enabled = bool(data.get('enabled', True))
+    _mute_simlish = bool(data.get('mute_simlish', True))
+    _console_logging = bool(data.get('console_logging', True))
 
 
 def _load_original_voice_actors():
     path = os.path.join(_data_directory, 'original_voice_actors.json')
     if not os.path.exists(path):
         return
-    try:
-        with open(path, encoding='utf-8-sig') as stream:
-            raw = json.load(stream)
-        for k, v in raw.items():
-            iv = int(v)
-            if iv and iv != _MUTE_VOICE_ACTOR:
-                _original_voice_actors[int(k)] = iv
-    except Exception:
-        pass
+    with open(path, encoding='utf-8-sig') as stream:
+        raw = json.load(stream)
+    for k, v in raw.items():
+        iv = int(v)
+        if iv and iv != _MUTE_VOICE_ACTOR:
+            _original_voice_actors[int(k)] = iv
 
 
 def _save_original_voice_actors():
-    try:
-        os.makedirs(_data_directory, exist_ok=True)
-        path = os.path.join(_data_directory, 'original_voice_actors.json')
-        payload = {str(k): int(v) for k, v in _original_voice_actors.items() if v and v != _MUTE_VOICE_ACTOR}
-        with open(path, 'w', encoding='utf-8') as stream:
-            json.dump(payload, stream, indent=2)
-    except Exception:
-        pass
+    os.makedirs(_data_directory, exist_ok=True)
+    path = os.path.join(_data_directory, 'original_voice_actors.json')
+    payload = {str(k): int(v) for k, v in _original_voice_actors.items() if v and v != _MUTE_VOICE_ACTOR}
+    with open(path, 'w', encoding='utf-8') as stream:
+        json.dump(payload, stream, indent=2)
 
 
 def _true_voice_actor(info):
@@ -267,147 +236,73 @@ def _console_print(text, _connection=None):
         _last_connection = _connection
     conn = _connection if _connection is not None else _last_connection
     if conn is None:
-        try:
-            cm = services.client_manager()
-            if cm is not None:
-                conn = cm.get_first_client_id()
-        except Exception:
-            conn = None
+        cm = services.client_manager()
+        if cm is not None:
+            conn = cm.get_first_client_id()
     if conn is None:
         return False
-    try:
-        sims4.commands.CheatOutput(conn)(str(text))
-        return True
-    except Exception:
-        return False
+    sims4.commands.CheatOutput(conn)(str(text))
+    return True
 
 
-def _companion_heartbeat():
-    hb_path = os.path.join(_data_directory, 'companion_heartbeat.json')
-    if not os.path.exists(hb_path):
-        return False, None
-    try:
-        with open(hb_path, encoding='utf-8-sig') as stream:
-            data = json.load(stream)
-        age = time.time() - float(data.get('ts') or 0.0)
-        return age < 8.0, data
-    except Exception:
-        return False, None
+def _companion_alive():
+    return _companion_proc is not None and _companion_proc.poll() is None
 
 
-def _find_companion_command():
-    py_exe = 'python'
-    for candidate in _PYTHON_CANDIDATES:
-        if os.path.exists(candidate):
-            py_exe = candidate
-            break
-    script_path = None
-    for candidate_script in (_REPO_COMPANION_PATH, os.path.join(_mod_directory, 'companion.py')):
-        if os.path.exists(candidate_script):
-            script_path = candidate_script
-            break
-    return py_exe, script_path
+def _ensure_companion_running():
+    """Start companion.py once per game process; it exits when the game exits."""
+    global _companion_proc, _last_companion_spawn
+    if _companion_alive():
+        return
+    now = time.monotonic()
+    if now - _last_companion_spawn < 10.0:
+        return
+    _last_companion_spawn = now
+    os.makedirs(_data_directory, exist_ok=True)
+    stdout_stream = open(os.path.join(_data_directory, 'companion.stdout.log'), 'a', encoding='utf-8')
+    stderr_stream = open(os.path.join(_data_directory, 'companion.stderr.log'), 'a', encoding='utf-8')
+    cmd = [_PYTHON, _COMPANION_PATH, '--data-directory', _data_directory, '--parent-pid', str(os.getpid())]
+    _companion_proc = subprocess.Popen(
+        cmd,
+        cwd=os.path.dirname(_COMPANION_PATH),
+        stdout=stdout_stream,
+        stderr=stderr_stream,
+        creationflags=subprocess.CREATE_NO_WINDOW,
+    )
+    _record({'type': 'companion_spawned', 'pid': _companion_proc.pid, 'observed_at': time.time()})
+    _console_print('[Banter Lab] Started companion.py (pid={}).'.format(_companion_proc.pid))
 
 
-def _ensure_companion_running(force=False, _connection=None):
-    global _last_companion_spawn_attempt
-    alive, _ = _companion_heartbeat()
-    if alive and not force:
-        return True
-    now_mono = time.monotonic()
-    if not force and (now_mono - _last_companion_spawn_attempt) < 8.0:
-        return False
-    _last_companion_spawn_attempt = now_mono
-    py_exe, script_path = _find_companion_command()
-    if not script_path:
-        _record({'type': 'companion_spawn_failed', 'reason': 'companion.py not found', 'observed_at': time.time()})
-        return False
-    try:
-        os.makedirs(_data_directory, exist_ok=True)
-        stdout_path = os.path.join(_data_directory, 'companion.stdout.log')
-        stderr_path = os.path.join(_data_directory, 'companion.stderr.log')
-        out_stream = open(stdout_path, 'a', encoding='utf-8')
-        err_stream = open(stderr_path, 'a', encoding='utf-8')
-        cmd = [py_exe, script_path, '--data-directory', _data_directory, '--speak']
-        if force:
-            cmd.append('--replace')
-        flags = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
-        proc = subprocess.Popen(
-            cmd,
-            cwd=os.path.dirname(script_path),
-            stdout=out_stream,
-            stderr=err_stream,
-            creationflags=flags,
-        )
-        _record({
-            'type': 'companion_spawned',
-            'pid': proc.pid,
-            'python': py_exe,
-            'script': script_path,
-            'force': bool(force),
-            'observed_at': time.time(),
-        })
-        _console_print('[Banter Lab] Auto-started companion.py (pid={}).'.format(proc.pid), _connection=_connection)
-        return True
-    except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
-        return False
+def _print_console_line(raw_line, _connection=None):
+    rec = json.loads(raw_line)
+    return _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection)
 
 
 def _drain_companion_console(force_tail=0, _connection=None):
+    """Mirror new companion log lines into the cheat console (or print the last `force_tail` lines)."""
     global _console_log_offset
     log_path = os.path.join(_data_directory, 'companion_console.jsonl')
     if not os.path.exists(log_path):
         return 0
     printed = 0
-    try:
-        if force_tail > 0:
-            with open(log_path, encoding='utf-8-sig') as stream:
-                lines = [ln for ln in stream.read().splitlines() if ln.strip()]
-                _console_log_offset = stream.tell()
-            for raw_line in lines[-force_tail:]:
-                try:
-                    rec = json.loads(raw_line)
-                    if _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection):
-                        printed += 1
-                except Exception:
-                    pass
-            return printed
-
-        if _console_log_offset is None:
-            with open(log_path, encoding='utf-8-sig') as stream:
-                lines = [ln for ln in stream.read().splitlines() if ln.strip()]
-                _console_log_offset = stream.tell()
-            if _console_logging:
-                now_ts = time.time()
-                for raw_line in lines[-2:]:
-                    try:
-                        rec = json.loads(raw_line)
-                        if (now_ts - float(rec.get('ts') or 0.0)) < 3600.0:
-                            if _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection):
-                                printed += 1
-                    except Exception:
-                        pass
-            return printed
-
+    if force_tail > 0 or _console_log_offset is None:
         with open(log_path, encoding='utf-8-sig') as stream:
-            stream.seek(_console_log_offset)
-            while True:
-                pos = stream.tell()
-                line = stream.readline()
-                if not line or not line.endswith('\n'):
-                    stream.seek(pos)
-                    break
-                _console_log_offset = stream.tell()
-                if _console_logging:
-                    try:
-                        rec = json.loads(line)
-                        if _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection):
-                            printed += 1
-                    except Exception:
-                        pass
-    except Exception:
-        pass
+            lines = [ln for ln in stream.read().splitlines() if ln.strip()]
+            _console_log_offset = stream.tell()
+        for raw_line in (lines[-force_tail:] if force_tail > 0 else []):
+            printed += int(bool(_print_console_line(raw_line, _connection=_connection)))
+        return printed
+    with open(log_path, encoding='utf-8-sig') as stream:
+        stream.seek(_console_log_offset)
+        while True:
+            pos = stream.tell()
+            line = stream.readline()
+            if not line or not line.endswith('\n'):
+                stream.seek(pos)
+                break
+            _console_log_offset = stream.tell()
+            if _console_logging:
+                printed += int(bool(_print_console_line(line, _connection=_connection)))
     return printed
 
 
@@ -430,61 +325,53 @@ def _notify(title, text, owner=None, secondary_owner=None, timeout_ms=None):
     dialog.show_dialog(**kwargs)
 
 
+def _crafted_recipe(obj):
+    crafting = getattr(obj, 'crafting_component', None)
+    if crafting is None or not hasattr(crafting, 'get_recipe'):
+        return None, None
+    recipe = crafting.get_recipe()
+    if recipe is None:
+        return None, None
+    return getattr(recipe, '__name__', type(recipe).__name__), _string_hash(getattr(recipe, 'get_recipe_name', None))
+
+
 def _sim_activities(sim):
     activities = []
     si_state = getattr(sim, 'si_state', None)
     if si_state is None:
         return activities
-    for si in si_state:
-        if getattr(si, 'is_social', False):
-            continue
-        si_name = type(si).__name__
-        if si_name in _IDLE_POSTURES:
-            continue
-        target_obj = getattr(si, 'target', None)
-        target_stbl = _string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None
-        recipe_name = None
-        recipe_stbl = None
-        crafting = getattr(target_obj, 'crafting_component', None) if target_obj is not None else None
-        if crafting is not None and hasattr(crafting, 'get_recipe'):
-            try:
-                recipe = crafting.get_recipe()
-                if recipe is not None:
-                    recipe_name = getattr(recipe, '__name__', type(recipe).__name__)
-                    recipe_stbl = _string_hash(getattr(recipe, 'get_recipe_name', None))
-            except Exception:
-                pass
-        activities.append({
-            'id': si_name,
-            'stbl': _string_hash(getattr(si, 'display_name', None), sim, target_obj),
-            'target': type(target_obj).__name__ if target_obj is not None else None,
-            'target_stbl': target_stbl,
-            'recipe': recipe_name,
-            'recipe_stbl': recipe_stbl,
-        })
-    posture_state = getattr(sim, 'posture_state', None)
-    for carried in (getattr(posture_state, 'carry_targets', ()) if posture_state is not None else ()):
-        if carried is None or getattr(carried, 'is_sim', False):
-            continue
-        recipe_name = None
-        recipe_stbl = None
-        crafting = getattr(carried, 'crafting_component', None)
-        if crafting is not None and hasattr(crafting, 'get_recipe'):
-            try:
-                recipe = crafting.get_recipe()
-                if recipe is not None:
-                    recipe_name = getattr(recipe, '__name__', type(recipe).__name__)
-                    recipe_stbl = _string_hash(getattr(recipe, 'get_recipe_name', None))
-            except Exception:
-                pass
-        activities.append({
-            'id': 'carrying',
-            'stbl': None,
-            'target': type(carried).__name__,
-            'target_stbl': _string_hash(getattr(carried, 'catalog_name', None)),
-            'recipe': recipe_name,
-            'recipe_stbl': recipe_stbl,
-        })
+    try:
+        for si in si_state:
+            if getattr(si, 'is_social', False):
+                continue
+            si_name = type(si).__name__
+            if si_name in _IDLE_POSTURES:
+                continue
+            target_obj = getattr(si, 'target', None)
+            recipe_name, recipe_stbl = _crafted_recipe(target_obj) if target_obj is not None else (None, None)
+            activities.append({
+                'id': si_name,
+                'stbl': _string_hash(getattr(si, 'display_name', None), sim, target_obj),
+                'target': type(target_obj).__name__ if target_obj is not None else None,
+                'target_stbl': _string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None,
+                'recipe': recipe_name,
+                'recipe_stbl': recipe_stbl,
+            })
+        posture_state = getattr(sim, 'posture_state', None)
+        for carried in (getattr(posture_state, 'carry_targets', ()) if posture_state is not None else ()):
+            if carried is None or getattr(carried, 'is_sim', False):
+                continue
+            recipe_name, recipe_stbl = _crafted_recipe(carried)
+            activities.append({
+                'id': 'carrying',
+                'stbl': None,
+                'target': type(carried).__name__,
+                'target_stbl': _string_hash(getattr(carried, 'catalog_name', None)),
+                'recipe': recipe_name,
+                'recipe_stbl': recipe_stbl,
+            })
+    except Exception:
+        _record_error()
     return activities[:4]
 
 
@@ -494,13 +381,11 @@ def _sim_careers(info):
     if tracker is None:
         return careers_out
     try:
-        career_dict = getattr(tracker, 'careers', None) or {}
-        for career in career_dict.values():
-            cid = getattr(career, '__name__', type(career).__name__)
+        for career in (getattr(tracker, 'careers', None) or {}).values():
             track = getattr(career, 'current_track_tuning', None)
             level_tuning = getattr(career, 'current_level_tuning', None)
             careers_out.append({
-                'id': cid,
+                'id': getattr(career, '__name__', type(career).__name__),
                 'track_id': getattr(track, '__name__', None) if track is not None else None,
                 'track_stbl': _string_hash(getattr(track, 'get_career_name', None), info) if track is not None else None,
                 'title_stbl': _string_hash(getattr(level_tuning, 'get_title', None), info) if level_tuning is not None else None,
@@ -508,7 +393,7 @@ def _sim_careers(info):
                 'at_work': bool(getattr(career, 'currently_at_work', False)),
             })
     except Exception:
-        pass
+        _record_error()
     return careers_out[:3]
 
 
@@ -522,29 +407,18 @@ def _sim_skills(info):
             if not getattr(stat, 'is_skill', False):
                 continue
             stat_cls = getattr(stat, 'stat_type', type(stat))
-            sid = getattr(stat_cls, '__name__', type(stat).__name__)
-            try:
-                user_val = int(stat.get_user_value() or 0)
-            except Exception:
-                user_val = 0
-            try:
-                raw_val = round(float(stat.get_value() or 0.0), 1)
-            except Exception:
-                raw_val = 0.0
+            user_val = int(stat.get_user_value() or 0)
+            raw_val = round(float(stat.get_value() or 0.0), 1)
             if user_val < 2 and raw_val < 500.0:
                 continue
-            skills_out.append((
-                -user_val,
-                -raw_val,
-                {
-                    'id': sid,
-                    'stbl': _string_hash(getattr(stat_cls, 'stat_name', None), info),
-                    'level': user_val,
-                    'points': raw_val,
-                },
-            ))
+            skills_out.append((-user_val, -raw_val, {
+                'id': getattr(stat_cls, '__name__', type(stat).__name__),
+                'stbl': _string_hash(getattr(stat_cls, 'stat_name', None), info),
+                'level': user_val,
+                'points': raw_val,
+            }))
     except Exception:
-        pass
+        _record_error()
     skills_out.sort(key=lambda item: (item[0], item[1]))
     return [item[2] for item in skills_out[:6]]
 
@@ -553,32 +427,21 @@ def _sim_snapshot(sim):
     info = sim.sim_info
     mood = info.get_mood()
     traits = list(info.trait_tracker.personality_traits)
-    trait_stbls = []
-    for trait in traits:
-        stbl = _string_hash(getattr(trait, 'display_name', None), info)
-        if stbl:
-            trait_stbls.append(stbl)
+    trait_stbls = [s for s in (_string_hash(getattr(t, 'display_name', None), info) for t in traits) if s]
     personality_names = {trait.__name__ for trait in traits}
     extra_traits = []
+    funds = None
     try:
         for eq_trait in getattr(info.trait_tracker, 'equipped_traits', ()):
             tname = getattr(eq_trait, '__name__', None)
             if tname and tname not in personality_names:
                 extra_traits.append(tname)
+        household = getattr(info, 'household', None)
+        if household is not None and getattr(household, 'funds', None) is not None:
+            funds = int(household.funds.money)
     except Exception:
-        pass
+        _record_error()
     asp = getattr(info, 'primary_aspiration', None)
-    asp_id = getattr(asp, '__name__', None) if asp is not None else None
-    asp_stbl = _string_hash(getattr(asp, 'display_name', None), info) if asp is not None else None
-    funds = None
-    try:
-        ff = getattr(info, 'family_funds', None)
-        if ff is not None and hasattr(ff, 'money'):
-            funds = int(ff.money)
-        elif getattr(info, 'household', None) is not None and getattr(info.household, 'funds', None) is not None:
-            funds = int(info.household.funds.money)
-    except Exception:
-        funds = None
     buffs = []
     buff_component = getattr(info, 'Buffs', None)
     if buff_component is not None:
@@ -592,27 +455,24 @@ def _sim_snapshot(sim):
                     getattr(buff, 'buff_reason', None) or getattr(buff, 'default_buff_reason', None)),
             })
     species_obj = getattr(info, 'extended_species', None) or getattr(info, 'species', None)
-    species_name = getattr(species_obj, 'name', str(species_obj)) if species_obj is not None else 'HUMAN'
     breed_name = getattr(info, '_breed_name', None) or getattr(info, 'breed_name', None) or None
     if callable(breed_name):
         breed_name = None
-    breed_stbl = _string_hash(getattr(info, 'breed_name_key', None))
     return {
         'id': str(info.sim_id),
-        'name': '{} {}'.format(info.first_name, info.last_name).strip(),
+        'name': _sim_name(info),
         'age': getattr(info.age, 'name', str(info.age)),
         'gender': getattr(info.gender, 'name', str(info.gender)),
-        'species': species_name,
+        'species': getattr(species_obj, 'name', str(species_obj)) if species_obj is not None else 'HUMAN',
         'breed': str(breed_name) if breed_name else None,
-        'breed_stbl': breed_stbl,
+        'breed_stbl': _string_hash(getattr(info, 'breed_name_key', None)),
         'voice_actor': _true_voice_actor(info),
-        'voice_actor_muted': int(getattr(info, 'voice_actor', 0)) == _MUTE_VOICE_ACTOR,
         'voice_pitch': round(float(getattr(info, 'voice_pitch', 0.0)), 4),
         'traits': [trait.__name__ for trait in traits],
         'trait_stbls': trait_stbls,
         'extra_traits': extra_traits,
-        'aspiration': asp_id,
-        'aspiration_stbl': asp_stbl,
+        'aspiration': getattr(asp, '__name__', None) if asp is not None else None,
+        'aspiration_stbl': _string_hash(getattr(asp, 'display_name', None), info) if asp is not None else None,
         'household_funds': funds,
         'careers': _sim_careers(info),
         'skills': _sim_skills(info),
@@ -624,84 +484,54 @@ def _sim_snapshot(sim):
     }
 
 
+_CONNECTION_PRIORITIES = (
+    (100, ('married', 'engaged', 'significant_other', 'soulmates', 'sweethearts', 'lovebirds', 'lovers',
+           'havebeenexes', 'broken_up', 'divorced', 'hasbeenunfaithful')),
+    (80, ('sentimentbit_', 'nolongerfriends', 'fellinlove', 'havebeenromantic', 'itsveryawkward', 'badromance',
+          'fear_beingcheatedon')),
+    (70, ('family_target_', 'familytrope_', 'romancetrope_', 'isdog', 'iscat', 'partnersincrime',
+          'wentonblinddatewith', 'hadsex_7days', 'hadlewddreamabout')),
+    (40, ('friendship-bff', 'friendship-good_friends', 'friendship-friend', 'friendship-disliked',
+          'friendship-despised', 'friendship-nemesis')),
+)
+
+
 def _sim_social_connections(info):
+    """The Sim's most dramatic third-party relationships (spouses, exes, sentiments, family, pets)."""
     tracker = getattr(info, 'relationship_tracker', None)
     if tracker is None or not hasattr(tracker, 'get_target_sim_infos'):
         return []
     scored = []
     sim_id = int(info.sim_id)
     hh_id = getattr(info, 'household_id', None)
-    spouse_id = getattr(info, 'spouse_sim_id', None)
-    fiance_id = getattr(info, 'fiance_sim_id', None)
+    partner_ids = (getattr(info, 'spouse_sim_id', None), getattr(info, 'fiance_sim_id', None))
     try:
-        targets = list(tracker.get_target_sim_infos())
-    except Exception:
-        return []
-    for other in targets:
-        if other is None:
-            continue
-        other_id = int(getattr(other, 'sim_id', 0) or 0)
-        if not other_id or other_id == sim_id:
-            continue
-        other_name = '{} {}'.format(getattr(other, 'first_name', ''), getattr(other, 'last_name', '')).strip()
-        if not other_name or 'do_not_remove' in other_name.lower():
-            continue
-        try:
+        for other in list(tracker.get_target_sim_infos()):
+            other_id = int(getattr(other, 'sim_id', 0) or 0) if other is not None else 0
+            if not other_id or other_id == sim_id:
+                continue
+            other_name = _sim_name(other)
+            if not other_name or 'do_not_remove' in other_name.lower():
+                continue
             bits = [b.__name__ for b in tracker.get_all_bits(other_id)]
-        except Exception:
-            bits = []
-        rev_bits = []
-        try:
             other_tracker = getattr(other, 'relationship_tracker', None)
-            if other_tracker is not None:
-                rev_bits = [b.__name__ for b in other_tracker.get_all_bits(sim_id) if b.__name__ not in bits]
-        except Exception:
-            rev_bits = []
-        try:
+            rev_bits = [b.__name__ for b in other_tracker.get_all_bits(sim_id)
+                        if b.__name__ not in bits] if other_tracker is not None else []
             friendship = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.FRIENDSHIP_TRACK)), 1)
-        except Exception:
-            friendship = 0.0
-        try:
             romance = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.ROMANCE_TRACK)), 1)
-        except Exception:
-            romance = 0.0
-        same_hh = bool(hh_id and getattr(other, 'household_id', None) == hh_id)
-        all_lower = ' '.join(bits + rev_bits).lower()
-        priority = 0
-        if other_id in (spouse_id, fiance_id) or any(
-            k in all_lower for k in (
-                'married', 'engaged', 'significant_other', 'soulmates', 'sweethearts',
-                'lovebirds', 'lovers', 'havebeenexes', 'broken_up', 'divorced', 'hasbeenunfaithful',
-            )
-        ):
-            priority += 100
-        if any(
-            k in all_lower for k in (
-                'sentimentbit_', 'nolongerfriends', 'fellinlove', 'havebeenromantic',
-                'itsveryawkward', 'badromance', 'fear_beingcheatedon',
-            )
-        ):
-            priority += 80
-        if same_hh or any(
-            k in all_lower for k in (
-                'family_target_', 'familytrope_', 'romancetrope_', 'isdog', 'iscat',
-                'partnersincrime', 'wentonblinddatewith', 'hadsex_7days', 'hadlewddreamabout',
-            )
-        ):
-            priority += 70
-        if abs(romance) >= 20.0 or abs(friendship) >= 35.0 or any(
-            k in all_lower for k in (
-                'friendship-bff', 'friendship-good_friends', 'friendship-friend',
-                'friendship-disliked', 'friendship-despised', 'friendship-nemesis',
-            )
-        ):
-            priority += 40
-        if priority <= 0:
-            continue
-        scored.append((
-            -priority,
-            -(abs(romance) + abs(friendship)),
-            {
+            same_hh = bool(hh_id and getattr(other, 'household_id', None) == hh_id)
+            all_lower = ' '.join(bits + rev_bits).lower()
+            priority = 100 if other_id in partner_ids else 0
+            for weight, keys in _CONNECTION_PRIORITIES:
+                if any(k in all_lower for k in keys):
+                    priority += weight
+            if same_hh:
+                priority += 70
+            if abs(romance) >= 20.0 or abs(friendship) >= 35.0:
+                priority += 40
+            if priority <= 0:
+                continue
+            scored.append((-priority, -(abs(romance) + abs(friendship)), {
                 'id': str(other_id),
                 'name': other_name,
                 'same_household': same_hh,
@@ -709,8 +539,9 @@ def _sim_social_connections(info):
                 'romance': romance,
                 'bits': bits,
                 'reverse_bits': rev_bits,
-            },
-        ))
+            }))
+    except Exception:
+        _record_error()
     scored.sort(key=lambda item: (item[0], item[1]))
     return [item[2] for item in scored[:8]]
 
@@ -719,37 +550,31 @@ def _venue_snapshot():
     zone = services.current_zone()
     venue_service = getattr(zone, 'venue_service', None) if zone is not None else None
     active_venue = getattr(venue_service, 'active_venue', None) if venue_service is not None else None
-    lot = getattr(zone, 'lot', None) if zone is not None else None
     lot_name = None
-    if lot is not None and hasattr(lot, 'get_lot_name'):
-        try:
-            lot_name = lot.get_lot_name() or None
-        except Exception:
-            lot_name = None
     lot_traits = []
+    business_info = None
     try:
+        lot = getattr(zone, 'lot', None) if zone is not None else None
+        if lot is not None and hasattr(lot, 'get_lot_name'):
+            lot_name = lot.get_lot_name() or None
         zm_service = services.get_zone_modifier_service()
         if zm_service is not None and zone is not None:
             for zm in zm_service.get_zone_modifiers(zone.id):
                 zname = getattr(zm, '__name__', type(zm).__name__)
                 if zname and 'mueventapm_test' not in zname.lower():
                     lot_traits.append(zname)
-    except Exception:
-        pass
-    business_info = None
-    try:
         b_service = services.business_service()
         if b_service is not None and zone is not None:
             b_mgr = b_service.get_business_manager_for_zone(zone.id)
             if b_mgr is not None:
-                b_type = getattr(getattr(b_mgr, 'business_type', None), 'name', str(getattr(b_mgr, 'business_type', '')))
+                b_type = getattr(b_mgr, 'business_type', None)
                 business_info = {
-                    'type': b_type,
+                    'type': getattr(b_type, 'name', str(b_type)),
                     'is_open': bool(getattr(b_mgr, 'is_open', False)),
                     'is_owned_by_active': bool(getattr(b_mgr, 'owner_household_id', None) == services.active_household_id()),
                 }
     except Exception:
-        pass
+        _record_error()
     return {
         'id': getattr(active_venue, '__name__', type(active_venue).__name__) if active_venue is not None else None,
         'stbl': _string_hash(getattr(active_venue, 'display_name', None)) if active_venue is not None else None,
@@ -761,26 +586,17 @@ def _venue_snapshot():
 
 def _relationship_snapshot(actor_info, target_info):
     bits = list(actor_info.relationship_tracker.get_all_bits(target_info.sim_id))
-    bit_stbls = []
-    for bit in bits:
-        stbl = _string_hash(getattr(bit, 'display_name', None), actor_info, target_info)
-        if stbl:
-            bit_stbls.append(stbl)
     bit_names = [bit.__name__ for bit in bits]
+    bit_stbls = [s for s in (_string_hash(getattr(b, 'display_name', None), actor_info, target_info) for b in bits) if s]
     reverse_bits = []
     reverse_bit_stbls = []
-    try:
-        target_tracker = getattr(target_info, 'relationship_tracker', None)
-        if target_tracker is not None:
-            for rbit in target_tracker.get_all_bits(actor_info.sim_id):
-                rname = rbit.__name__
-                if rname not in bit_names:
-                    reverse_bits.append(rname)
-                    rstbl = _string_hash(getattr(rbit, 'display_name', None), target_info, actor_info)
-                    if rstbl:
-                        reverse_bit_stbls.append(rstbl)
-    except Exception:
-        pass
+    for rbit in target_info.relationship_tracker.get_all_bits(actor_info.sim_id):
+        if rbit.__name__ in bit_names:
+            continue
+        reverse_bits.append(rbit.__name__)
+        rstbl = _string_hash(getattr(rbit, 'display_name', None), target_info, actor_info)
+        if rstbl:
+            reverse_bit_stbls.append(rstbl)
     return {
         'friendship': round(actor_info.relationship_tracker.get_relationship_score(
             target_info.sim_id, RelationshipTrack.FRIENDSHIP_TRACK), 2),
@@ -793,33 +609,16 @@ def _relationship_snapshot(actor_info, target_info):
     }
 
 
-def _mark_english_for_sims(*sims):
-    now = time.monotonic()
-    for sim in sims:
-        if sim is not None and getattr(sim, 'sim_info', None) is not None:
-            _last_english_by_sim[sim.sim_info.sim_id] = now
-
-
-def _record_skip(reason, interaction, actor=None, target=None, extra=None, log_to_file=True):
+def _record_skip(reason, interaction, actor=None, target=None, extra=None):
     _skip_counts[reason] = _skip_counts.get(reason, 0) + 1
-    if not log_to_file and not _trace:
-        return
-    actor_name = None
-    if actor is not None and getattr(actor, 'sim_info', None) is not None:
-        actor_name = '{} {}'.format(actor.sim_info.first_name, actor.sim_info.last_name).strip()
-    target_name = None
-    if target is not None and getattr(target, 'sim_info', None) is not None:
-        target_name = '{} {}'.format(target.sim_info.first_name, target.sim_info.last_name).strip()
     rec = {
         'type': 'skipped',
         'skip_reason': reason,
         'observed_at': time.time(),
         'interaction': type(interaction).__name__,
         'interaction_stbl': _string_hash(getattr(interaction, 'display_name', None), actor, target),
-        'is_social': bool(getattr(interaction, 'is_social', False)),
-        'is_super': bool(getattr(interaction, 'is_super', False)),
-        'actor_name': actor_name,
-        'target_name': target_name,
+        'actor_name': _sim_name(actor) if actor is not None else None,
+        'target_name': _sim_name(target) if target is not None else None,
     }
     if extra:
         rec.update(extra)
@@ -847,7 +646,7 @@ def _social_participants(interaction):
 
 
 def _solo_vocal_actor(interaction):
-    """Identify solo/self vocal interactions (such as Shout Forbidden Words) by the active household."""
+    """Identify Shout Forbidden Words performed alone by an active-household Sim."""
     actor = getattr(interaction, 'sim', None)
     if actor is None or getattr(actor, 'sim_info', None) is None:
         return None
@@ -856,112 +655,73 @@ def _solo_vocal_actor(interaction):
     target = interaction.get_participant(ParticipantType.TargetSim)
     if target is not None and getattr(target, 'is_sim', False) and target.sim_info.sim_id != actor.sim_info.sim_id:
         return None
-    name_low = type(interaction).__name__.lower()
-    if name_low in _IDLE_POSTURES:
-        return None
-    stbl_hash = _string_hash(getattr(interaction, 'display_name', None), actor)
-    if stbl_hash in _SOLO_VOCAL_STBLS:
+    if _string_hash(getattr(interaction, 'display_name', None), actor) in _SOLO_VOCAL_STBLS:
         return actor
-    for sub in _SOLO_VOCAL_SUBSTRINGS:
-        if sub in name_low:
-            return actor
     return None
 
 
-def _trace_lifecycle(interaction, stage, extra=None):
-    if not _trace:
-        return
-    actor, target = _social_participants(interaction)
-    if actor is None:
-        actor = _solo_vocal_actor(interaction)
-    if actor is None:
-        return
-    target_name = None
-    if target is not None:
-        target_name = '{} {}'.format(target.sim_info.first_name, target.sim_info.last_name).strip()
-    record = {
-        'type': 'trace',
-        'stage': stage,
-        'observed_at': time.time(),
-        'interaction': type(interaction).__name__,
-        'interaction_stbl': _string_hash(getattr(interaction, 'display_name', None), actor, target),
-        'is_super': bool(getattr(interaction, 'is_super', False)),
-        'actor_name': '{} {}'.format(actor.sim_info.first_name, actor.sim_info.last_name).strip(),
-        'target_name': target_name,
-    }
-    if extra:
-        record.update(extra)
-    _record(record)
-
-
-def _observe_solo_vocal(interaction, actor, hook_stage='start', outcome_result=None):
-    global _last_shown, _last_solo_shown, _event_count, _pending
-    if _mute_simlish:
-        _apply_mute_to_info(actor.sim_info)
-    if not _enabled:
-        return
-    if hook_stage != 'start':
-        return
-    now = time.monotonic()
-    if now - _last_solo_shown < 2.0:
-        return
-    if _pending is not None and (time.time() - float(_pending.get('observed_at') or 0.0)) > 25.0:
+def _busy(interaction, actor, target=None):
+    """One exchange at a time: skip while a reply is still generating."""
+    global _pending
+    if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
         _pending = None
-    if _pending is not None:
-        _record_skip('pending_in_flight', interaction, actor, None,
-                     {'pending_event_id': _pending.get('event_id')})
-        return
-    _last_solo_shown = now
-    _last_shown = now
+    if _pending is None:
+        return False
+    _record_skip('pending_in_flight', interaction, actor, target, {'pending_event_id': _pending['event_id']})
+    return True
+
+
+def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome,
+                player_message=None):
+    global _event_count
     _event_count += 1
-    _mark_english_for_sims(actor)
     venue = _venue_snapshot()
-    interaction_name = type(interaction).__name__
-    stbl_val = _string_hash(getattr(interaction, 'display_name', None), actor)
-    if not stbl_val and 'forbidden' in interaction_name.lower():
-        stbl_val = 4013856058
     event = {
-        'type': 'solo_vocal',
-        'mode': _mode,
-        'hook_stage': hook_stage,
-        'outcome': outcome_result or 'SUCCESS',
-        'event_id': 'solo-{}-{}'.format(int(time.time() * 1000), _event_count),
+        'type': event_type,
+        'outcome': outcome,
+        'event_id': '{}{}-{}'.format(id_prefix, int(time.time() * 1000), _event_count),
         'observed_at': time.time(),
         'interaction': interaction_name,
-        'interaction_stbl': stbl_val,
-        'is_super': bool(getattr(interaction, 'is_super', False)),
+        'interaction_stbl': interaction_stbl,
         'venue': venue['id'],
         'venue_stbl': venue['stbl'],
-        'lot_name': venue.get('lot_name'),
-        'lot_traits': venue.get('lot_traits'),
-        'business': venue.get('business'),
+        'lot_name': venue['lot_name'],
+        'lot_traits': venue['lot_traits'],
+        'business': venue['business'],
         'actor': _sim_snapshot(actor),
-        'target': None,
+        'target': _sim_snapshot(target) if target is not None else None,
     }
-    if _mode == 'ai':
-        _pending = dict(event, zone_id=services.current_zone_id())
+    if target is not None:
+        event['relationship'] = _relationship_snapshot(actor.sim_info, target.sim_info)
+    if player_message is not None:
+        event['player_message'] = player_message
+    return event
+
+
+def _submit(event):
+    global _pending
+    _ensure_poller_alarm()
+    _pending = dict(event, zone_id=services.current_zone_id())
     _record(event)
-    if _mode == 'fixed':
-        actor_name = event['actor']['name']
-        line = '{}: [Banter Lab solo] ({})!'.format(actor_name, interaction_name)
-        _notify(actor_name, line, actor.sim_info, None)
-        _record({'type': 'displayed', 'mode': 'fixed', 'event_id': event['event_id'], 'text': line})
+    return event
 
 
-def _observe(interaction, hook_stage='start', outcome_result=None):
-    global _last_shown, _event_count, _pending
+def _observe(interaction, hook_stage, outcome_result=None):
     actor, target = _social_participants(interaction)
     if actor is None:
         solo_actor = _solo_vocal_actor(interaction)
-        if solo_actor is not None:
-            _observe_solo_vocal(interaction, solo_actor, hook_stage=hook_stage, outcome_result=outcome_result)
+        if solo_actor is not None and _enabled and hook_stage == 'start':
+            if _mute_simlish:
+                _apply_mute_to_info(solo_actor.sim_info)
+            if not _busy(interaction, solo_actor):
+                _submit(_make_event(
+                    'solo_vocal', 'solo-', solo_actor, None, type(interaction).__name__,
+                    _string_hash(getattr(interaction, 'display_name', None), solo_actor), 'SUCCESS'))
         return
     if _mute_simlish:
         _apply_mute_to_info(actor.sim_info)
         _apply_mute_to_info(target.sim_info)
-    if not _enabled:
-        return
-    if hook_stage != _trigger_on:
+    if not _enabled or hook_stage != 'outcome':
         return
     interaction_name = type(interaction).__name__
     if interaction_name in _PASSIVE_CONTAINERS:
@@ -971,62 +731,20 @@ def _observe(interaction, hook_stage='start', outcome_result=None):
     if interaction_name in _UNLABELLED_WAVES and not interaction_stbl:
         _record_skip('unlabelled_wave', interaction, actor, target)
         return
-    if _pending is not None and (time.time() - float(_pending.get('observed_at') or 0.0)) > 25.0:
-        _pending = None
-    if _pending is not None:
-        _record_skip('pending_in_flight', interaction, actor, target,
-                     {'pending_event_id': _pending.get('event_id')})
+    if _busy(interaction, actor, target):
         return
-    now = time.monotonic()
-    elapsed = now - _last_shown
-    if elapsed < _COOLDOWN_SECONDS:
-        _record_skip('cooldown', interaction, actor, target,
-                     {'cooldown_remaining_s': round(_COOLDOWN_SECONDS - elapsed, 2)})
-        return
-    _last_shown = now
-    _event_count += 1
-    _mark_english_for_sims(actor, target)
-    venue = _venue_snapshot()
-    event = {
-        'type': 'social',
-        'mode': _mode,
-        'hook_stage': hook_stage,
-        'outcome': outcome_result,
-        'event_id': '{}-{}'.format(int(time.time() * 1000), _event_count),
-        'observed_at': time.time(),
-        'interaction': interaction_name,
-        'interaction_stbl': interaction_stbl,
-        'is_super': bool(getattr(interaction, 'is_super', False)),
-        'venue': venue['id'],
-        'venue_stbl': venue['stbl'],
-        'lot_name': venue.get('lot_name'),
-        'lot_traits': venue.get('lot_traits'),
-        'business': venue.get('business'),
-        'actor': _sim_snapshot(actor),
-        'target': _sim_snapshot(target),
-        'relationship': _relationship_snapshot(actor.sim_info, target.sim_info),
-    }
-    if _mode == 'ai':
-        _pending = dict(event, zone_id=services.current_zone_id())
-    _record(event)
-    if _mode == 'fixed':
-        actor_name = event['actor']['name']
-        target_name = event['target']['name']
-        line = '{} to {}: [Banter Lab test] Lovely weather for a {} ({}).'.format(
-            actor_name, target_name, interaction_name, outcome_result or hook_stage)
-        _notify('Banter Lab', line, actor.sim_info, target.sim_info)
-        _record({'type': 'displayed', 'mode': 'fixed', 'event_id': event['event_id'], 'text': line})
+    _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result))
 
 
 class _ReplyPoller:
     def poll(self, _timeline_handle):
         global _enabled, _pending
-        _drain_companion_console()
-        if _enabled or _pending is not None:
-            _ensure_companion_running()
-        if _pending is None or _reply_path is None or not os.path.exists(_reply_path):
-            return
         try:
+            _drain_companion_console()
+            if _enabled or _pending is not None:
+                _ensure_companion_running()
+            if _pending is None or _reply_path is None or not os.path.exists(_reply_path):
+                return
             with open(_reply_path, encoding='utf-8-sig') as stream:
                 reply = json.load(stream)
             if reply.get('event_id') != _pending['event_id']:
@@ -1039,32 +757,20 @@ class _ReplyPoller:
                 _enabled = False
                 _notify('Banter Lab', 'Generation stopped: {}. Check the companion.'.format(reply['error']),
                         services.active_sim_info())
-            else:
-                manager = services.sim_info_manager()
-                actor_info = manager.get(int(event['actor']['id'])) if manager is not None else None
-                target_data = event.get('target')
-                target_info = None
-                if isinstance(target_data, dict) and target_data.get('id') and manager is not None:
-                    target_info = manager.get(int(target_data['id']))
-                if target_data and target_data.get('name'):
-                    title = '{} ↔ {}'.format(event['actor']['name'], target_data['name'])
-                else:
-                    title = event['actor']['name']
-                if actor_info is not None and actor_info.get_sim_instance() is not None:
-                    _mark_english_for_sims(actor_info.get_sim_instance())
-                if target_info is not None and target_info.get_sim_instance() is not None:
-                    _mark_english_for_sims(target_info.get_sim_instance())
-                tts_meta = reply.get('tts') or {}
-                audio_dur = float(tts_meta.get('duration_seconds') or 0.0)
-                if audio_dur > 0.0:
-                    timeout_ms = int(round((audio_dur + 2.0) * 1000))
-                else:
-                    est_dur = max(2.0, len(reply.get('text', '')) / 18.0)
-                    timeout_ms = int(round((est_dur + 2.0) * 1000))
-                _notify(title, reply['text'], actor_info, target_info, timeout_ms=timeout_ms)
-                _record(dict(reply, type='displayed', displayed_at=time.time(), timeout_duration_ms=timeout_ms))
+                return
+            manager = services.sim_info_manager()
+            actor_info = manager.get(int(event['actor']['id']))
+            target_data = event.get('target')
+            target_info = manager.get(int(target_data['id'])) if target_data else None
+            title = '{} ↔ {}'.format(event['actor']['name'], target_data['name']) if target_data else event['actor']['name']
+            audio_dur = float((reply.get('tts') or {}).get('duration_seconds') or 0.0)
+            if audio_dur <= 0.0:
+                audio_dur = max(2.0, len(reply.get('text', '')) / 18.0)
+            timeout_ms = int(round((audio_dur + 2.0) * 1000))
+            _notify(title, reply['text'], actor_info, target_info, timeout_ms=timeout_ms)
+            _record(dict(reply, type='displayed', displayed_at=time.time(), timeout_duration_ms=timeout_ms))
         except Exception:
-            _record({'type': 'error', 'traceback': traceback.format_exc()})
+            _record_error()
 
 
 _poller = _ReplyPoller()
@@ -1072,14 +778,7 @@ _poller = _ReplyPoller()
 
 def _ensure_poller_alarm():
     global _alarm, _reply_path
-    _ensure_companion_running()
-    if _reply_path is None:
-        bridge_config = os.path.join(_data_directory, 'bridge.json')
-        if os.path.exists(bridge_config):
-            with open(bridge_config, encoding='utf-8-sig') as stream:
-                _reply_path = json.load(stream)['reply_file']
-        else:
-            _reply_path = os.path.join(_data_directory, 'reply.json')
+    _reply_path = os.path.join(_data_directory, 'reply.json')
     if _alarm is None:
         _alarm = alarms.add_alarm_real_time(
             _poller, clock.interval_in_real_seconds(0.35), _poller.poll, repeating=True, cross_zone=True)
@@ -1093,114 +792,69 @@ def _cancel_polling():
     _pending = None
 
 
-def _resolve_chat_partner(first_name=None, last_name=None):
-    active_sim = services.get_active_sim()
-    if active_sim is None:
-        return None, None
-    manager = services.sim_info_manager()
-    if first_name and last_name and manager is not None:
-        info = manager.get_sim_info_by_name(first_name, last_name)
-        if info is not None and info.get_sim_instance() is not None:
-            return active_sim, info.get_sim_instance()
-    si_state = getattr(active_sim, 'si_state', None)
-    if si_state is not None:
-        for si in si_state:
-            if getattr(si, 'is_social', False):
-                target = si.get_participant(ParticipantType.TargetSim)
-                if target is not None and getattr(target, 'is_sim', False) and target is not active_sim:
-                    return active_sim, target
-    best_sim = None
-    best_dist = None
-    active_pos = getattr(active_sim, 'position', None)
-    for info in manager.values():
-        sim = info.get_sim_instance()
-        if sim is None or sim is active_sim:
-            continue
-        pos = getattr(sim, 'position', None)
-        if active_pos is not None and pos is not None:
-            delta = active_pos - pos
-            dist = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z
-            if best_dist is None or dist < best_dist:
-                best_dist = dist
-                best_sim = sim
-        elif best_sim is None:
-            best_sim = sim
-    return active_sim, best_sim
+def _open_text_dialog(owner_info, title, prompt, secondary_info, on_text):
+    def _on_response(dialog):
+        try:
+            text_val = dialog.text_input_responses.get('message', '').strip()
+            if getattr(dialog, 'accepted', False) and text_val:
+                on_text(text_val)
+        except Exception:
+            _record_error()
+
+    dialog = _BanterInputDialog.TunableFactory().default(
+        owner_info,
+        title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(title),
+        text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(prompt),
+    )
+    dialog.add_listener(_on_response)
+    icons = {'icon_override': IconInfoData(obj_instance=owner_info)}
+    if secondary_info is not None:
+        icons['secondary_icon_override'] = IconInfoData(obj_instance=secondary_info)
+    dialog.show_dialog(**icons)
 
 
 def _open_talk_dialog(actor_sim, target_sim):
     actor_info = actor_sim.sim_info
     target_info = target_sim.sim_info
-
-    def _on_response(dialog):
-        try:
-            text_val = dialog.text_input_responses.get('message', '').strip()
-            if not getattr(dialog, 'accepted', False) or not text_val:
-                _record({'type': 'talk_dialog_cancelled', 'observed_at': time.time()})
-                return
-            _submit_player_chat(actor_sim, target_sim, text_val)
-        except Exception:
-            _record({'type': 'error', 'traceback': traceback.format_exc()})
-
-    dialog = _BanterInputDialog.TunableFactory().default(
+    _open_text_dialog(
         actor_info,
-        title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(
-            '{} {} → {} {}'.format(
-                actor_info.first_name, actor_info.last_name,
-                target_info.first_name, target_info.last_name)),
-        text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(
-            'What does {} say to {}?'.format(actor_info.first_name, target_info.first_name)),
+        '{} → {}'.format(_sim_name(actor_info), _sim_name(target_info)),
+        'What does {} say to {}?'.format(actor_info.first_name, target_info.first_name),
+        target_info,
+        lambda text: _submit_player_chat(actor_sim, target_sim, text),
     )
-    dialog.add_listener(_on_response)
-    dialog.show_dialog(
-        icon_override=IconInfoData(obj_instance=actor_info),
-        secondary_icon_override=IconInfoData(obj_instance=target_info),
-    )
-    _record({
-        'type': 'talk_dialog_opened',
-        'observed_at': time.time(),
-        'actor': '{} {}'.format(actor_info.first_name, actor_info.last_name).strip(),
-        'target': '{} {}'.format(target_info.first_name, target_info.last_name).strip(),
-    })
 
 
 def _open_ask_self_dialog(actor_sim):
     actor_info = actor_sim.sim_info
-
-    def _on_response(dialog):
-        try:
-            text_val = dialog.text_input_responses.get('message', '').strip()
-            if not getattr(dialog, 'accepted', False) or not text_val:
-                _record({'type': 'ask_self_dialog_cancelled', 'observed_at': time.time()})
-                return
-            _submit_player_ask_self(actor_sim, text_val)
-        except Exception:
-            _record({'type': 'error', 'traceback': traceback.format_exc()})
-
-    dialog = _BanterInputDialog.TunableFactory().default(
+    _open_text_dialog(
         actor_info,
-        title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(
-            'Ask {} {}'.format(actor_info.first_name, actor_info.last_name)),
-        text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(
-            'Ask {} a question in English (or Hebrew / Russian):'.format(actor_info.first_name)),
+        'Ask {}'.format(_sim_name(actor_info)),
+        'Ask {} a question in English (or Hebrew / Russian):'.format(actor_info.first_name),
+        None,
+        lambda text: _submit_player_ask_self(actor_sim, text),
     )
-    dialog.add_listener(_on_response)
-    dialog.show_dialog(
-        icon_override=IconInfoData(obj_instance=actor_info),
-    )
-    _record({
-        'type': 'ask_self_dialog_opened',
-        'observed_at': time.time(),
-        'actor': '{} {}'.format(actor_info.first_name, actor_info.last_name).strip(),
-    })
+
+
+def _submit_player_chat(actor_sim, target_sim, message_text):
+    if _mute_simlish:
+        _apply_mute_to_info(actor_sim.sim_info)
+        _apply_mute_to_info(target_sim.sim_info)
+    return _submit(_make_event('player_chat', 'chat-', actor_sim, target_sim, 'player_direct_chat', None,
+                               'PLAYER_INITIATED', player_message=message_text))
+
+
+def _submit_player_ask_self(actor_sim, question_text):
+    if _mute_simlish:
+        _apply_mute_to_info(actor_sim.sim_info)
+    return _submit(_make_event('player_ask_self', 'ask-', actor_sim, None, 'player_ask_active_sim', None,
+                               'PLAYER_INITIATED', player_message=question_text))
 
 
 def _install_pie_menu_interaction():
     global _pie_interaction_cls, _pie_ask_self_cls
     affordance_mgr = services.affordance_manager()
-    if affordance_mgr is None:
-        return 0
-    base_cls = affordance_mgr.get(13142)
+    base_cls = affordance_mgr.get(13142) if affordance_mgr is not None else None
     if base_cls is None:
         return 0
 
@@ -1248,14 +902,14 @@ def _install_pie_menu_interaction():
                             _notify('Banter Lab', 'English Banter turned off.', actor_sim.sim_info)
                         else:
                             mute_command('on')
-                            start_ai('outcome')
+                            start_ai()
                             _notify('Banter Lab',
-                                    'English Banter is on! Sims will now speak contextual English during socials and solo vocalizations.',
+                                    'English Banter is on! Sims will now speak contextual English during socials.',
                                     actor_sim.sim_info)
                     elif actor_sim is not None and target_sim is not None and getattr(target_sim, 'is_sim', False):
                         _open_talk_dialog(actor_sim, target_sim)
                 except Exception:
-                    _record({'type': 'error', 'traceback': traceback.format_exc()})
+                    _record_error()
                 return True
 
         _pie_interaction_cls = BanterPieMenuInteraction
@@ -1299,7 +953,7 @@ def _install_pie_menu_interaction():
                     if actor_sim is not None:
                         _open_ask_self_dialog(actor_sim)
                 except Exception:
-                    _record({'type': 'error', 'traceback': traceback.format_exc()})
+                    _record_error()
                 return True
 
         _pie_ask_self_cls = BanterAskSelfPieMenuInteraction
@@ -1307,10 +961,7 @@ def _install_pie_menu_interaction():
             affordance_mgr._tuned_classes[_pie_ask_self_cls.guid64] = _pie_ask_self_cls
 
     count = 0
-    sim_info_mgr = services.sim_info_manager()
-    if sim_info_mgr is None:
-        return 0
-    for info in sim_info_mgr.values():
+    for info in services.sim_info_manager().values():
         sim = info.get_sim_instance()
         if sim is None:
             continue
@@ -1324,126 +975,22 @@ def _install_pie_menu_interaction():
     return count
 
 
-def _submit_player_chat(actor_sim, target_sim, message_text):
-    global _event_count, _pending
-    _ensure_poller_alarm()
-    _event_count += 1
-    _mark_english_for_sims(actor_sim, target_sim)
-    venue = _venue_snapshot()
-    event = {
-        'type': 'player_chat',
-        'mode': 'ai',
-        'hook_stage': 'player',
-        'outcome': 'PLAYER_INITIATED',
-        'player_message': message_text,
-        'event_id': 'chat-{}-{}'.format(int(time.time() * 1000), _event_count),
-        'observed_at': time.time(),
-        'interaction': 'player_direct_chat',
-        'interaction_stbl': None,
-        'is_super': False,
-        'venue': venue['id'],
-        'venue_stbl': venue['stbl'],
-        'lot_name': venue.get('lot_name'),
-        'lot_traits': venue.get('lot_traits'),
-        'business': venue.get('business'),
-        'actor': _sim_snapshot(actor_sim),
-        'target': _sim_snapshot(target_sim),
-        'relationship': _relationship_snapshot(actor_sim.sim_info, target_sim.sim_info),
-    }
-    _pending = dict(event, zone_id=services.current_zone_id())
-    _record(event)
-    return event
-
-
-def _submit_player_ask_self(actor_sim, question_text):
-    global _event_count, _pending
-    _ensure_poller_alarm()
-    _event_count += 1
-    _mark_english_for_sims(actor_sim)
-    venue = _venue_snapshot()
-    event = {
-        'type': 'player_ask_self',
-        'mode': 'ai',
-        'hook_stage': 'player',
-        'outcome': 'PLAYER_INITIATED',
-        'player_message': question_text,
-        'event_id': 'ask-{}-{}'.format(int(time.time() * 1000), _event_count),
-        'observed_at': time.time(),
-        'interaction': 'player_ask_active_sim',
-        'interaction_stbl': None,
-        'is_super': False,
-        'venue': venue['id'],
-        'venue_stbl': venue['stbl'],
-        'lot_name': venue.get('lot_name'),
-        'lot_traits': venue.get('lot_traits'),
-        'business': venue.get('business'),
-        'actor': _sim_snapshot(actor_sim),
-        'target': None,
-    }
-    _pending = dict(event, zone_id=services.current_zone_id())
-    _record(event)
-    return event
-
-
 _original_start = getattr(Interaction, '_banter_orig_start', Interaction._trigger_interaction_start_event)
 _original_store_outcome = getattr(Interaction, '_banter_orig_outcome', Interaction.store_result_for_outcome)
-_original_complete = getattr(Interaction, '_banter_orig_complete', Interaction._trigger_interaction_complete_test_event)
-_original_cancel = getattr(Interaction, '_banter_orig_cancel', Interaction.cancel)
 _original_zone_loaded = getattr(Zone, '_banter_orig_zone_loaded', Zone.on_loading_screen_animation_finished)
-_original_playsound_start = getattr(PlaySound, '_banter_orig_start', PlaySound.start)
 
 Interaction._banter_orig_start = _original_start
 Interaction._banter_orig_outcome = _original_store_outcome
-Interaction._banter_orig_complete = _original_complete
-Interaction._banter_orig_cancel = _original_cancel
 Zone._banter_orig_zone_loaded = _original_zone_loaded
-PlaySound._banter_orig_start = _original_playsound_start
-
-
-@functools.wraps(_original_playsound_start)
-def _on_playsound_start(self, *args, **kwargs):
-    ret = _original_playsound_start(self, *args, **kwargs)
-    try:
-        if getattr(self, '_is_vox', False) and (_enabled or _trace):
-            target_obj = getattr(self, 'target', None)
-            sim_info = getattr(target_obj, 'sim_info', None)
-            if sim_info is not None and sim_info.household_id == services.active_household_id():
-                _vox_stats['total'] = _vox_stats.get('total', 0) + 1
-                now = time.monotonic()
-                recent_en = (now - _last_english_by_sim.get(sim_info.sim_id, 0.0)) < 8.0
-                pending_match = (
-                    _pending is not None and (
-                        str(sim_info.sim_id) == str((_pending.get('actor') or {}).get('id'))
-                        or str(sim_info.sim_id) == str((_pending.get('target') or {}).get('id'))
-                    )
-                )
-                covered = bool(recent_en or pending_match)
-                if covered:
-                    _vox_stats['covered_by_english'] = _vox_stats.get('covered_by_english', 0) + 1
-                else:
-                    _vox_stats['unreplaced'] = _vox_stats.get('unreplaced', 0) + 1
-                _record({
-                    'type': 'vox_attempt',
-                    'observed_at': time.time(),
-                    'sim_name': '{} {}'.format(sim_info.first_name, sim_info.last_name).strip(),
-                    'sound_name': getattr(self, '_sound_name', None),
-                    'sound_id': getattr(self, '_sound_id', None),
-                    'covered_by_english': covered,
-                    'mute_simlish': _mute_simlish,
-                })
-    except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
-    return ret
 
 
 @functools.wraps(_original_start)
 def _on_interaction_start(self, *args, **kwargs):
     result = _original_start(self, *args, **kwargs)
     try:
-        _trace_lifecycle(self, 'start')
-        _observe(self, hook_stage='start')
+        _observe(self, 'start')
     except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
+        _record_error()
     return result
 
 
@@ -1451,47 +998,14 @@ def _on_interaction_start(self, *args, **kwargs):
 def _on_store_outcome(self, outcome, result, *args, **kwargs):
     ret = _original_store_outcome(self, outcome, result, *args, **kwargs)
     try:
-        outcome_name = getattr(result, 'name', str(result))
-        _trace_lifecycle(self, 'outcome', {'outcome': outcome_name, 'outcome_type': type(outcome).__name__})
-        _observe(self, hook_stage='outcome', outcome_result=outcome_name)
+        _observe(self, 'outcome', outcome_result=getattr(result, 'name', str(result)))
     except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
-    return ret
-
-
-@functools.wraps(_original_complete)
-def _on_interaction_complete(self, *args, **kwargs):
-    ret = _original_complete(self, *args, **kwargs)
-    try:
-        outcome_val = getattr(self, 'global_outcome_result', None)
-        _trace_lifecycle(self, 'complete', {
-            'global_outcome_result': getattr(outcome_val, 'name', str(outcome_val)) if outcome_val is not None else None,
-        })
-    except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
-    return ret
-
-
-@functools.wraps(_original_cancel)
-def _on_interaction_cancel(self, finishing_type, cancel_reason_msg=None, ignore_must_run=False, *args, **kwargs):
-    ret = _original_cancel(
-        self, finishing_type, cancel_reason_msg=cancel_reason_msg,
-        ignore_must_run=ignore_must_run, *args, **kwargs)
-    try:
-        if ret:
-            _trace_lifecycle(self, 'cancel', {
-                'finishing_type': getattr(finishing_type, 'name', str(finishing_type)),
-            })
-    except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
+        _record_error()
     return ret
 
 
 Interaction._trigger_interaction_start_event = _on_interaction_start
 Interaction.store_result_for_outcome = _on_store_outcome
-Interaction._trigger_interaction_complete_test_event = _on_interaction_complete
-Interaction.cancel = _on_interaction_cancel
-PlaySound.start = _on_playsound_start
 
 
 @functools.wraps(_original_zone_loaded)
@@ -1500,7 +1014,7 @@ def _on_zone_loaded(self, *args, **kwargs):
     try:
         _load_settings()
         count = _install_pie_menu_interaction()
-        if _enabled and _mode == 'ai':
+        if _enabled:
             _ensure_companion_running()
         if _mute_simlish:
             _sync_zone_mute()
@@ -1512,397 +1026,146 @@ def _on_zone_loaded(self, *args, **kwargs):
             'sims': count,
             'enabled': _enabled,
             'mute_simlish': _mute_simlish,
-            'mode': _mode,
             'observed_at': time.time(),
         })
     except Exception:
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
+        _record_error()
     return ret
 
 
 Zone.on_loading_screen_animation_finished = _on_zone_loaded
 
 
-def _read_cost_summary():
-    cost_path = os.path.join(_data_directory, 'cost_summary.json')
-    if not os.path.exists(cost_path):
-        return None
-    try:
-        with open(cost_path, encoding='utf-8-sig') as stream:
-            return json.load(stream)
-    except Exception:
-        return None
-
-
-@sims4.commands.Command('banter.start', command_type=sims4.commands.CommandType.Live)
-def start(trigger: str = 'start', _connection=None):
-    global _enabled, _last_shown, _mode, _trigger_on
-    _cancel_polling()
-    _enabled = True
-    _mode = 'fixed'
-    _trigger_on = 'outcome' if trigger == 'outcome' else 'start'
-    _last_shown = 0
-    _save_settings()
-    if _connection is not None:
-        sims4.commands.CheatOutput(_connection)(
-            'Banter Lab observing social interactions (trigger={}).'.format(_trigger_on))
-    _notify('Banter Lab',
-            'Social observation is on (trigger={}). Use banter.stop to turn it off.'.format(_trigger_on),
-            services.active_sim_info())
-    _record({'type': 'started', 'mode': _mode, 'trigger_on': _trigger_on,
-             'observed_at': time.time(), 'active_sim': _sim_snapshot(services.get_active_sim())})
-
-
 @sims4.commands.Command('banter.ai', command_type=sims4.commands.CommandType.Live)
-def start_ai(trigger: str = 'outcome', _connection=None):
-    global _enabled, _last_shown, _mode, _trigger_on, _reply_path
-    _reply_path = None
+def start_ai(_connection=None):
+    global _enabled
     _cancel_polling()
     _ensure_poller_alarm()
     _enabled = True
-    _mode = 'ai'
-    _trigger_on = 'start' if trigger == 'start' else 'outcome'
-    _last_shown = 0
     _save_settings()
-    alive, hb = _companion_heartbeat()
-    comp_state = 'running (pid={})'.format(hb.get('pid')) if (alive and hb) else 'auto-starting'
-    _console_print(
-        'Banter Lab: generated mode (trigger={}, companion={}).'.format(_trigger_on, comp_state),
-        _connection=_connection)
-    _record({'type': 'started', 'mode': _mode, 'trigger_on': _trigger_on,
-             'observed_at': time.time(), 'active_sim': _sim_snapshot(services.get_active_sim()),
-             'reply_file': _reply_path})
-
-
-@sims4.commands.Command('banter.say', command_type=sims4.commands.CommandType.Live)
-def say_command(*words, _connection=None):
-    """Send a direct player-authored line from the active Sim to the nearest or conversing Sim."""
-    output = sims4.commands.CheatOutput(_connection)
-    message_text = ' '.join(words).strip()
-    if not message_text:
-        output('Usage: banter.say <what your Sim says>')
-        return
-    actor_sim, target_sim = _resolve_chat_partner()
-    if actor_sim is None or target_sim is None:
-        output('No nearby Sim found to talk to.')
-        return
-    event = _submit_player_chat(actor_sim, target_sim, message_text)
-    output('Sent to {} {}: "{}" (event={})'.format(
-        target_sim.sim_info.first_name, target_sim.sim_info.last_name,
-        message_text, event['event_id']))
-
-
-@sims4.commands.Command('banter.ask', command_type=sims4.commands.CommandType.Live)
-def ask_self_command(*words, _connection=None):
-    """Ask the active Sim a direct question in English (or open the Ask Self modal if no question given)."""
-    output = sims4.commands.CheatOutput(_connection)
-    active_sim = services.get_active_sim()
-    if active_sim is None:
-        output('No active Sim found.')
-        return
-    question_text = ' '.join(words).strip()
-    if not question_text:
-        _open_ask_self_dialog(active_sim)
-        output('Opened Ask Self dialog for {} {}.'.format(
-            active_sim.sim_info.first_name, active_sim.sim_info.last_name))
-        return
-    event = _submit_player_ask_self(active_sim, question_text)
-    output('Asked {} {}: "{}" (event={})'.format(
-        active_sim.sim_info.first_name, active_sim.sim_info.last_name,
-        question_text, event['event_id']))
-
-
-@sims4.commands.Command('banter.solo', command_type=sims4.commands.CommandType.Live)
-def solo_vocal_command(*words, _connection=None):
-    """Trigger a solo vocal outburst (defaults to Shout Forbidden Words) on the active Sim."""
-    global _event_count, _pending
-    output = sims4.commands.CheatOutput(_connection)
-    active_sim = services.get_active_sim()
-    if active_sim is None:
-        output('No active Sim found.')
-        return
-    _ensure_poller_alarm()
-    _event_count += 1
-    _mark_english_for_sims(active_sim)
-    action_name = ' '.join(words).strip() or 'si_Trait_Manners_ShoutForbiddenWords'
-    stbl_val = 4013856058 if 'forbidden' in action_name.lower() else None
-    venue = _venue_snapshot()
-    event = {
-        'type': 'solo_vocal',
-        'mode': 'ai',
-        'hook_stage': 'start',
-        'outcome': 'SUCCESS',
-        'event_id': 'solo-{}-{}'.format(int(time.time() * 1000), _event_count),
-        'observed_at': time.time(),
-        'interaction': action_name,
-        'interaction_stbl': stbl_val,
-        'is_super': True,
-        'venue': venue['id'],
-        'venue_stbl': venue['stbl'],
-        'lot_name': venue.get('lot_name'),
-        'lot_traits': venue.get('lot_traits'),
-        'business': venue.get('business'),
-        'actor': _sim_snapshot(active_sim),
-        'target': None,
-    }
-    _pending = dict(event, zone_id=services.current_zone_id())
-    _record(event)
-    output('Triggered solo vocal {} for {} {} (event={})'.format(
-        action_name, active_sim.sim_info.first_name, active_sim.sim_info.last_name, event['event_id']))
+    _ensure_companion_running()
+    _console_print('Banter Lab on (companion pid={}).'.format(
+        _companion_proc.pid if _companion_alive() else None), _connection=_connection)
+    _record({'type': 'started', 'observed_at': time.time()})
 
 
 @sims4.commands.Command('banter.talk', command_type=sims4.commands.CommandType.Live)
 def talk_dialog_command(first_name: str = '', last_name: str = '', _connection=None):
-    """Open an in-game text input modal to speak to a nearby or named Sim."""
-    output = sims4.commands.CheatOutput(_connection)
-    actor_sim, target_sim = _resolve_chat_partner(first_name or None, last_name or None)
-    if actor_sim is None or target_sim is None:
-        output('No nearby Sim found to talk to.')
+    """Open the text-input modal to speak as the active Sim to a named Sim."""
+    active_sim = services.get_active_sim()
+    info = services.sim_info_manager().get_sim_info_by_name(first_name, last_name) if first_name else None
+    target_sim = info.get_sim_instance() if info is not None else None
+    if active_sim is None or target_sim is None:
+        _console_print('Usage: banter.talk <first> <last> (the Sim must be on this lot).', _connection=_connection)
         return
-    _open_talk_dialog(actor_sim, target_sim)
-    output('Opened talk dialog for {} → {}.'.format(
-        actor_sim.sim_info.first_name, target_sim.sim_info.first_name))
+    _open_talk_dialog(active_sim, target_sim)
 
 
-@sims4.commands.Command('banter.menu', command_type=sims4.commands.CommandType.Live)
-def menu_command(_connection=None):
-    """Ensure the Banter Lab pie-menu interactions are attached to instanced Sims."""
-    count = _install_pie_menu_interaction()
-    _record({'type': 'pie_menu_installed', 'sims': count, 'observed_at': time.time()})
-    if _connection is not None:
-        sims4.commands.CheatOutput(_connection)('Banter Lab pie-menu interactions installed on {} Sims.'.format(count))
+@sims4.commands.Command('banter.ask', command_type=sims4.commands.CommandType.Live)
+def ask_self_command(*words, _connection=None):
+    """Ask the active Sim a question (or open the Ask modal if no question is given)."""
+    active_sim = services.get_active_sim()
+    if active_sim is None:
+        _console_print('No active Sim found.', _connection=_connection)
+        return
+    question_text = ' '.join(words).strip()
+    if not question_text:
+        _open_ask_self_dialog(active_sim)
+        return
+    event = _submit_player_ask_self(active_sim, question_text)
+    _console_print('Asked {}: "{}" (event={})'.format(_sim_name(active_sim), question_text, event['event_id']),
+                   _connection=_connection)
 
 
 @sims4.commands.Command('banter.mute', command_type=sims4.commands.CommandType.Live)
 def mute_command(state: str = 'on', _connection=None):
-    """Dynamically silence or restore Simlish voice_actor on instanced Sims in the zone."""
+    """Silence or restore Simlish voice_actor on instanced Sims in the zone."""
     global _mute_simlish
     _mute_simlish = state.lower() not in ('off', '0', 'false', 'stop')
     _save_settings()
     count = _sync_zone_mute()
-    active_info = services.active_sim_info()
-    _record({
-        'type': 'mute_state',
-        'mute_simlish': _mute_simlish,
-        'affected_sims': count,
-        'active_sim_voice_actor_raw': int(getattr(active_info, 'voice_actor', 0)) if active_info else None,
-        'active_sim_voice_actor_preserved': _true_voice_actor(active_info) if active_info else None,
-        'observed_at': time.time(),
-    })
-    if _connection is not None:
-        sims4.commands.CheatOutput(_connection)(
-            'Banter Lab Simlish mute={} (updated {} Sims).'.format(_mute_simlish, count))
-
-
-@sims4.commands.Command('banter.trace', command_type=sims4.commands.CommandType.Live)
-def trace_command(state: str = 'on', _connection=None):
-    global _trace
-    _trace = state.lower() not in ('off', '0', 'false', 'stop')
-    if _connection is not None:
-        sims4.commands.CheatOutput(_connection)('Banter Lab lifecycle trace={}.'.format(_trace))
-    _record({'type': 'trace_state', 'enabled': _trace, 'observed_at': time.time()})
+    _record({'type': 'mute_state', 'mute_simlish': _mute_simlish, 'affected_sims': count, 'observed_at': time.time()})
+    _console_print('Banter Lab Simlish mute={} (updated {} Sims).'.format(_mute_simlish, count), _connection=_connection)
 
 
 @sims4.commands.Command('banter.stop', command_type=sims4.commands.CommandType.Live)
 def stop(_connection=None):
-    global _enabled, _trace, _mute_simlish, _pending
+    global _enabled, _mute_simlish, _pending
     _enabled = False
-    _trace = False
     _pending = None
     if _mute_simlish:
         _mute_simlish = False
         _sync_zone_mute()
     _save_settings()
-    if _connection is not None:
-        _console_print('Banter Lab stopped and Simlish voices restored.', _connection=_connection)
+    _console_print('Banter Lab stopped and Simlish voices restored.', _connection=_connection)
 
 
 @sims4.commands.Command('banter.logs', command_type=sims4.commands.CommandType.Live)
 def logs_command(mode: str = 'tail', _connection=None):
-    """Stream companion stdout logs to the game console (`on`/`off`) or print recent lines (`tail`)."""
+    """Stream companion logs to the cheat console (`on`/`off`) or print recent lines (`tail`)."""
     global _console_logging
     m = (mode or 'tail').lower().strip()
-    if m in ('on', '1', 'true'):
-        _console_logging = True
+    if m in ('on', '1', 'true', 'off', '0', 'false'):
+        _console_logging = m in ('on', '1', 'true')
         _save_settings()
-        _ensure_poller_alarm()
-        _console_print('Banter Lab console log streaming=True.', _connection=_connection)
-        _drain_companion_console(force_tail=5, _connection=_connection)
-    elif m in ('off', '0', 'false'):
-        _console_logging = False
-        _save_settings()
-        _console_print('Banter Lab console log streaming=False.', _connection=_connection)
-    else:
-        count = _drain_companion_console(force_tail=10, _connection=_connection)
-        if count == 0:
-            _console_print('No companion console logs recorded yet.', _connection=_connection)
-
-
-@sims4.commands.Command('banter.companion', command_type=sims4.commands.CommandType.Live)
-def companion_command(action: str = 'status', _connection=None):
-    """Check or restart the background companion.py process."""
-    act = (action or 'status').lower().strip()
-    if act in ('restart', 'start', 'spawn'):
-        ok = _ensure_companion_running(force=True, _connection=_connection)
-        _ensure_poller_alarm()
-        if not ok:
-            _console_print('Failed to spawn companion.py; check BanterLabData/events.jsonl.', _connection=_connection)
+        _console_print('Banter Lab console log streaming={}.'.format(_console_logging), _connection=_connection)
         return
-    alive, hb = _companion_heartbeat()
-    if alive and hb:
-        age = round(time.time() - float(hb.get('ts') or 0.0), 1)
-        _console_print(
-            'Companion: alive=True, pid={}, status={}, model={}, tts={}, heartbeat_age={}s'.format(
-                hb.get('pid'), hb.get('status'), hb.get('model'), hb.get('tts_engine'), age),
-            _connection=_connection)
-    else:
-        _console_print('Companion: alive=False (spawning now...)', _connection=_connection)
-        _ensure_companion_running(force=True, _connection=_connection)
+    if _drain_companion_console(force_tail=10, _connection=_connection) == 0:
+        _console_print('No companion console logs recorded yet.', _connection=_connection)
 
 
 @sims4.commands.Command('banter.status', command_type=sims4.commands.CommandType.Live)
 def status(_connection=None):
-    cost = _read_cost_summary() or {}
-    sess_usd = (cost.get('session') or {}).get('total_usd', 0.0)
-    cum_usd = (cost.get('cumulative') or {}).get('total_usd', 0.0)
-    vox_total = _vox_stats.get('total', 0)
-    vox_cov = _vox_stats.get('covered_by_english', 0)
-    vox_pct = round(100.0 * vox_cov / vox_total, 1) if vox_total else 100.0
-    alive, hb = _companion_heartbeat()
-    comp_pid = hb.get('pid') if (alive and hb) else None
-    if _connection is not None:
-        _console_print(
-            'Banter Lab: enabled={}, mute={}, companion_pid={}, observed={}, vox_covered={}/{} ({}%), skipped={}, cost(session=${:.4f}, total=${:.4f})'.format(
-                _enabled, _mute_simlish, comp_pid, _event_count, vox_cov, vox_total, vox_pct, _skip_counts, sess_usd, cum_usd),
-            _connection=_connection)
-    nearby = []
-    for info in services.sim_info_manager().values():
-        sim = info.get_sim_instance()
-        if sim is not None:
-            nearby.append({'id': str(info.sim_id), 'name': '{} {}'.format(info.first_name, info.last_name)})
+    cost_path = os.path.join(_data_directory, 'cost_summary.json')
+    cost = {}
+    if os.path.exists(cost_path):
+        with open(cost_path, encoding='utf-8-sig') as stream:
+            cost = json.load(stream)
+    _console_print(
+        'Banter Lab: enabled={}, mute={}, companion_alive={}, observed={}, skipped={}, '
+        'cost(session=${:.4f}, total=${:.4f})'.format(
+            _enabled, _mute_simlish, _companion_alive(), _event_count, _skip_counts,
+            cost.get('session_usd', 0.0), cost.get('total_usd', 0.0)),
+        _connection=_connection)
+    active_sim = services.get_active_sim()
     _record({
         'type': 'status',
         'enabled': _enabled,
-        'trace': _trace,
         'mute_simlish': _mute_simlish,
-        'companion_alive': alive,
-        'companion_heartbeat': hb,
-        'mode': _mode,
-        'trigger_on': _trigger_on,
+        'companion_alive': _companion_alive(),
         'observed_count': _event_count,
         'skip_counts': dict(_skip_counts),
-        'vox_stats': dict(_vox_counts if hasattr(sys.modules[__name__], '_vox_counts') else _vox_stats),
         'cost_summary': cost,
         'venue': _venue_snapshot(),
-        'active_sim': _sim_snapshot(services.get_active_sim()) if services.get_active_sim() else None,
-        'nearby': nearby,
+        'active_sim': _sim_snapshot(active_sim) if active_sim is not None else None,
+        'nearby': [_sim_name(info) for info in services.sim_info_manager().values()
+                   if info.get_sim_instance() is not None],
     })
 
 
 @sims4.commands.Command('banter.reload', command_type=sims4.commands.CommandType.Live)
 def reload_command(_connection=None):
     """Hot-reload banter_lab from BanterLab.ts4script without restarting The Sims 4."""
-    output = sims4.commands.CheatOutput(_connection)
     try:
         _cancel_polling()
         zipimport._zip_directory_cache.clear()
         mod = importlib.reload(sys.modules[__name__])
         count = mod._install_pie_menu_interaction()
-        output('Banter Lab hot-reloaded cleanly (pie menu attached to {} Sims).'.format(count))
+        _console_print('Banter Lab hot-reloaded (pie menu attached to {} Sims).'.format(count), _connection=_connection)
     except Exception as exc:
-        output('Reload failed: {}'.format(exc))
-        _record({'type': 'error', 'traceback': traceback.format_exc()})
-
-
-@sims4.commands.Command('banter.summon', command_type=sims4.commands.CommandType.Live)
-def summon(first_name: str, last_name: str, _connection=None):
-    """Test-save setup only; wait for the NPC before requesting a social."""
-    info = services.sim_info_manager().get_sim_info_by_name(first_name, last_name)
-    if info is None:
-        sims4.commands.CheatOutput(_connection)('No Sim found with that name.')
-        return
-    SimSpawner.load_sim(info.sim_id)
-    _record({'type': 'summon_requested', 'id': str(info.sim_id),
-             'name': '{} {}'.format(info.first_name, info.last_name)})
-    sims4.commands.CheatOutput(_connection)('Requested {} {}. Use banter.status to inspect arrivals.'.format(
-        info.first_name, info.last_name))
-
-
-@sims4.commands.Command('banter.test', command_type=sims4.commands.CommandType.Live)
-def test_notification(_connection=None):
-    active_info = services.active_sim_info()
-    partner_info = None
-    for info in services.sim_info_manager().values():
-        if info.get_sim_instance() is not None and info is not active_info:
-            partner_info = info
-            break
-    title = 'Banter Lab'
-    if active_info is not None and partner_info is not None:
-        title = '{} {} ↔ {} {}'.format(
-            active_info.first_name, active_info.last_name,
-            partner_info.first_name, partner_info.last_name)
-    _notify(title,
-            'Alex: Did you just check whether the silverware is real silver?\n'
-            'Partner: I call it appreciating the table setting.',
-            active_info, partner_info)
-    _record({'type': 'test_notification_sent', 'observed_at': time.time(),
-             'has_secondary_icon': partner_info is not None})
-    sims4.commands.CheatOutput(_connection)('Speech notification sent.')
-
-
-@sims4.commands.Command('banter.audio', command_type=sims4.commands.CommandType.Live)
-def test_audio(mode: str = 'hello', _connection=None):
-    """Manual fixed-resource or vox experiment; neither generates speech nor chooses a social."""
-    global _audio_probe
-    output = sims4.commands.CheatOutput(_connection)
-    if mode not in ('hello', 'control', 'vox', 'stop'):
-        output('Use banter.audio hello, control, vox, or stop.')
-        return
-    if _audio_probe is not None:
-        _audio_probe.stop()
-        _audio_probe = None
-    if mode == 'stop':
-        output('Audio probe stopped.')
-        return
-    active_sim = services.get_active_sim()
-    if mode == 'vox':
-        _audio_probe = PlaySound(
-            active_sim, sound_id=0, sound_name='vo_expr_greet_angry_25f',
-            is_vox=True, joint_name_hash=None, play_on_active_sim_only=False, immediate=True)
-        _audio_probe.start()
-        _record({
-            'type': 'audio_probe_requested',
-            'mode': 'vox',
-            'sound_name': 'vo_expr_greet_angry_25f',
-            'is_vox': True,
-            'mute_simlish': _mute_simlish,
-            'voice_actor_raw': int(getattr(active_sim.sim_info, 'voice_actor', 0)),
-            'observed_at': time.time(),
-        })
-        output('Requested vox audio probe (mute_simlish={}).'.format(_mute_simlish))
-        return
-    sound_id = 0xAE9960DCFFD5C32E if mode == 'hello' else 0x04A64CD44542ACEC
-    _audio_probe = PlaySound(
-        active_sim, sound_id=sound_id, sound_name=None, is_vox=False,
-        joint_name_hash=None, play_on_active_sim_only=False, immediate=True)
-    _audio_probe.start()
-    _record({'type': 'audio_probe_requested', 'mode': mode,
-             'sound_id': '{:016X}'.format(sound_id), 'observed_at': time.time()})
-    output('Requested {} audio probe; audible playback still needs verification.'.format(mode))
+        _console_print('Reload failed: {}'.format(exc), _connection=_connection)
+        _record_error()
 
 
 _load_settings()
 _load_original_voice_actors()
 
-try:
-    if services.current_zone() is not None:
-        _install_pie_menu_interaction()
-        if _enabled and _mode == 'ai':
-            _ensure_companion_running()
-        if _mute_simlish:
-            _sync_zone_mute()
-        _ensure_poller_alarm()
-except Exception:
-    pass
+if services.current_zone() is not None:
+    _install_pie_menu_interaction()
+    if _enabled:
+        _ensure_companion_running()
+    if _mute_simlish:
+        _sync_zone_mute()
+    _ensure_poller_alarm()
 
 _record({'type': 'loaded', 'observed_at': time.time(), 'enabled': _enabled})

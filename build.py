@@ -265,7 +265,8 @@ def main():
 
     if DEFAULT_DEPLOY_DIR.parent.exists():
         DEFAULT_DEPLOY_DIR.mkdir(parents=True, exist_ok=True)
-        assets = [output, root / 'companion.py', root / 'prompt.txt']
+        # companion.py and prompt.txt run from this repository; the game starts them from here.
+        assets = [output]
         if built_ui is not None:
             assets.append(built_ui)
         for asset in assets:

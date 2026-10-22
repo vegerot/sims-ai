@@ -1,28 +1,27 @@
 """Generate banter and realistic AI voices outside the game's legacy Python 3.7 thread.
 
-Uses the checked-in project OpenRouter API key (DEFAULT_OPENROUTER_API_KEY) by default,
-tracks session and cumulative costs (cost_summary.json + /api/v1/key), supports
-1-speaker (solo_vocal, player_ask_self) and 2-speaker (social, player_chat) scenes,
-and synthesizes trilingual (English / Hebrew / Russian) neural speech via openai/gpt-audio-mini.
+The game mod starts this process (`--data-directory`, `--parent-pid`); it exits when the game exits.
+It tails the game's events.jsonl, writes reply.json, synthesizes trilingual (English / Hebrew / Russian)
+speech with openai/gpt-audio-mini, and plays it when the game logs `displayed`.
+`--once scene.json` generates text for one captured event (for offline prompt experiments).
 """
 
 import argparse
 import base64
 from concurrent.futures import ThreadPoolExecutor
 import ctypes
-import html
 import json
+import msvcrt
 import os
 from pathlib import Path
 import random
 import re
 import struct
-import subprocess
-import sys
 import time
 import urllib.error
 import urllib.request
 import wave
+import winsound
 import zlib
 
 
@@ -30,13 +29,16 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_GAME_DIR = Path(r'C:\Program Files\EA Games\The Sims 4')
 DEFAULT_MODS_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods')
 STBL_CACHE_PATH = ROOT / '.local' / 'stbl_en_us.json'
-DEFAULT_OPENROUTER_API_KEY = (
-    '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'
-)
-DEFAULT_TTS_MODEL = 'openai/gpt-audio-mini'
+TTS_DIR = ROOT / '.local' / 'tts'
+LOCK_PATH = ROOT / '.local' / 'companion.lock'
+# Capped ($50) key dedicated to this project, so the key's own usage is the project's total cost.
+OPENROUTER_API_KEY = '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'
+CHAT_MODEL = 'openai/gpt-6-luna'
+REASONING_EFFORT = 'none'
+TTS_MODEL = 'openai/gpt-audio-mini'
+MULTILINGUAL_CHANCE = 0.12
 
 _stbl_cache: dict[int, str] | None = None
-_tts_worker: subprocess.Popen | None = None
 _sim_voice_assignments: dict[str, str] = {}
 
 FEMALE_OPENROUTER_VOICES = ('coral', 'nova', 'shimmer', 'sage', 'ballad', 'alloy')
@@ -174,14 +176,12 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     global _stbl_cache
     if _stbl_cache is not None:
         return _stbl_cache
-    fallback_cache = Path(r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\.local\stbl_en_us.json')
-    for candidate in (STBL_CACHE_PATH, fallback_cache):
-        if candidate.exists():
-            _stbl_cache = {
-                int(k): v
-                for k, v in json.loads(candidate.read_text(encoding='utf-8')).items()
-            }
-            return _stbl_cache
+    if STBL_CACHE_PATH.exists():
+        _stbl_cache = {
+            int(k): v
+            for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()
+        }
+        return _stbl_cache
     strings: dict[int, str] = {}
     if game_dir.exists():
         for pkg in sorted(game_dir.rglob('Strings_ENG_US.package')):
@@ -759,7 +759,8 @@ class MemoryStore:
         self.data_dir = data_dir or (ROOT / '.local')
         self.path = self.data_dir / 'memories.json'
         self.pairs: dict[str, list[dict]] = {}
-        self._load_or_seed()
+        if self.path.exists():
+            self.pairs = json.loads(self.path.read_text(encoding='utf-8-sig'))['pairs']
 
     @staticmethod
     def make_key(actor_name: str, target_name: str | None = None) -> str:
@@ -768,55 +769,6 @@ class MemoryStore:
         if t and t != a:
             return ' :: '.join(sorted((a, t)))
         return f'solo::{a}'
-
-    def _load_or_seed(self) -> None:
-        if self.path.exists():
-            try:
-                raw = json.loads(self.path.read_text(encoding='utf-8-sig'))
-                if isinstance(raw, dict) and isinstance(raw.get('pairs'), dict):
-                    self.pairs = raw['pairs']
-                    return
-            except Exception:
-                pass
-        events_path = self.data_dir / 'events.jsonl'
-        if not events_path.exists():
-            return
-        by_id: dict[str, dict] = {}
-        try:
-            for line in events_path.read_text(encoding='utf-8', errors='replace').splitlines():
-                try:
-                    ev = json.loads(line)
-                except Exception:
-                    continue
-                etype = ev.get('type')
-                eid = str(ev.get('event_id') or '')
-                if etype in ('social', 'player_chat', 'solo_vocal', 'player_ask_self') and eid:
-                    by_id[eid] = ev
-                elif etype == 'displayed' and eid and ev.get('text'):
-                    src = by_id.get(eid) or {}
-                    actor = src.get('actor') or {}
-                    target = src.get('target') if isinstance(src.get('target'), dict) else None
-                    aname = str(actor.get('name') or '').strip()
-                    tname = str(target.get('name') or '').strip() if target else ''
-                    if not aname:
-                        continue
-                    key = self.make_key(aname, tname)
-                    lot = src.get('lot_name') or resolve_stbl(src.get('venue_stbl'), actor, target) or src.get('venue')
-                    inter = resolve_stbl(src.get('interaction_stbl'), actor, target) or src.get('interaction')
-                    lst = self.pairs.setdefault(key, [])
-                    lst.append({
-                        'ts': round(float(ev.get('observed_at') or time.time()), 1),
-                        'lot': lot,
-                        'interaction': inter,
-                        'outcome': src.get('outcome'),
-                        'text': str(ev.get('text')).strip(),
-                    })
-                    if len(lst) > 8:
-                        del lst[:-8]
-            if self.pairs:
-                self.save()
-        except Exception:
-            pass
 
     def get_memory(self, actor_name: str, target_name: str | None = None, limit: int = 4) -> list[dict]:
         key = self.make_key(actor_name, target_name)
@@ -854,128 +806,30 @@ class MemoryStore:
 
 
 class CostTracker:
-    """Track per-call, per-session, and cumulative OpenRouter spend (text + TTS)."""
+    """Session cost = sum of per-call `usage.cost`; total cost = the dedicated key's usage on OpenRouter."""
 
-    def __init__(self, data_dir: Path | None, api_key: str):
-        self.api_key = api_key
-        self.data_dir = data_dir or (ROOT / '.local')
-        self.summary_path = self.data_dir / 'cost_summary.json'
-        self.session_started_at = time.time()
-        self.session_chat_usd = 0.0
-        self.session_tts_usd = 0.0
-        self.session_chat_calls = 0
-        self.session_tts_calls = 0
-        self.session_exchanges = 0
-        self.historical_chat_usd = 0.0
-        self.historical_tts_usd = 0.0
-        self.historical_chat_calls = 0
-        self.historical_tts_calls = 0
-        self.historical_exchanges = 0
-        self.key_info: dict = {}
-        self._load_or_seed_baseline()
-        self.refresh_key_info()
-
-    def _load_or_seed_baseline(self):
-        if self.summary_path.exists():
-            try:
-                saved = json.loads(self.summary_path.read_text(encoding='utf-8'))
-                cum = saved.get('cumulative') or {}
-                self.historical_chat_usd = float(cum.get('chat_usd', 0.0))
-                self.historical_tts_usd = float(cum.get('tts_usd', 0.0))
-                self.historical_chat_calls = int(cum.get('chat_calls', 0))
-                self.historical_tts_calls = int(cum.get('tts_calls', 0))
-                self.historical_exchanges = int(cum.get('exchanges', 0))
-                return
-            except Exception:
-                pass
-        events_path = self.data_dir / 'events.jsonl'
-        if events_path.exists():
-            for line in events_path.read_text(encoding='utf-8', errors='replace').splitlines():
-                try:
-                    ev = json.loads(line)
-                except Exception:
-                    continue
-                usage = ev.get('usage')
-                if isinstance(usage, dict) and 'cost' in usage:
-                    self.historical_chat_usd += float(usage.get('cost') or 0.0)
-                    self.historical_chat_calls += 1
-                    self.historical_exchanges += 1
-                tts_info = ev.get('tts')
-                if isinstance(tts_info, dict) and 'tts_cost_usd' in tts_info:
-                    self.historical_tts_usd += float(tts_info.get('tts_cost_usd') or 0.0)
-                    self.historical_tts_calls += int(tts_info.get('tts_calls', 1))
-
-    def refresh_key_info(self) -> dict:
+    def __init__(self, data_dir: Path):
+        self.summary_path = data_dir / 'cost_summary.json'
         req = urllib.request.Request(
-            'https://openrouter.ai/api/v1/key',
-            headers={'Authorization': f'Bearer {self.api_key}'},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                data = json.loads(resp.read().decode('utf-8')).get('data') or {}
-            self.key_info = {
-                'label': data.get('label'),
-                'usage_total_usd': round(float(data.get('usage') or 0.0), 6),
-                'usage_daily_usd': round(float(data.get('usage_daily') or 0.0), 6),
-                'limit_usd': data.get('limit'),
-                'limit_remaining_usd': round(float(data.get('limit_remaining') or 0.0), 6)
-                if data.get('limit_remaining') is not None else None,
-            }
-        except Exception:
-            pass
-        return self.key_info
+            'https://openrouter.ai/api/v1/key', headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}'})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            key = json.loads(resp.read().decode('utf-8'))['data']
+        self.key_usage_at_start = float(key['usage'])
+        self.key_limit_remaining = key.get('limit_remaining')
+        self.session_usd = 0.0
+        self.session_exchanges = 0
 
-    def record_exchange(self, chat_cost_usd: float, tts_cost_usd: float = 0.0, tts_calls: int = 0) -> dict:
-        self.session_chat_usd += float(chat_cost_usd or 0.0)
-        self.session_tts_usd += float(tts_cost_usd or 0.0)
-        self.session_chat_calls += 1
-        self.session_tts_calls += int(tts_calls)
+    def record_exchange(self, cost_usd: float) -> dict:
+        self.session_usd += cost_usd
         self.session_exchanges += 1
-        self.refresh_key_info()
-        summary = self.snapshot(last_chat_usd=chat_cost_usd, last_tts_usd=tts_cost_usd)
-        self._save(summary)
-        return summary
-
-    def snapshot(self, last_chat_usd: float = 0.0, last_tts_usd: float = 0.0) -> dict:
-        session_total = self.session_chat_usd + self.session_tts_usd
-        cum_chat = self.historical_chat_usd + self.session_chat_usd
-        cum_tts = self.historical_tts_usd + self.session_tts_usd
-        cum_total = cum_chat + cum_tts
-        return {
-            'updated_at': time.time(),
-            'last_exchange': {
-                'chat_usd': round(float(last_chat_usd or 0.0), 6),
-                'tts_usd': round(float(last_tts_usd or 0.0), 6),
-                'total_usd': round(float((last_chat_usd or 0.0) + (last_tts_usd or 0.0)), 6),
-            },
-            'session': {
-                'started_at': self.session_started_at,
-                'exchanges': self.session_exchanges,
-                'chat_calls': self.session_chat_calls,
-                'tts_calls': self.session_tts_calls,
-                'chat_usd': round(self.session_chat_usd, 6),
-                'tts_usd': round(self.session_tts_usd, 6),
-                'total_usd': round(session_total, 6),
-            },
-            'cumulative': {
-                'exchanges': self.historical_exchanges + self.session_exchanges,
-                'chat_calls': self.historical_chat_calls + self.session_chat_calls,
-                'tts_calls': self.historical_tts_calls + self.session_tts_calls,
-                'chat_usd': round(cum_chat, 6),
-                'tts_usd': round(cum_tts, 6),
-                'total_usd': round(cum_total, 6),
-            },
-            'openrouter_key': self.key_info,
+        summary = {
+            'session_usd': round(self.session_usd, 6),
+            'session_exchanges': self.session_exchanges,
+            'total_usd': round(self.key_usage_at_start + self.session_usd, 6),
+            'key_limit_remaining_usd_at_start': self.key_limit_remaining,
         }
-
-    def _save(self, summary: dict):
-        try:
-            self.summary_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = self.summary_path.with_suffix('.tmp')
-            tmp.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding='utf-8')
-            os.replace(tmp, self.summary_path)
-        except Exception:
-            pass
+        _safe_write_json(self.summary_path, summary, indent=2)
+        return summary
 
 
 def detect_message_language(text: str | None) -> str | None:
@@ -988,22 +842,16 @@ def detect_message_language(text: str | None) -> str | None:
     return None
 
 
-def choose_scene_language(
-    event: dict,
-    multilingual_chance: float = 0.12,
-    language_override: str | None = None,
-) -> str:
-    if language_override:
-        return language_override
+def choose_scene_language(event: dict) -> str:
+    """Reply in the player's language; otherwise English with a small Hebrew/Russian chance."""
     msg_lang = detect_message_language(event.get('player_message'))
     if msg_lang:
         return msg_lang
-    if multilingual_chance > 0:
-        r = random.random()
-        if r < multilingual_chance / 2.0:
-            return 'Hebrew (עברית)'
-        if r < multilingual_chance:
-            return 'Russian (Русский)'
+    r = random.random()
+    if r < MULTILINGUAL_CHANCE / 2.0:
+        return 'Hebrew (עברית)'
+    if r < MULTILINGUAL_CHANCE:
+        return 'Russian (Русский)'
     return 'English'
 
 
@@ -1086,13 +934,9 @@ def build_scene(
             b for b in raw_bits
             if not any(x in b.lower() for x in _NOISY_REL_BIT_SUBSTRINGS)
         ]
-        bit_labels = [
-            label for label in (resolve_stbl(s, actor, target) for s in raw_rel.get('bit_stbls', []))
-            if label
-        ]
-        for rlabel in (resolve_stbl(s, target, actor) for s in raw_rel.get('reverse_bit_stbls', [])):
-            if rlabel and rlabel not in bit_labels:
-                bit_labels.append(rlabel)
+        labels = [resolve_stbl(s, actor, target) for s in raw_rel.get('bit_stbls', [])]
+        labels += [resolve_stbl(s, target, actor) for s in raw_rel.get('reverse_bit_stbls', [])]
+        bit_labels = list(dict.fromkeys(label for label in labels if label))
         if bit_labels:
             rel['bit_labels'] = bit_labels
         highlights = _summarize_rel_tags(raw_bits, rev_bits, actor_name, target_name)
@@ -1139,99 +983,6 @@ def select_openrouter_voice(sim: dict, slot: int = 0, avoid_voice: str | None = 
     return chosen
 
 
-def select_sapi_voice(sim: dict, slot: int = 0) -> tuple[str, int]:
-    """Select an installed Windows Desktop SAPI5 voice ('Microsoft David Desktop' or 'Microsoft Zira Desktop')."""
-    gender = str(sim.get('gender') or '').upper()
-    voice_actor = int(sim.get('voice_actor') or 0)
-    raw_pitch = float(sim.get('voice_pitch') or 0.0)
-    pitch_pct = max(-18, min(18, int(round(raw_pitch * 15))))
-    if gender == 'FEMALE':
-        offset = ((voice_actor % 5) - 2) * 3 if voice_actor else (-4 if slot == 0 else 4)
-        return 'Microsoft Zira Desktop', max(-18, min(18, pitch_pct + offset))
-    offset = ((voice_actor % 5) - 2) * 4 if voice_actor else (-5 if slot == 0 else 5)
-    return 'Microsoft David Desktop', max(-18, min(18, pitch_pct + offset))
-
-
-def _get_tts_worker() -> subprocess.Popen:
-    global _tts_worker
-    if _tts_worker is not None and _tts_worker.poll() is None:
-        return _tts_worker
-    ps_loop = (
-        "Add-Type -AssemblyName System.Speech; "
-        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
-        "$ms = New-Object System.IO.MemoryStream; "
-        "$s.SetOutputToWaveStream($ms); "
-        "$s.Speak(' '); "
-        "$s.SetOutputToNull(); "
-        "$ms.Dispose(); "
-        "[Console]::Out.WriteLine('READY'); [Console]::Out.Flush(); "
-        "while (($line = [Console]::In.ReadLine()) -ne $null) { "
-        "  $req = $line | ConvertFrom-Json; "
-        "  $s.SetOutputToWaveFile($req.wav_path); "
-        "  $s.SpeakSsml($req.ssml); "
-        "  $s.SetOutputToNull(); "
-        "  [Console]::Out.WriteLine('OK'); "
-        "  [Console]::Out.Flush(); "
-        "} "
-        "$s.Dispose()"
-    )
-    _tts_worker = subprocess.Popen(
-        ['powershell.exe', '-NoProfile', '-Command', ps_loop],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        encoding='utf-8',
-    )
-    assert _tts_worker.stdout is not None
-    _tts_worker.stdout.readline()
-    return _tts_worker
-
-
-def synthesize_dialogue_sapi(text: str, actor: dict, target: dict | None, wav_path: Path) -> dict:
-    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    actor_voice, actor_pitch = select_sapi_voice(actor, 0)
-    target_voice, target_pitch = (
-        select_sapi_voice(target, 1) if isinstance(target, dict) else (actor_voice, actor_pitch)
-    )
-    max_lines = 1 if target is None else 2
-    utterances = []
-    for idx, line in enumerate(lines[:max_lines]):
-        spoken = line.split(':', 1)[1].strip() if ':' in line else line
-        voice = actor_voice if idx == 0 else target_voice
-        pitch = actor_pitch if idx == 0 else target_pitch
-        utterances.append(
-            f'<voice name="{voice}"><prosody pitch="{pitch:+d}%" rate="+4%">{html.escape(spoken)}</prosody></voice>'
-        )
-    ssml = (
-        '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">'
-        + '<break time="180ms"/>'.join(utterances)
-        + '</speak>'
-    )
-    wav_path.parent.mkdir(parents=True, exist_ok=True)
-    started = time.monotonic()
-    worker = _get_tts_worker()
-    assert worker.stdin is not None and worker.stdout is not None
-    worker.stdin.write(json.dumps({'wav_path': str(wav_path), 'ssml': ssml}) + '\n')
-    worker.stdin.flush()
-    ack = worker.stdout.readline().strip()
-    if ack != 'OK':
-        raise RuntimeError(f'TTS worker failed: {ack}')
-    with wave.open(str(wav_path), 'rb') as wf:
-        dur_s = round(wf.getnframes() / float(wf.getframerate() or 22050), 2)
-    return {
-        'engine': 'sapi',
-        'audio_file': str(wav_path),
-        'actor_voice': {'voice': actor_voice, 'pitch_percent': actor_pitch},
-        'target_voice': {'voice': target_voice, 'pitch_percent': target_pitch} if target is not None else None,
-        'tts_elapsed_seconds': round(time.monotonic() - started, 3),
-        'tts_cost_usd': 0.0,
-        'tts_calls': 0,
-        'wav_bytes': wav_path.stat().st_size,
-        'duration_seconds': dur_s,
-    }
-
-
 MOOD_TO_DELIVERY_TONE = {
     'Angry': 'exasperated, dramatic, annoyed',
     'Flirty': 'warm, playful, flirty',
@@ -1246,38 +997,19 @@ MOOD_TO_DELIVERY_TONE = {
 }
 
 
-REFUSAL_SUBSTRINGS = (
-    "i'm sorry, but i can't",
-    "i cannot assist",
-    "i can't assist",
-    "i'm here to help",
-    "please remember to keep",
-    "keep things respectful",
-    "keep things appropriate",
-)
+def _transcript_matches(spoken_text: str, transcript: str) -> bool:
+    """True when the audio model actually read the line (it sometimes replies or refuses instead)."""
+    def words(text: str) -> set[str]:
+        return set(re.findall(r'\w+', text.lower()))
+    spoken = words(spoken_text)
+    return not spoken or len(spoken & words(transcript)) / len(spoken) >= 0.6
 
 
-def _is_refusal_transcript(spoken_text: str, transcript: str) -> bool:
-    t_low = transcript.lower().strip()
-    s_low = spoken_text.lower().strip()
-    for pat in REFUSAL_SUBSTRINGS:
-        if pat in t_low and pat not in s_low:
-            return True
-    return False
-
-
-def _synthesize_single_line_openrouter(
-    spoken_text: str,
-    voice: str,
-    mood: str,
-    interaction_label: str | None,
-    api_key: str,
-    tts_model: str = DEFAULT_TTS_MODEL,
-) -> dict:
+def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) -> dict:
     clean_mood = (mood or 'Fine').replace('Mood_', '')
     tone = MOOD_TO_DELIVERY_TONE.get(clean_mood, 'natural, expressive, playful')
     payload = {
-        'model': tts_model,
+        'model': TTS_MODEL,
         'modalities': ['text', 'audio'],
         'audio': {'voice': voice, 'format': 'pcm16'},
         'stream': True,
@@ -1299,7 +1031,7 @@ def _synthesize_single_line_openrouter(
     req = urllib.request.Request(
         'https://openrouter.ai/api/v1/chat/completions',
         data=json.dumps(payload).encode('utf-8'),
-        headers={'Authorization': f'Bearer {api_key}', 'Content-Type': 'application/json'},
+        headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}', 'Content-Type': 'application/json'},
         method='POST',
     )
     t0 = time.monotonic()
@@ -1329,8 +1061,8 @@ def _synthesize_single_line_openrouter(
                     transcript_parts.append(audio['transcript'])
     ttlt = round(time.monotonic() - t0, 3)
     transcript = ''.join(transcript_parts).strip()
-    if _is_refusal_transcript(spoken_text, transcript):
-        raise RuntimeError(f'Audio model refused verbatim read: {transcript!r}')
+    if not _transcript_matches(spoken_text, transcript):
+        raise RuntimeError(f'Audio model did not read the line verbatim: {transcript!r}')
     return {
         'voice': voice,
         'tone': tone,
@@ -1343,85 +1075,45 @@ def _synthesize_single_line_openrouter(
     }
 
 
-def synthesize_dialogue_openrouter(
-    text: str,
-    actor: dict,
-    target: dict | None,
-    wav_path: Path,
-    api_key: str,
-    interaction_label: str | None = None,
-    tts_model: str = DEFAULT_TTS_MODEL,
-) -> dict:
+def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, wav_path: Path) -> dict:
+    """Synthesize each line in parallel; a failed line (e.g. a refusal) is silent instead of failing the exchange."""
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    max_lines = 1 if target is None else 2
     actor_voice = select_openrouter_voice(actor, 0)
-    target_voice = (
-        select_openrouter_voice(target, 1, avoid_voice=actor_voice)
-        if isinstance(target, dict) else None
-    )
-
+    target_voice = select_openrouter_voice(target, 1, avoid_voice=actor_voice) if target else None
     tasks = []
-    for idx, line in enumerate(lines[:max_lines]):
-        spoken = line.split(':', 1)[1].strip() if ':' in line else line
-        spoken = spoken.strip(' "“”')
-        if not spoken:
-            continue
-        sim = actor if idx == 0 or not isinstance(target, dict) else target
+    for idx, line in enumerate(lines[:1 if target is None else 2]):
+        spoken = (line.split(':', 1)[1] if ':' in line else line).strip(' "“”')
+        sim = actor if idx == 0 or target is None else target
         voice = actor_voice if idx == 0 or target_voice is None else target_voice
-        tasks.append((spoken, voice, str(sim.get('mood') or 'Fine')))
+        if spoken:
+            tasks.append((spoken, voice, str(sim.get('mood') or 'Fine')))
 
     started = time.monotonic()
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
-        futures = [
-            pool.submit(
-                _synthesize_single_line_openrouter,
-                spoken,
-                voice,
-                mood,
-                interaction_label,
-                api_key,
-                tts_model,
-            )
-            for spoken, voice, mood in tasks
-        ]
-        line_results = [f.result() for f in futures]
+        futures = [pool.submit(_synthesize_single_line_openrouter, *task) for task in tasks]
+        line_results = []
+        for (_, voice, _), future in zip(tasks, futures):
+            try:
+                line_results.append(future.result())
+            except Exception as exc:
+                line_results.append({'voice': voice, 'pcm': b'', 'cost_usd': 0.0, 'error': str(exc)})
 
     sample_rate = 24000
     pause_bytes = b'\x00\x00' * int(sample_rate * 0.18)
     combined_pcm = pause_bytes.join(r['pcm'] for r in line_results if r['pcm'])
-
-    wav_path.parent.mkdir(parents=True, exist_ok=True)
-    with wave.open(str(wav_path), 'wb') as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(sample_rate)
-        wf.writeframes(combined_pcm)
-
-    total_tts_cost = sum(r['cost_usd'] for r in line_results)
+    if combined_pcm:
+        wav_path.parent.mkdir(parents=True, exist_ok=True)
+        with wave.open(str(wav_path), 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(sample_rate)
+            wf.writeframes(combined_pcm)
     return {
-        'engine': 'openrouter',
-        'model': tts_model,
-        'audio_file': str(wav_path),
-        'actor_voice': {
-            'voice': actor_voice,
-            'tone': line_results[0]['tone'] if line_results else None,
-            'ttfa_s': line_results[0]['ttfa_s'] if line_results else None,
-            'ttlt_s': line_results[0]['ttlt_s'] if line_results else None,
-            'cost_usd': round(line_results[0]['cost_usd'], 6) if line_results else 0.0,
-            'transcript': line_results[0]['transcript'] if line_results else None,
-        },
-        'target_voice': {
-            'voice': target_voice,
-            'tone': line_results[1]['tone'] if len(line_results) > 1 else None,
-            'ttfa_s': line_results[1]['ttfa_s'] if len(line_results) > 1 else None,
-            'ttlt_s': line_results[1]['ttlt_s'] if len(line_results) > 1 else None,
-            'cost_usd': round(line_results[1]['cost_usd'], 6) if len(line_results) > 1 else 0.0,
-            'transcript': line_results[1]['transcript'] if len(line_results) > 1 else None,
-        } if target_voice else None,
+        'model': TTS_MODEL,
+        'audio_file': str(wav_path) if combined_pcm else None,
+        'lines': [{k: v for k, v in r.items() if k != 'pcm'} for r in line_results],
         'tts_elapsed_seconds': round(time.monotonic() - started, 3),
-        'tts_cost_usd': round(total_tts_cost, 6),
-        'tts_calls': len(line_results),
-        'wav_bytes': wav_path.stat().st_size,
+        'tts_cost_usd': round(sum(r['cost_usd'] for r in line_results), 6),
         'duration_seconds': round(len(combined_pcm) / (sample_rate * 2), 2),
     }
 
@@ -1459,37 +1151,29 @@ def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
 
 def generate(
     event: dict,
-    model: str,
-    reasoning_effort: str | None = 'none',
+    memory_store: MemoryStore,
     recent_dialogue: list[str] | None = None,
     tts_dir: Path | None = None,
-    tts_engine: str = 'openrouter',
-    multilingual_chance: float = 0.12,
-    language_override: str | None = None,
-    api_key: str = DEFAULT_OPENROUTER_API_KEY,
     cost_tracker: CostTracker | None = None,
-    memory_store: MemoryStore | None = None,
 ) -> dict:
-    language = choose_scene_language(event, multilingual_chance=multilingual_chance, language_override=language_override)
-    actor_name = str((event.get('actor') or {}).get('name') or '')
-    target_dict = event.get('target') if isinstance(event.get('target'), dict) else None
-    target_name = str(target_dict.get('name') or '') if target_dict else None
-    pair_mem = memory_store.get_memory(actor_name, target_name) if memory_store is not None else None
+    language = choose_scene_language(event)
+    actor_name = str(event['actor'].get('name') or '')
+    target = event.get('target')
+    pair_mem = memory_store.get_memory(actor_name, target.get('name') if target else None)
     scene = build_scene(event, recent_dialogue=recent_dialogue, language=language, pair_memory=pair_mem)
-    payload: dict = {
-        'model': model,
+    payload = {
+        'model': CHAT_MODEL,
         'messages': [
             {'role': 'system', 'content': (ROOT / 'prompt.txt').read_text(encoding='utf-8')},
             {'role': 'user', 'content': json.dumps(scene, ensure_ascii=False)},
         ],
         'max_tokens': 300,
+        'reasoning': {'effort': REASONING_EFFORT},
     }
-    if reasoning_effort is not None:
-        payload['reasoning'] = {'effort': reasoning_effort}
     request = urllib.request.Request(
         'https://openrouter.ai/api/v1/chat/completions',
         data=json.dumps(payload).encode('utf-8'),
-        headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json'},
+        headers={'Authorization': 'Bearer ' + OPENROUTER_API_KEY, 'Content-Type': 'application/json'},
         method='POST',
     )
     started = time.monotonic()
@@ -1498,270 +1182,113 @@ def generate(
     raw_text = result['choices'][0]['message']['content'].strip()
     if not raw_text:
         raise ValueError('The model returned no dialogue.')
-    if len(raw_text) > 1000:
-        raise ValueError('The model exceeded the short-dialogue limit.')
     text = _normalize_dialogue_lines(raw_text, event)
     usage = result.get('usage', {})
-    chat_cost_usd = float(usage.get('cost') or 0.0)
-
     out = {
         'event_id': event['event_id'],
         'event_type': event.get('type', 'social'),
         'speaker_count': scene['speaker_count'],
         'language': language,
         'text': text,
-        'scene_summary': {
-            'interaction_label': scene.get('interaction_label'),
-            'player_message': scene.get('player_message'),
-            'outcome': scene.get('outcome'),
-            'venue_label': scene.get('venue_label'),
-            'actor_activities': scene['actor'].get('activity_labels'),
-            'target_activities': scene['target'].get('activity_labels') if scene.get('target') else None,
-        },
-        'model': result.get('model', model),
-        'reasoning_effort': reasoning_effort,
+        'model': result.get('model', CHAT_MODEL),
         'finish_reason': result['choices'][0].get('finish_reason'),
         'elapsed_seconds': round(time.monotonic() - started, 3),
         'usage': usage,
     }
-
-    tts_cost_usd = 0.0
-    tts_calls = 0
+    cost_usd = float(usage.get('cost') or 0.0)
     if tts_dir is not None:
-        wav_path = tts_dir / f"{event['event_id']}.wav"
-        if tts_engine == 'openrouter':
-            try:
-                tts_info = synthesize_dialogue_openrouter(
-                    text,
-                    event['actor'],
-                    event.get('target'),
-                    wav_path,
-                    api_key=api_key,
-                    interaction_label=scene.get('interaction_label'),
-                )
-            except Exception as exc:
-                tts_info = synthesize_dialogue_sapi(text, event['actor'], event.get('target'), wav_path)
-                tts_info['fallback_reason'] = str(exc)
-        else:
-            tts_info = synthesize_dialogue_sapi(text, event['actor'], event.get('target'), wav_path)
-        out['tts'] = tts_info
-        tts_cost_usd = float(tts_info.get('tts_cost_usd') or 0.0)
-        tts_calls = int(tts_info.get('tts_calls') or 0)
-
-    if memory_store is not None:
-        memory_store.record(event, scene, text)
+        out['tts'] = synthesize_dialogue_openrouter(text, event['actor'], target, tts_dir / f"{event['event_id']}.wav")
+        cost_usd += out['tts']['tts_cost_usd']
+    memory_store.record(event, scene, text)
     if cost_tracker is not None:
-        out['cost_summary'] = cost_tracker.record_exchange(
-            chat_cost_usd=chat_cost_usd,
-            tts_cost_usd=tts_cost_usd,
-            tts_calls=tts_calls,
-        )
+        out['cost_summary'] = cost_tracker.record_exchange(cost_usd)
     return out
 
 
 def _is_pid_running(pid: int) -> bool:
-    if pid <= 0:
+    handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, int(pid))  # PROCESS_QUERY_LIMITED_INFORMATION
+    if not handle:
         return False
-    if sys.platform == 'win32':
-        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, int(pid))
-        if not handle:
-            return False
-        try:
-            exit_code = ctypes.c_ulong()
-            if ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
-                return exit_code.value == 259
-            return True
-        finally:
-            ctypes.windll.kernel32.CloseHandle(handle)
     try:
-        os.kill(pid, 0)
-        return True
-    except OSError:
-        return False
-
-
-def _terminate_pid(pid: int) -> None:
-    if pid <= 0 or pid == os.getpid():
-        return
-    if sys.platform == 'win32':
-        handle = ctypes.windll.kernel32.OpenProcess(0x0001, False, int(pid))
-        if handle:
-            try:
-                ctypes.windll.kernel32.TerminateProcess(handle, 0)
-            finally:
-                ctypes.windll.kernel32.CloseHandle(handle)
+        exit_code = ctypes.c_ulong()
+        ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+        return exit_code.value == 259  # STILL_ACTIVE
+    finally:
+        ctypes.windll.kernel32.CloseHandle(handle)
 
 
 def _safe_write_json(target_path: Path, payload: dict, indent: int | None = None) -> None:
+    """Atomic replace; retry briefly because OneDrive sync can hold the target open (observed WinError 5)."""
     target_path.parent.mkdir(parents=True, exist_ok=True)
-    serialized = json.dumps(payload, ensure_ascii=False, indent=indent)
     tmp_path = target_path.with_name(f'{target_path.stem}.{os.getpid()}.tmp')
-    try:
-        tmp_path.write_text(serialized, encoding='utf-8')
-        for _ in range(5):
-            try:
-                os.replace(tmp_path, target_path)
-                return
-            except PermissionError:
-                time.sleep(0.02)
-        target_path.write_text(serialized, encoding='utf-8')
-    except PermissionError:
-        pass
-    finally:
-        if tmp_path.exists():
-            try:
-                tmp_path.unlink()
-            except OSError:
-                pass
-
-
-def _write_heartbeat(
-    data_dir: Path,
-    model: str,
-    tts_engine: str,
-    speak: bool,
-    status: str = 'listening',
-) -> None:
-    payload = {
-        'pid': os.getpid(),
-        'ts': time.time(),
-        'model': model,
-        'tts_engine': tts_engine,
-        'speak': bool(speak),
-        'status': status,
-    }
-    _safe_write_json(data_dir / 'companion_heartbeat.json', payload)
-
-
-def _claim_single_instance(
-    data_dir: Path,
-    replace: bool,
-    model: str,
-    tts_engine: str,
-    speak: bool,
-) -> bool:
-    hb_path = data_dir / 'companion_heartbeat.json'
-    if hb_path.exists():
+    tmp_path.write_text(json.dumps(payload, ensure_ascii=False, indent=indent), encoding='utf-8')
+    for attempt in range(10):
         try:
-            existing = json.loads(hb_path.read_text(encoding='utf-8-sig'))
-            old_pid = int(existing.get('pid') or 0)
-            old_ts = float(existing.get('ts') or 0.0)
-            if old_pid and old_pid != os.getpid() and (time.time() - old_ts) < 8.0 and _is_pid_running(old_pid):
-                if replace:
-                    _terminate_pid(old_pid)
-                    time.sleep(0.25)
-                else:
-                    return False
-        except Exception:
-            pass
-    _write_heartbeat(data_dir, model, tts_engine, speak, status='starting')
-    return True
+            os.replace(tmp_path, target_path)
+            return
+        except PermissionError:
+            if attempt == 9:
+                raise
+            time.sleep(0.05)
 
 
-def _console_log(message: str, data_dir: Path | None = None) -> None:
+def _console_log(message: str, data_dir: Path) -> None:
+    """Print, and mirror to companion_console.jsonl so the game can show it in the cheat console."""
     print(message, flush=True)
-    if data_dir is not None:
-        try:
-            data_dir.mkdir(parents=True, exist_ok=True)
-            log_path = data_dir / 'companion_console.jsonl'
-            entry = {'ts': time.time(), 'pid': os.getpid(), 'text': message}
-            with log_path.open('a', encoding='utf-8') as stream:
-                stream.write(json.dumps(entry, ensure_ascii=False) + '\n')
-        except Exception:
-            pass
+    entry = {'ts': time.time(), 'pid': os.getpid(), 'text': message}
+    with (data_dir / 'companion_console.jsonl').open('a', encoding='utf-8') as stream:
+        stream.write(json.dumps(entry, ensure_ascii=False) + '\n')
+
+
+def _acquire_single_instance_lock():
+    """Return an open, locked file, or None if another companion holds the lock."""
+    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    lock = LOCK_PATH.open('a+')
+    try:
+        msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+    except OSError:
+        lock.close()
+        return None
+    return lock
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-directory', type=Path, default=DEFAULT_MODS_DIR / 'BanterLab' / 'BanterLabData')
-    parser.add_argument('--reply-file', type=Path,
-                        help='Reply JSON path; defaults to <data-directory>/reply.json.')
-    parser.add_argument('--once', type=Path, help='Generate once from a captured event JSON file.')
-    parser.add_argument('--model', default='openai/gpt-6-luna')
-    parser.add_argument('--reasoning-effort', default='none',
-                        help='Explicit model reasoning effort; defaults to none for short dialogue.')
-    parser.add_argument('--tts-dir', type=Path,
-                        help='Optional directory to synthesize WAV audio for each exchange.')
-    parser.add_argument('--tts-engine', choices=('openrouter', 'sapi'), default='openrouter',
-                        help='TTS backend: openrouter (gpt-audio-mini) or sapi (Windows Desktop SAPI5).')
-    parser.add_argument('--multilingual-chance', type=float, default=0.12,
-                        help='Probability (0.0-1.0) of seasoning autonomous banter with Hebrew or Russian.')
-    parser.add_argument('--language', default=None,
-                        help='Optional explicit language override (e.g. "English", "Hebrew (עברית)", "Russian (Русский)").')
-    parser.add_argument('--api-key', default=DEFAULT_OPENROUTER_API_KEY,
-                        help='OpenRouter API key; defaults to the checked-in capped project key.')
-    parser.add_argument('--speak', action='store_true',
-                        help='Play synthesized WAV asynchronously when the game displays the notification.')
-    parser.add_argument('--replace', action='store_true',
-                        help='Replace an existing running companion instance if one is active.')
+    parser.add_argument('--parent-pid', type=int, help='Exit when this process (the game) exits.')
+    parser.add_argument('--once', type=Path, help='Generate text once from a captured event JSON file.')
     args = parser.parse_args()
+    data = args.data_directory
 
     if args.once:
-        once_event = json.loads(args.once.read_text(encoding='utf-8-sig'))
-        data_dir_once = args.data_directory or (ROOT / '.local')
-        memories_once = MemoryStore(data_dir_once)
-        tracker = CostTracker(data_dir_once, args.api_key)
-        print(json.dumps(
-            generate(
-                once_event,
-                args.model,
-                args.reasoning_effort,
-                tts_dir=args.tts_dir,
-                tts_engine=args.tts_engine,
-                multilingual_chance=args.multilingual_chance,
-                language_override=args.language,
-                api_key=args.api_key,
-                cost_tracker=tracker,
-                memory_store=memories_once,
-            ),
-            ensure_ascii=False,
-            indent=2,
-        ), flush=True)
+        event = json.loads(args.once.read_text(encoding='utf-8-sig'))
+        print(json.dumps(generate(event, MemoryStore(ROOT / '.local' / 'once')), ensure_ascii=False, indent=2))
         return
 
-    if args.data_directory is None:
-        parser.error('--data-directory is required unless --once is used.')
-
-    data = args.data_directory
-    data.mkdir(parents=True, exist_ok=True)
-    if not _claim_single_instance(data, args.replace, args.model, args.tts_engine, args.speak):
-        print(f'Companion already running in {data}; exiting duplicate.', flush=True)
+    lock = _acquire_single_instance_lock()
+    if lock is None:
+        print('Another companion is already running; exiting.', flush=True)
         return
-
-    reply_file = args.reply_file or (data / 'reply.json')
-    reply_file.parent.mkdir(parents=True, exist_ok=True)
-    tts_dir = args.tts_dir or (ROOT / '.local' / 'tts' if args.speak else None)
+    reply_file = data / 'reply.json'
     events = data / 'events.jsonl'
     events.touch(exist_ok=True)
     recent_by_zone: dict[str, list[str]] = {}
-
     load_stbl_dictionary()
     memories = MemoryStore(data)
-    tracker = CostTracker(data, args.api_key)
-    snap = tracker.snapshot()
+    tracker = CostTracker(data)
     _console_log(
-        f"Cost tracker ready: cumulative=${snap['cumulative']['total_usd']:.6f} "
-        f"({snap['cumulative']['exchanges']} exchanges) | "
-        f"OpenRouter key remaining=${(snap['openrouter_key'].get('limit_remaining_usd') or 0):.4f}",
-        data,
-    )
-    if tts_dir is not None and args.tts_engine == 'sapi':
-        _get_tts_worker()
+        f'Listening (model={CHAT_MODEL}, tts={TTS_MODEL}, total so far=${tracker.key_usage_at_start:.4f}, '
+        f'key remaining=${tracker.key_limit_remaining})', data)
 
-    last_hb = 0.0
+    last_parent_check = time.monotonic()
     with events.open('r', encoding='utf-8') as incoming:
         incoming.seek(0, os.SEEK_END)
-        _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
-        last_hb = time.monotonic()
-        _console_log(
-            f'Listening for AI events in {data} (model={args.model}, tts={args.tts_engine}, reply={reply_file})',
-            data,
-        )
         while True:
-            now_mono = time.monotonic()
-            if now_mono - last_hb >= 2.0:
-                _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
-                last_hb = now_mono
+            if args.parent_pid and time.monotonic() - last_parent_check > 2.0:
+                last_parent_check = time.monotonic()
+                if not _is_pid_running(args.parent_pid):
+                    _console_log('The game exited; companion exiting.', data)
+                    return
             offset = incoming.tell()
             line = incoming.readline()
             if not line or not line.endswith('\n'):
@@ -1769,59 +1296,34 @@ def main():
                 time.sleep(0.15)
                 continue
             event = json.loads(line)
-            if event.get('type') == 'displayed' and args.speak:
-                audio_path = event.get('tts', {}).get('audio_file')
-                if audio_path and os.path.exists(audio_path) and sys.platform == 'win32':
-                    import winsound
+            if event.get('type') == 'displayed':
+                audio_path = (event.get('tts') or {}).get('audio_file')
+                if audio_path:
                     winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 continue
-            if event.get('type') not in ('social', 'player_chat', 'solo_vocal', 'player_ask_self') or event.get('mode') != 'ai':
+            if event.get('type') not in ('social', 'player_chat', 'solo_vocal', 'player_ask_self'):
                 continue
-            zone_key = str(event.get('venue') or 'default')
-            recent = recent_by_zone.setdefault(zone_key, [])
-            _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='generating')
+            recent = recent_by_zone.setdefault(str(event.get('venue') or 'default'), [])
             try:
-                reply = generate(
-                    event,
-                    args.model,
-                    args.reasoning_effort,
-                    recent_dialogue=recent,
-                    tts_dir=tts_dir,
-                    tts_engine=args.tts_engine,
-                    multilingual_chance=args.multilingual_chance,
-                    language_override=args.language,
-                    api_key=args.api_key,
-                    cost_tracker=tracker,
-                    memory_store=memories,
-                )
+                reply = generate(event, memories, recent_dialogue=recent, tts_dir=TTS_DIR, cost_tracker=tracker)
                 recent.append(reply['text'])
-                if len(recent) > 6:
-                    del recent[:-6]
+                del recent[:-6]
             except (urllib.error.URLError, KeyError, ValueError, json.JSONDecodeError) as exc:
                 reply = {'event_id': event['event_id'], 'error': str(exc)}
             _safe_write_json(reply_file, reply)
-            _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
-            last_hb = time.monotonic()
-            if 'cost_summary' in reply:
-                cs = reply['cost_summary']
-                tts_meta = reply.get('tts') or {}
-                v1 = (tts_meta.get('actor_voice') or {}).get('voice')
-                v2 = (tts_meta.get('target_voice') or {}).get('voice')
-                _console_log(
-                    f"[{reply['event_id']}] lang={reply.get('language')} "
-                    f"chat={reply.get('elapsed_seconds')}s tts={tts_meta.get('tts_elapsed_seconds')}s "
-                    f"audio={tts_meta.get('duration_seconds')}s voices=({v1}, {v2}) | "
-                    f"call=${cs['last_exchange']['total_usd']:.6f} "
-                    f"session=${cs['session']['total_usd']:.6f} "
-                    f"total=${cs['cumulative']['total_usd']:.6f}",
-                    data,
-                )
-            else:
+            if 'error' in reply:
                 _console_log(json.dumps(reply, ensure_ascii=False), data)
+                continue
+            tts = reply['tts']
+            failed = [ln['error'] for ln in tts['lines'] if 'error' in ln]
+            _console_log(
+                f"[{reply['event_id']}] lang={reply['language']} chat={reply['elapsed_seconds']}s "
+                f"tts={tts['tts_elapsed_seconds']}s audio={tts['duration_seconds']}s "
+                f"voices={[ln['voice'] for ln in tts['lines']]} | session=${reply['cost_summary']['session_usd']:.4f} "
+                f"total=${reply['cost_summary']['total_usd']:.4f}" + (f' | silent lines: {failed}' if failed else ''),
+                data,
+            )
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        sys.exit(0)
+    main()
