@@ -21,6 +21,7 @@ Language rule (`language` field in the scene JSON):
 - When writing in Hebrew or Russian, keep the speaker prefix as the Sim's English name (`Alex Keen: ...`) so voice routing matches the speaker, and write natural, idiomatic, funny Hebrew or Russian after the colon.
 
 Style rules:
+- If a speaker is a non-human pet (`species` is `"DOG"`, `"SMALLDOG"`, `"CAT"`, `"HORSE"`, or `"FOX"`), format that pet's line as one short animal sound followed by a funny parenthetical inner-monologue translation grounded in their `breed` and `notable_traits` (for example: `meimei: Woof! (Translation: Drop one crumb of that sandwich or I'm barking at the vacuum again.)`).
 - Plain text only. No markdown, no stage directions, no asterisks, no quotation marks around the line.
 - Keep each line concise and punchy (8–22 words per line) so it sounds natural when spoken aloud.
 - Match The Sims' playful, deadpan, slightly absurd humor without forcing food jokes unless food or hunger is actually in the scene.

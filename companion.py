@@ -462,6 +462,29 @@ def humanize_extra_trait(tname: str) -> tuple[str | None, str | None]:
     if 'wickedwhims_trait_nudity_sleepnaked' in tl:
         return 'notable_traits', 'Sleeps naked'
 
+    if tl.startswith('trait_petquirk_obsessed_'):
+        item = re.sub(r'([a-z])([A-Z])', r'\1 \2', t[len('trait_PetQuirk_Obsessed_'):]).replace('_', ' ')
+        return 'notable_traits', f'Pet quirk: obsessed with {item}'
+    if tl.startswith('trait_petquirk_fear_'):
+        item = re.sub(r'([a-z])([A-Z])', r'\1 \2', t[len('trait_PetQuirk_Fear_'):]).replace('_', ' ')
+        if item.lower() == 'swiming':
+            item = 'Swimming'
+        return 'notable_traits', f'Pet quirk: afraid of {item}'
+    pet_map = {
+        'trait_misbehavior_pet_trasheat': 'Eats out of the trash',
+        'trait_misbehaviors_pet_eatpeoplefood': 'Begs for and eats people food',
+        'trait_misbehavior_pet_puddlesdrink': 'Drinks out of puddles',
+        'trait_misbehavior_dog_bark': 'Loves barking loudly',
+        'trait_misbehavior_pet_attack': 'Sometimes chases/attacks',
+        'trait_misbehaviors_pet_wakeupsims': 'Wakes up sleeping Sims',
+        'trait_pet_friendly_dog': 'Friendly dog',
+        'trait_pet_hairy_dog': 'Fluffy/hairy coat',
+        'trait_pet_friendly_cat': 'Friendly cat',
+        'trait_petquirk_petbedspin': 'Spins in circles before lying down',
+    }
+    if tl in pet_map:
+        return 'notable_traits', pet_map[tl]
+
     notable_map = {
         'trait_familiesim': 'Domestic (Family Sim)',
         'trait_familysim': 'Domestic (Family Sim)',
@@ -584,15 +607,47 @@ def humanize_aspiration(asp_id: str | None, asp_stbl: int | None, sim: dict, par
     return re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned).replace('_', ' ').strip()
 
 
+def humanize_lot_trait(zname: str) -> str | None:
+    if not zname:
+        return None
+    z = zname.strip()
+    zl = z.lower()
+    if 'mueventapm_test' in zl:
+        return None
+    lot_map = {
+        'zonemodifier_lottrait_romanticatmosphere': 'Romantic Atmosphere',
+        'zonemodifier_lottrait_quakezone': 'Quake Zone',
+        'zonemodifier_lottrait_homey': 'Homey',
+        'zonemodifier_lottrait_greatacoustics': 'Great Acoustics',
+        'zonemodifier_lottrait_highspeedinternet': 'Fast Internet',
+        'zonemodifier_petworld_cathangout': 'Cat Hangout',
+        'zonemodifier_petworld_doghangout': 'Dog Hangout',
+        'zonemodifier_lottrait_greatsoil': 'Great Soil',
+        'zonemodifier_lottrait_freshair': 'Fresh Air',
+        'zonemodifier_lottrait_naturallight': 'Natural Light',
+        'zonemodifier_lottrait_convivial': 'Convivial',
+        'zonemodifier_lottrait_notrespassing': 'Private Dwelling (No Trespassing)',
+    }
+    if zl in lot_map:
+        return lot_map[zl]
+    cleaned = re.sub(r'^zoneModifier_(lotTrait_|PetWorld_)?', '', z, flags=re.I)
+    return re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned).replace('_', ' ').strip()
+
+
 def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     cleaned = {
         k: v for k, v in sim.items()
         if k not in (
             'id', 'trait_stbls', 'extra_traits', 'aspiration', 'aspiration_stbl',
-            'careers', 'skills', 'buffs', 'activities',
+            'breed_stbl', 'careers', 'skills', 'buffs', 'activities',
             'voice_actor', 'voice_actor_muted', 'voice_pitch', 'social_connections',
         )
     }
+    breed_label = resolve_stbl(sim.get('breed_stbl'), sim, partner) or sim.get('breed')
+    if breed_label:
+        cleaned['breed'] = breed_label
+    elif 'breed' in cleaned and not cleaned['breed']:
+        del cleaned['breed']
     if sim.get('mood') and str(sim['mood']).startswith('Mood_'):
         cleaned['mood_label'] = str(sim['mood'])[5:]
     trait_labels = [
@@ -863,11 +918,19 @@ def build_scene(
 
     interaction_label = resolve_stbl(event.get('interaction_stbl'), actor, target)
     venue_label = resolve_stbl(event.get('venue_stbl'), actor, target)
+    if not venue_label and event.get('venue') == 'venue_MultiUnit':
+        venue_label = 'Multi-Unit Residential Rental'
+    lot_name = event.get('lot_name')
+    lot_trait_labels = [
+        lt for lt in (humanize_lot_trait(z) for z in event.get('lot_traits', []) or [])
+        if lt
+    ]
 
     event_type = event.get('type', 'social')
     speaker_count = 1 if target is None or event_type in ('solo_vocal', 'player_ask_self') else 2
     action_desc = interaction_label or event.get('interaction', 'social')
-    venue_desc = venue_label or event.get('venue') or 'the lot'
+    venue_base = venue_label or event.get('venue') or 'the lot'
+    venue_desc = f"{lot_name!r} ({venue_base})" if lot_name else venue_base
 
     if event_type == 'player_ask_self':
         summary = (
@@ -902,9 +965,13 @@ def build_scene(
         'outcome': event.get('outcome'),
         'venue': event.get('venue'),
         'venue_label': venue_label,
+        'lot_name': lot_name,
+        'lot_traits': lot_trait_labels if lot_trait_labels else None,
+        'business': event.get('business'),
         'actor': _clean_sim_for_prompt(actor, target),
         'target': _clean_sim_for_prompt(target, actor) if target else None,
     }
+    scene = {k: v for k, v in scene.items() if v is not None or k in ('target', 'outcome', 'interaction_label', 'venue_label')}
     if target and isinstance(event.get('relationship'), dict):
         raw_rel = event['relationship']
         rel = {

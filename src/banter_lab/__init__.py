@@ -549,11 +549,20 @@ def _sim_snapshot(sim):
                 'reason_stbl': _string_hash(
                     getattr(buff, 'buff_reason', None) or getattr(buff, 'default_buff_reason', None)),
             })
+    species_obj = getattr(info, 'extended_species', None) or getattr(info, 'species', None)
+    species_name = getattr(species_obj, 'name', str(species_obj)) if species_obj is not None else 'HUMAN'
+    breed_name = getattr(info, '_breed_name', None) or getattr(info, 'breed_name', None) or None
+    if callable(breed_name):
+        breed_name = None
+    breed_stbl = _string_hash(getattr(info, 'breed_name_key', None))
     return {
         'id': str(info.sim_id),
         'name': '{} {}'.format(info.first_name, info.last_name).strip(),
         'age': getattr(info.age, 'name', str(info.age)),
         'gender': getattr(info.gender, 'name', str(info.gender)),
+        'species': species_name,
+        'breed': str(breed_name) if breed_name else None,
+        'breed_stbl': breed_stbl,
         'voice_actor': _true_voice_actor(info),
         'voice_actor_muted': int(getattr(info, 'voice_actor', 0)) == _MUTE_VOICE_ACTOR,
         'voice_pitch': round(float(getattr(info, 'voice_pitch', 0.0)), 4),
@@ -668,11 +677,43 @@ def _venue_snapshot():
     zone = services.current_zone()
     venue_service = getattr(zone, 'venue_service', None) if zone is not None else None
     active_venue = getattr(venue_service, 'active_venue', None) if venue_service is not None else None
-    if active_venue is None:
-        return {'id': None, 'stbl': None}
+    lot = getattr(zone, 'lot', None) if zone is not None else None
+    lot_name = None
+    if lot is not None and hasattr(lot, 'get_lot_name'):
+        try:
+            lot_name = lot.get_lot_name() or None
+        except Exception:
+            lot_name = None
+    lot_traits = []
+    try:
+        zm_service = services.get_zone_modifier_service()
+        if zm_service is not None and zone is not None:
+            for zm in zm_service.get_zone_modifiers(zone.id):
+                zname = getattr(zm, '__name__', type(zm).__name__)
+                if zname and 'mueventapm_test' not in zname.lower():
+                    lot_traits.append(zname)
+    except Exception:
+        pass
+    business_info = None
+    try:
+        b_service = services.business_service()
+        if b_service is not None and zone is not None:
+            b_mgr = b_service.get_business_manager_for_zone(zone.id)
+            if b_mgr is not None:
+                b_type = getattr(getattr(b_mgr, 'business_type', None), 'name', str(getattr(b_mgr, 'business_type', '')))
+                business_info = {
+                    'type': b_type,
+                    'is_open': bool(getattr(b_mgr, 'is_open', False)),
+                    'is_owned_by_active': bool(getattr(b_mgr, 'owner_household_id', None) == services.active_household_id()),
+                }
+    except Exception:
+        pass
     return {
-        'id': getattr(active_venue, '__name__', type(active_venue).__name__),
-        'stbl': _string_hash(getattr(active_venue, 'display_name', None)),
+        'id': getattr(active_venue, '__name__', type(active_venue).__name__) if active_venue is not None else None,
+        'stbl': _string_hash(getattr(active_venue, 'display_name', None)) if active_venue is not None else None,
+        'lot_name': lot_name,
+        'lot_traits': lot_traits[:6],
+        'business': business_info,
     }
 
 
@@ -744,10 +785,15 @@ def _record_skip(reason, interaction, actor=None, target=None, extra=None, log_t
 
 
 def _social_participants(interaction):
-    if not getattr(interaction, 'is_social', False):
-        return None, None
     actor = interaction.sim
     target = interaction.get_participant(ParticipantType.TargetSim)
+    is_soc = bool(getattr(interaction, 'is_social', False))
+    if not is_soc and target is not None and getattr(target, 'is_sim', False):
+        iname = type(interaction).__name__.lower()
+        if any(k in iname for k in ('petsocial', 'simtopet', 'talkto', 'praise', 'scold', 'lecture', 'calm', 'pamper')):
+            is_soc = True
+    if not is_soc:
+        return None, None
     if actor is None or target is None or not getattr(target, 'is_sim', False):
         return None, None
     if actor.sim_info.sim_id == target.sim_info.sim_id:
@@ -844,6 +890,9 @@ def _observe_solo_vocal(interaction, actor, hook_stage='start', outcome_result=N
         'is_super': bool(getattr(interaction, 'is_super', False)),
         'venue': venue['id'],
         'venue_stbl': venue['stbl'],
+        'lot_name': venue.get('lot_name'),
+        'lot_traits': venue.get('lot_traits'),
+        'business': venue.get('business'),
         'actor': _sim_snapshot(actor),
         'target': None,
     }
@@ -908,6 +957,9 @@ def _observe(interaction, hook_stage='start', outcome_result=None):
         'is_super': bool(getattr(interaction, 'is_super', False)),
         'venue': venue['id'],
         'venue_stbl': venue['stbl'],
+        'lot_name': venue.get('lot_name'),
+        'lot_traits': venue.get('lot_traits'),
+        'business': venue.get('business'),
         'actor': _sim_snapshot(actor),
         'target': _sim_snapshot(target),
         'relationship': _relationship_snapshot(actor.sim_info, target.sim_info),
@@ -1248,6 +1300,9 @@ def _submit_player_chat(actor_sim, target_sim, message_text):
         'is_super': False,
         'venue': venue['id'],
         'venue_stbl': venue['stbl'],
+        'lot_name': venue.get('lot_name'),
+        'lot_traits': venue.get('lot_traits'),
+        'business': venue.get('business'),
         'actor': _sim_snapshot(actor_sim),
         'target': _sim_snapshot(target_sim),
         'relationship': _relationship_snapshot(actor_sim.sim_info, target_sim.sim_info),
@@ -1276,6 +1331,9 @@ def _submit_player_ask_self(actor_sim, question_text):
         'is_super': False,
         'venue': venue['id'],
         'venue_stbl': venue['stbl'],
+        'lot_name': venue.get('lot_name'),
+        'lot_traits': venue.get('lot_traits'),
+        'business': venue.get('business'),
         'actor': _sim_snapshot(actor_sim),
         'target': None,
     }
@@ -1526,6 +1584,9 @@ def solo_vocal_command(*words, _connection=None):
         'is_super': True,
         'venue': venue['id'],
         'venue_stbl': venue['stbl'],
+        'lot_name': venue.get('lot_name'),
+        'lot_traits': venue.get('lot_traits'),
+        'business': venue.get('business'),
         'actor': _sim_snapshot(active_sim),
         'target': None,
     }
