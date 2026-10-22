@@ -295,3 +295,14 @@ Next:
   - Added live streaming of `companion.py` stdout lines into the in-game `Ctrl+Shift+C` Cheat Console via `services.client_manager().get_first_client_id()` + `sims4.commands.CheatOutput`, plus `banter.logs [on|off|tail]` and `banter.companion [status|restart]`.
   - Persisted original Simlish `voice_actor` hashes in `BanterLabData/original_voice_actors.json` so `banter.mute` and `select_openrouter_voice` preserve true voice actors across `banter.reload` and saved games.
   - Updated [build.py](build.py) to deploy `BanterLab.ts4script`, `companion.py`, and `prompt.txt` directly to `Mods/BanterLab/`.
+
+## 2026-10-21 — Audio-matched `timeout_duration` (`audio_duration + 2.0s`) & `Enter`-to-send in player text dialogs
+
+- **Root causes traced in `UI.package` ActionScript bytecode:**
+  - **Why notifications lingered and stacked:** In `UI.package` Resource #144 (`Notifications.gfx`, `0x62ECC59A:0x00000000:0x47928BF88A95BD53`), `UiDialogNotification` inherits `timeout_duration` from `UiDialogMessage` (`UiDialogMessage.ParseObject` copies `param1['timeout_duration']` onto the notification object), **but** `NotificationsMain.ShowNextMessage` (`mid=6609`) ignored `notification.timeout_duration` and hardcoded `mHideTimer = new Timer(Math.max(4000, text.length * 100))` (`100 ms/char`, making a 215-char exchange linger for `21.5 s` while its audio lasted `~10.6 s`).
+  - **Why pressing `Enter` while typing didn't submit:** In `UI.package` Resource #746 (`Dialog.gfx`, `0x62ECC59A:0x00000000:0x379A262E4BFB7F29`), `TextInputHeader` set `mcTextInput.textField.multiline = true` (so `Enter` inserted `\r`), and `TextInput.handleInput` (`mid=7960`) was a stub that returned without checking `details.code == 13` (`Keyboard.ENTER`).
+- **Completed:**
+  - Updated [src/banter_lab/__init__.py](src/banter_lab/__init__.py) (`_notify` + `_ReplyPoller.poll`) to pass `timeout_duration = int(round((audio_duration + 2.0) * 1000))` (in ms) on `UiDialogNotification`.
+  - Updated [build.py](build.py) to build and deploy `BanterLabUI.package` alongside `BanterLab.ts4script`:
+    1. Patches `NotificationsMain.ShowNextMessage` (`mid=6609` in `Notifications.gfx`) to set `_loc3_ = Number(notification.timeout_duration)` whenever `notification.timeout_duration > 0` (leaving vanilla notifications with `timeout_duration == 0` untouched).
+    2. Patches `Dialog.gfx` (`TextInput.handleInput` `mid=7960`, `TextInputHeader.Initialize` `mid=8348`, `TextInputHeader.Draw` `mid=8349`, `OnComponentEvent` `mid=8352`, `OnTextInputChanged` `mid=8353`) so `mcTextInput` auto-focuses when the dialog opens, keeps `wordWrap = true` with `multiline = false`, and calls `DialogManager.HandleOKConfirm()` on `Enter` (`code == 13`, `KEY_DOWN`).

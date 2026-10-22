@@ -102,7 +102,7 @@ class _BanterInputDialog(UiDialogTextInputOkCancel):
 
     def on_text_input(self, text_input_name='', text_input=''):
         self.text_input_responses[text_input_name] = text_input
-        return False
+        return True
 
     def build_msg(self, text_input_overrides=None, additional_tokens=(), **kwargs):
         msg = super().build_msg(additional_tokens=(), **kwargs)
@@ -369,15 +369,17 @@ def _drain_companion_console(force_tail=0, _connection=None):
     return printed
 
 
-def _notify(title, text, owner=None, secondary_owner=None):
-    dialog = UiDialogNotification.TunableFactory().default(
-        owner,
-        title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(title),
-        text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(text),
-        expand_behavior=UiDialogNotification.UiDialogNotificationExpandBehavior.FORCE_EXPAND,
-        visual_type=UiDialogNotification.UiDialogNotificationVisualType.SPEECH,
-        information_level=UiDialogNotification.UiDialogNotificationLevel.SIM,
-    )
+def _notify(title, text, owner=None, secondary_owner=None, timeout_ms=None):
+    factory_kwargs = {
+        'title': lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(title),
+        'text': lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(text),
+        'expand_behavior': UiDialogNotification.UiDialogNotificationExpandBehavior.FORCE_EXPAND,
+        'visual_type': UiDialogNotification.UiDialogNotificationVisualType.SPEECH,
+        'information_level': UiDialogNotification.UiDialogNotificationLevel.SIM,
+    }
+    if timeout_ms is not None and int(timeout_ms) > 0:
+        factory_kwargs['timeout_duration'] = int(timeout_ms)
+    dialog = UiDialogNotification.TunableFactory().default(owner, **factory_kwargs)
     kwargs = {}
     if owner is not None:
         kwargs['icon_override'] = IconInfoData(obj_instance=owner)
@@ -757,8 +759,15 @@ class _ReplyPoller:
                     _mark_english_for_sims(actor_info.get_sim_instance())
                 if target_info is not None and target_info.get_sim_instance() is not None:
                     _mark_english_for_sims(target_info.get_sim_instance())
-                _notify(title, reply['text'], actor_info, target_info)
-                _record(dict(reply, type='displayed', displayed_at=time.time()))
+                tts_meta = reply.get('tts') or {}
+                audio_dur = float(tts_meta.get('duration_seconds') or 0.0)
+                if audio_dur > 0.0:
+                    timeout_ms = int(round((audio_dur + 2.0) * 1000))
+                else:
+                    est_dur = max(2.0, len(reply.get('text', '')) / 18.0)
+                    timeout_ms = int(round((est_dur + 2.0) * 1000))
+                _notify(title, reply['text'], actor_info, target_info, timeout_ms=timeout_ms)
+                _record(dict(reply, type='displayed', displayed_at=time.time(), timeout_duration_ms=timeout_ms))
         except Exception:
             _record({'type': 'error', 'traceback': traceback.format_exc()})
 

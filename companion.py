@@ -554,6 +554,8 @@ def synthesize_dialogue_sapi(text: str, actor: dict, target: dict | None, wav_pa
     ack = worker.stdout.readline().strip()
     if ack != 'OK':
         raise RuntimeError(f'TTS worker failed: {ack}')
+    with wave.open(str(wav_path), 'rb') as wf:
+        dur_s = round(wf.getnframes() / float(wf.getframerate() or 22050), 2)
     return {
         'engine': 'sapi',
         'audio_file': str(wav_path),
@@ -563,6 +565,7 @@ def synthesize_dialogue_sapi(text: str, actor: dict, target: dict | None, wav_pa
         'tts_cost_usd': 0.0,
         'tts_calls': 0,
         'wav_bytes': wav_path.stat().st_size,
+        'duration_seconds': dur_s,
     }
 
 
@@ -1115,7 +1118,7 @@ def main():
                 _console_log(
                     f"[{reply['event_id']}] lang={reply.get('language')} "
                     f"chat={reply.get('elapsed_seconds')}s tts={tts_meta.get('tts_elapsed_seconds')}s "
-                    f"voices=({v1}, {v2}) | "
+                    f"audio={tts_meta.get('duration_seconds')}s voices=({v1}, {v2}) | "
                     f"call=${cs['last_exchange']['total_usd']:.6f} "
                     f"session=${cs['session']['total_usd']:.6f} "
                     f"total=${cs['cumulative']['total_usd']:.6f}",
