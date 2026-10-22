@@ -752,6 +752,107 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
 
 
 
+class MemoryStore:
+    """Persist per-Sim-pair and per-Sim solo dialogue history across lots and game sessions."""
+
+    def __init__(self, data_dir: Path | None):
+        self.data_dir = data_dir or (ROOT / '.local')
+        self.path = self.data_dir / 'memories.json'
+        self.pairs: dict[str, list[dict]] = {}
+        self._load_or_seed()
+
+    @staticmethod
+    def make_key(actor_name: str, target_name: str | None = None) -> str:
+        a = (actor_name or 'Sim').strip()
+        t = (target_name or '').strip()
+        if t and t != a:
+            return ' :: '.join(sorted((a, t)))
+        return f'solo::{a}'
+
+    def _load_or_seed(self) -> None:
+        if self.path.exists():
+            try:
+                raw = json.loads(self.path.read_text(encoding='utf-8-sig'))
+                if isinstance(raw, dict) and isinstance(raw.get('pairs'), dict):
+                    self.pairs = raw['pairs']
+                    return
+            except Exception:
+                pass
+        events_path = self.data_dir / 'events.jsonl'
+        if not events_path.exists():
+            return
+        by_id: dict[str, dict] = {}
+        try:
+            for line in events_path.read_text(encoding='utf-8', errors='replace').splitlines():
+                try:
+                    ev = json.loads(line)
+                except Exception:
+                    continue
+                etype = ev.get('type')
+                eid = str(ev.get('event_id') or '')
+                if etype in ('social', 'player_chat', 'solo_vocal', 'player_ask_self') and eid:
+                    by_id[eid] = ev
+                elif etype == 'displayed' and eid and ev.get('text'):
+                    src = by_id.get(eid) or {}
+                    actor = src.get('actor') or {}
+                    target = src.get('target') if isinstance(src.get('target'), dict) else None
+                    aname = str(actor.get('name') or '').strip()
+                    tname = str(target.get('name') or '').strip() if target else ''
+                    if not aname:
+                        continue
+                    key = self.make_key(aname, tname)
+                    lot = src.get('lot_name') or resolve_stbl(src.get('venue_stbl'), actor, target) or src.get('venue')
+                    inter = resolve_stbl(src.get('interaction_stbl'), actor, target) or src.get('interaction')
+                    lst = self.pairs.setdefault(key, [])
+                    lst.append({
+                        'ts': round(float(ev.get('observed_at') or time.time()), 1),
+                        'lot': lot,
+                        'interaction': inter,
+                        'outcome': src.get('outcome'),
+                        'text': str(ev.get('text')).strip(),
+                    })
+                    if len(lst) > 8:
+                        del lst[:-8]
+            if self.pairs:
+                self.save()
+        except Exception:
+            pass
+
+    def get_memory(self, actor_name: str, target_name: str | None = None, limit: int = 4) -> list[dict]:
+        key = self.make_key(actor_name, target_name)
+        items = self.pairs.get(key) or []
+        return items[-limit:]
+
+    def record(self, event: dict, scene: dict, text: str) -> None:
+        actor = event.get('actor') or {}
+        target = event.get('target') if isinstance(event.get('target'), dict) else None
+        aname = str(actor.get('name') or '').strip()
+        tname = str(target.get('name') or '').strip() if target else ''
+        if not aname or not text:
+            return
+        key = self.make_key(aname, tname)
+        lst = self.pairs.setdefault(key, [])
+        entry = {
+            'ts': round(time.time(), 1),
+            'lot': scene.get('lot_name') or scene.get('venue_label') or scene.get('venue'),
+            'interaction': scene.get('interaction_label') or scene.get('interaction'),
+            'outcome': scene.get('outcome'),
+            'text': text.strip(),
+        }
+        lst.append(entry)
+        if len(lst) > 8:
+            del lst[:-8]
+        self.save()
+
+    def save(self) -> None:
+        payload = {
+            'updated_at': round(time.time(), 1),
+            'pair_count': len(self.pairs),
+            'pairs': self.pairs,
+        }
+        _safe_write_json(self.path, payload, indent=2)
+
+
 class CostTracker:
     """Track per-call, per-session, and cumulative OpenRouter spend (text + TTS)."""
 
@@ -910,6 +1011,7 @@ def build_scene(
     event: dict,
     recent_dialogue: list[str] | None = None,
     language: str = 'English',
+    pair_memory: list[dict] | None = None,
 ) -> dict:
     actor = event['actor']
     target = event.get('target') if isinstance(event.get('target'), dict) else None
@@ -1000,6 +1102,8 @@ def build_scene(
 
     if event.get('player_message'):
         scene['player_message'] = event['player_message']
+    if pair_memory:
+        scene['pair_memory'] = pair_memory[-4:]
     if recent_dialogue:
         scene['recent_dialogue'] = recent_dialogue[-3:]
     return scene
@@ -1364,9 +1468,14 @@ def generate(
     language_override: str | None = None,
     api_key: str = DEFAULT_OPENROUTER_API_KEY,
     cost_tracker: CostTracker | None = None,
+    memory_store: MemoryStore | None = None,
 ) -> dict:
     language = choose_scene_language(event, multilingual_chance=multilingual_chance, language_override=language_override)
-    scene = build_scene(event, recent_dialogue=recent_dialogue, language=language)
+    actor_name = str((event.get('actor') or {}).get('name') or '')
+    target_dict = event.get('target') if isinstance(event.get('target'), dict) else None
+    target_name = str(target_dict.get('name') or '') if target_dict else None
+    pair_mem = memory_store.get_memory(actor_name, target_name) if memory_store is not None else None
+    scene = build_scene(event, recent_dialogue=recent_dialogue, language=language, pair_memory=pair_mem)
     payload: dict = {
         'model': model,
         'messages': [
@@ -1439,6 +1548,8 @@ def generate(
         tts_cost_usd = float(tts_info.get('tts_cost_usd') or 0.0)
         tts_calls = int(tts_info.get('tts_calls') or 0)
 
+    if memory_store is not None:
+        memory_store.record(event, scene, text)
     if cost_tracker is not None:
         out['cost_summary'] = cost_tracker.record_exchange(
             chat_cost_usd=chat_cost_usd,
@@ -1587,7 +1698,9 @@ def main():
 
     if args.once:
         once_event = json.loads(args.once.read_text(encoding='utf-8-sig'))
-        tracker = CostTracker(args.data_directory or (ROOT / '.local'), args.api_key)
+        data_dir_once = args.data_directory or (ROOT / '.local')
+        memories_once = MemoryStore(data_dir_once)
+        tracker = CostTracker(data_dir_once, args.api_key)
         print(json.dumps(
             generate(
                 once_event,
@@ -1599,6 +1712,7 @@ def main():
                 language_override=args.language,
                 api_key=args.api_key,
                 cost_tracker=tracker,
+                memory_store=memories_once,
             ),
             ensure_ascii=False,
             indent=2,
@@ -1622,6 +1736,7 @@ def main():
     recent_by_zone: dict[str, list[str]] = {}
 
     load_stbl_dictionary()
+    memories = MemoryStore(data)
     tracker = CostTracker(data, args.api_key)
     snap = tracker.snapshot()
     _console_log(
@@ -1677,6 +1792,7 @@ def main():
                     language_override=args.language,
                     api_key=args.api_key,
                     cost_tracker=tracker,
+                    memory_store=memories,
                 )
                 recent.append(reply['text'])
                 if len(recent) > 6:

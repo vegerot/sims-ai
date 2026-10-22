@@ -36,14 +36,14 @@ from ui.ui_dialog_generic import UiDialogTextInputOkCancel
 from ui.ui_dialog_notification import UiDialogNotification
 
 
-_enabled = False
+_enabled = True
 _trace = False
-_mute_simlish = False
+_mute_simlish = True
 _original_voice_actors = {}
 _last_shown = 0.0
 _last_solo_shown = 0.0
 _event_count = 0
-_mode = 'fixed'
+_mode = 'ai'
 _trigger_on = 'outcome'
 _pending = None
 _alarm = None
@@ -137,6 +137,48 @@ def _string_hash(value, *tokens):
         except Exception:
             pass
     return None
+
+
+def _settings_path():
+    return os.path.join(_data_directory, 'settings.json')
+
+
+def _save_settings():
+    try:
+        os.makedirs(_data_directory, exist_ok=True)
+        payload = {
+            'enabled': bool(_enabled),
+            'mute_simlish': bool(_mute_simlish),
+            'mode': str(_mode),
+            'trigger_on': str(_trigger_on),
+            'console_logging': bool(_console_logging),
+            'updated_at': time.time(),
+        }
+        tmp_path = _settings_path() + '.tmp'
+        with open(tmp_path, 'w', encoding='utf-8') as stream:
+            json.dump(payload, stream, indent=2)
+        os.replace(tmp_path, _settings_path())
+    except Exception:
+        pass
+
+
+def _load_settings():
+    global _enabled, _mute_simlish, _mode, _trigger_on, _console_logging
+    path = _settings_path()
+    if not os.path.exists(path):
+        _save_settings()
+        return
+    try:
+        with open(path, encoding='utf-8-sig') as stream:
+            data = json.load(stream)
+        if isinstance(data, dict):
+            _enabled = bool(data.get('enabled', True))
+            _mute_simlish = bool(data.get('mute_simlish', True))
+            _mode = str(data.get('mode') or 'ai')
+            _trigger_on = str(data.get('trigger_on') or 'outcome')
+            _console_logging = bool(data.get('console_logging', True))
+    except Exception:
+        pass
 
 
 def _load_original_voice_actors():
@@ -1205,6 +1247,7 @@ def _install_pie_menu_interaction():
                             stop()
                             _notify('Banter Lab', 'English Banter turned off.', actor_sim.sim_info)
                         else:
+                            mute_command('on')
                             start_ai('outcome')
                             _notify('Banter Lab',
                                     'English Banter is on! Sims will now speak contextual English during socials and solo vocalizations.',
@@ -1455,13 +1498,23 @@ PlaySound.start = _on_playsound_start
 def _on_zone_loaded(self, *args, **kwargs):
     ret = _original_zone_loaded(self, *args, **kwargs)
     try:
+        _load_settings()
         count = _install_pie_menu_interaction()
+        if _enabled and _mode == 'ai':
+            _ensure_companion_running()
         if _mute_simlish:
             _sync_zone_mute()
         _cancel_polling()
         _ensure_poller_alarm()
         _drain_companion_console()
-        _record({'type': 'pie_menu_installed', 'sims': count, 'observed_at': time.time()})
+        _record({
+            'type': 'pie_menu_installed',
+            'sims': count,
+            'enabled': _enabled,
+            'mute_simlish': _mute_simlish,
+            'mode': _mode,
+            'observed_at': time.time(),
+        })
     except Exception:
         _record({'type': 'error', 'traceback': traceback.format_exc()})
     return ret
@@ -1489,6 +1542,7 @@ def start(trigger: str = 'start', _connection=None):
     _mode = 'fixed'
     _trigger_on = 'outcome' if trigger == 'outcome' else 'start'
     _last_shown = 0
+    _save_settings()
     if _connection is not None:
         sims4.commands.CheatOutput(_connection)(
             'Banter Lab observing social interactions (trigger={}).'.format(_trigger_on))
@@ -1509,6 +1563,7 @@ def start_ai(trigger: str = 'outcome', _connection=None):
     _mode = 'ai'
     _trigger_on = 'start' if trigger == 'start' else 'outcome'
     _last_shown = 0
+    _save_settings()
     alive, hb = _companion_heartbeat()
     comp_state = 'running (pid={})'.format(hb.get('pid')) if (alive and hb) else 'auto-starting'
     _console_print(
@@ -1623,6 +1678,7 @@ def mute_command(state: str = 'on', _connection=None):
     """Dynamically silence or restore Simlish voice_actor on instanced Sims in the zone."""
     global _mute_simlish
     _mute_simlish = state.lower() not in ('off', '0', 'false', 'stop')
+    _save_settings()
     count = _sync_zone_mute()
     active_info = services.active_sim_info()
     _record({
@@ -1656,6 +1712,7 @@ def stop(_connection=None):
     if _mute_simlish:
         _mute_simlish = False
         _sync_zone_mute()
+    _save_settings()
     if _connection is not None:
         _console_print('Banter Lab stopped and Simlish voices restored.', _connection=_connection)
 
@@ -1667,11 +1724,13 @@ def logs_command(mode: str = 'tail', _connection=None):
     m = (mode or 'tail').lower().strip()
     if m in ('on', '1', 'true'):
         _console_logging = True
+        _save_settings()
         _ensure_poller_alarm()
         _console_print('Banter Lab console log streaming=True.', _connection=_connection)
         _drain_companion_console(force_tail=5, _connection=_connection)
     elif m in ('off', '0', 'false'):
         _console_logging = False
+        _save_settings()
         _console_print('Banter Lab console log streaming=False.', _connection=_connection)
     else:
         count = _drain_companion_console(force_tail=10, _connection=_connection)
@@ -1832,11 +1891,16 @@ def test_audio(mode: str = 'hello', _connection=None):
     output('Requested {} audio probe; audible playback still needs verification.'.format(mode))
 
 
+_load_settings()
 _load_original_voice_actors()
 
 try:
     if services.current_zone() is not None:
         _install_pie_menu_interaction()
+        if _enabled and _mode == 'ai':
+            _ensure_companion_running()
+        if _mute_simlish:
+            _sync_zone_mute()
         _ensure_poller_alarm()
 except Exception:
     pass

@@ -26,4 +26,4 @@ Style rules:
 - Keep each line concise and punchy (8–22 words per line) so it sounds natural when spoken aloud.
 - Match The Sims' playful, deadpan, slightly absurd humor without forcing food jokes unless food or hunger is actually in the scene.
 - Show personality through attitude and subtext—never literally announce trait names (do NOT say 'my neat side', 'my music-lover side', 'I'm adventurous', or mention stealing dumbbells on every turn).
-- Prioritize the specific `interaction_label` and `active_buffs` over general traits, and never repeat a joke, prop, or phrasing already present in `recent_dialogue`.
+- Prioritize the specific `interaction_label` and `active_buffs` over general traits. Use `pair_memory` (previous exchanges between these exact Sims across lots/sessions) for continuity and callbacks, and never repeat a joke, prop, or phrasing already present in `pair_memory` or `recent_dialogue`.
