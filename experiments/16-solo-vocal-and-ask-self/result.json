@@ -1,4 +1,6 @@
 {
+  "evidence": "harness-only (corrected 2026-10-22)",
+  "evidence_note": "These records came from importing the mod under the local Python 3.7.9 compiler with mocked game objects (.local/test-exp16-data), not from The Sims 4 (which embeds Python 3.7.0). None of the solo_vocal, vox_attempt, or harness event IDs below appear in the real BanterLabData/events.jsonl (297 records, 2026-10-20 to 2026-10-21 21:02). Player Ask Self was later observed live (4 player_ask_self events); Shout Forbidden Words and vox_attempt were never observed live.",
   "python_version": "3.7.9 (tags/v3.7.9:13c94747c7, Aug 17 2020, 18:58:18) [MSC v.1900 64 bit (AMD64)]",
   "pie_menu_installed_sims": 2,
   "pie_menu_on_active_sim": {

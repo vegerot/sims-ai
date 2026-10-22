@@ -1,4 +1,5 @@
 {
+  "correction_2026_10_22": "This experiment concluded Gemini TTS was unavailable on OpenRouter by calling the chat model google/gemini-3.8-flash on /chat/completions. OpenRouter lists dedicated speech models (including google/gemini-3.8-flash-tts) on /api/v1/audio/speech; a 2026-10-22 probe returned audio for the line gpt-audio-mini refused, at 3.0-4.4 s wall time (n=3, not listened to). Max chose to keep openai/gpt-audio-mini.",
   "throw_drink_en": {
     "event_id": "1792603519538-17",
     "event_type": "social",

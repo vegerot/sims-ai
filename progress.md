@@ -306,3 +306,14 @@ Next:
   - Updated [build.py](build.py) to build and deploy `BanterLabUI.package` alongside `BanterLab.ts4script`:
     1. Patches `NotificationsMain.ShowNextMessage` (`mid=6609` in `Notifications.gfx`) to set `_loc3_ = Number(notification.timeout_duration)` whenever `notification.timeout_duration > 0` (leaving vanilla notifications with `timeout_duration == 0` untouched).
     2. Patches `Dialog.gfx` (`TextInput.handleInput` `mid=7960`, `TextInputHeader.Initialize` `mid=8348`, `TextInputHeader.Draw` `mid=8349`, `OnComponentEvent` `mid=8352`, `OnTextInputChanged` `mid=8353`) so `mcTextInput` auto-focuses when the dialog opens, keeps `wordWrap = true` with `multiline = false`, and calls `DialogManager.HandleOKConfirm()` on `Enter` (`code == 13`, `KEY_DOWN`).
+
+## 2026-10-22 — Evidence audit and the verification rule
+
+- 🔎 An ethos / five-step audit compared the records with the real game log (`BanterLabData/events.jsonl`, 297 records, 2026-10-20 → 2026-10-21 21:02):
+  - Experiment 16's `result.json` was harness output (local Python 3.7.9 with mocks in `.local/test-exp16-data`), not the game (Python 3.7.0). Its `solo_vocal` and `vox_attempt` records never appear in the game log. Ask Self was observed live (4 events). Shout Forbidden Words was never observed live.
+  - `vox_attempt` (the Simlish-replacement meter) logged 0 events in the game, while `banter.status` printed 100% coverage.
+  - The save-aware stack (`c340016`–`fffe078`) had 0 game runs: no game event contains `careers` or `social_connections`.
+  - Experiment 15 tested the chat model `google/gemini-3.8-flash`, not the speech model `google/gemini-3.8-flash-tts` on `/api/v1/audio/speech`. Max chose to keep `openai/gpt-audio-mini` anyway.
+  - Measured: outcome → notification p50 4.38 s (n=40); voiced audio p50 11.98 s (n=43); 10 of 43 exchanges began before the previous audio ended (`winsound` `SND_ASYNC` cuts the previous sound off).
+- ✅ **Rule:** a behavior is *verified* only when it appears in the real game's `events.jsonl` (or a screenshot / recording of the real game). Harness runs are labelled harness runs.
+- 🧭 Max's decisions: mute only the Simlish that is replaced by English (keep all other Simlish); keep two-line exchanges; playtest on a copy of her save via CUA; keep OpenAI TTS.
