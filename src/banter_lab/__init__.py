@@ -8,6 +8,7 @@ import functools
 import importlib
 import json
 import os
+import subprocess
 import sys
 import time
 import traceback
@@ -75,8 +76,21 @@ _SOLO_VOCAL_SUBSTRINGS = (
 _skip_counts = {}
 _vox_stats = {'total': 0, 'covered_by_english': 0, 'unreplaced': 0}
 _last_english_by_sim = {}
+_console_logging = True
+_console_log_offset = None
+_last_connection = None
+_last_companion_spawn_attempt = 0.0
 # Zip-imported modules have a path inside the .ts4script archive.
-_data_directory = os.path.join(os.path.dirname(__file__.split('.ts4script', 1)[0]), 'BanterLabData')
+_mod_directory = os.path.dirname(__file__.split('.ts4script', 1)[0])
+_data_directory = os.path.join(_mod_directory, 'BanterLabData')
+_REPO_COMPANION_PATH = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\companion.py'
+_PYTHON_CANDIDATES = (
+    r'C:\Users\Max\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe',
+    r'C:\Users\Max\.local\bin\python3.15.exe',
+    os.path.expanduser(r'~\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe'),
+    os.path.expanduser(r'~\.local\bin\python3.15.exe'),
+    os.path.expanduser(r'~\AppData\Local\Programs\Python\Python314\python.exe'),
+)
 
 
 class _BanterInputDialog(UiDialogTextInputOkCancel):
@@ -125,10 +139,45 @@ def _string_hash(value, *tokens):
     return None
 
 
+def _load_original_voice_actors():
+    path = os.path.join(_data_directory, 'original_voice_actors.json')
+    if not os.path.exists(path):
+        return
+    try:
+        with open(path, encoding='utf-8-sig') as stream:
+            raw = json.load(stream)
+        for k, v in raw.items():
+            iv = int(v)
+            if iv and iv != _MUTE_VOICE_ACTOR:
+                _original_voice_actors[int(k)] = iv
+    except Exception:
+        pass
+
+
+def _save_original_voice_actors():
+    try:
+        os.makedirs(_data_directory, exist_ok=True)
+        path = os.path.join(_data_directory, 'original_voice_actors.json')
+        payload = {str(k): int(v) for k, v in _original_voice_actors.items() if v and v != _MUTE_VOICE_ACTOR}
+        with open(path, 'w', encoding='utf-8') as stream:
+            json.dump(payload, stream, indent=2)
+    except Exception:
+        pass
+
+
 def _true_voice_actor(info):
-    if info.sim_id in _original_voice_actors:
-        return _original_voice_actors[info.sim_id]
-    return int(getattr(info, 'voice_actor', 0))
+    if info is None:
+        return 0
+    sim_id = int(info.sim_id)
+    if sim_id in _original_voice_actors:
+        return _original_voice_actors[sim_id]
+    current = int(getattr(info, 'voice_actor', 0))
+    if current != _MUTE_VOICE_ACTOR and current != 0:
+        _original_voice_actors[sim_id] = current
+        _save_original_voice_actors()
+        return current
+    gender = getattr(getattr(info, 'gender', None), 'name', '')
+    return 1802970394 if str(gender).upper() == 'FEMALE' else 1685527063
 
 
 def _distribute_voice_actor(info, actor_hash):
@@ -141,9 +190,11 @@ def _distribute_voice_actor(info, actor_hash):
 def _apply_mute_to_info(info):
     if info is None:
         return
+    sim_id = int(info.sim_id)
     current = int(getattr(info, 'voice_actor', 0))
-    if info.sim_id not in _original_voice_actors and current != _MUTE_VOICE_ACTOR:
-        _original_voice_actors[info.sim_id] = current
+    if sim_id not in _original_voice_actors and current != _MUTE_VOICE_ACTOR and current != 0:
+        _original_voice_actors[sim_id] = current
+        _save_original_voice_actors()
     if current != _MUTE_VOICE_ACTOR:
         _distribute_voice_actor(info, _MUTE_VOICE_ACTOR)
 
@@ -159,13 +210,163 @@ def _sync_zone_mute():
                 _apply_mute_to_info(info)
                 count += 1
     else:
-        for sim_id, orig_actor in list(_original_voice_actors.items()):
-            info = manager.get(sim_id)
-            if info is not None:
-                _distribute_voice_actor(info, orig_actor)
-                count += 1
-            _original_voice_actors.pop(sim_id, None)
+        for info in manager.values():
+            if info.get_sim_instance() is not None or int(getattr(info, 'voice_actor', 0)) == _MUTE_VOICE_ACTOR:
+                orig_actor = _true_voice_actor(info)
+                if orig_actor and orig_actor != _MUTE_VOICE_ACTOR:
+                    _distribute_voice_actor(info, orig_actor)
+                    count += 1
     return count
+
+
+def _console_print(text, _connection=None):
+    global _last_connection
+    if _connection is not None:
+        _last_connection = _connection
+    conn = _connection if _connection is not None else _last_connection
+    if conn is None:
+        try:
+            cm = services.client_manager()
+            if cm is not None:
+                conn = cm.get_first_client_id()
+        except Exception:
+            conn = None
+    if conn is None:
+        return False
+    try:
+        sims4.commands.CheatOutput(conn)(str(text))
+        return True
+    except Exception:
+        return False
+
+
+def _companion_heartbeat():
+    hb_path = os.path.join(_data_directory, 'companion_heartbeat.json')
+    if not os.path.exists(hb_path):
+        return False, None
+    try:
+        with open(hb_path, encoding='utf-8-sig') as stream:
+            data = json.load(stream)
+        age = time.time() - float(data.get('ts') or 0.0)
+        return age < 8.0, data
+    except Exception:
+        return False, None
+
+
+def _find_companion_command():
+    py_exe = 'python'
+    for candidate in _PYTHON_CANDIDATES:
+        if os.path.exists(candidate):
+            py_exe = candidate
+            break
+    script_path = None
+    for candidate_script in (_REPO_COMPANION_PATH, os.path.join(_mod_directory, 'companion.py')):
+        if os.path.exists(candidate_script):
+            script_path = candidate_script
+            break
+    return py_exe, script_path
+
+
+def _ensure_companion_running(force=False, _connection=None):
+    global _last_companion_spawn_attempt
+    alive, _ = _companion_heartbeat()
+    if alive and not force:
+        return True
+    now_mono = time.monotonic()
+    if not force and (now_mono - _last_companion_spawn_attempt) < 8.0:
+        return False
+    _last_companion_spawn_attempt = now_mono
+    py_exe, script_path = _find_companion_command()
+    if not script_path:
+        _record({'type': 'companion_spawn_failed', 'reason': 'companion.py not found', 'observed_at': time.time()})
+        return False
+    try:
+        os.makedirs(_data_directory, exist_ok=True)
+        stdout_path = os.path.join(_data_directory, 'companion.stdout.log')
+        stderr_path = os.path.join(_data_directory, 'companion.stderr.log')
+        out_stream = open(stdout_path, 'a', encoding='utf-8')
+        err_stream = open(stderr_path, 'a', encoding='utf-8')
+        cmd = [py_exe, script_path, '--data-directory', _data_directory, '--speak']
+        if force:
+            cmd.append('--replace')
+        flags = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
+        proc = subprocess.Popen(
+            cmd,
+            cwd=os.path.dirname(script_path),
+            stdout=out_stream,
+            stderr=err_stream,
+            creationflags=flags,
+        )
+        _record({
+            'type': 'companion_spawned',
+            'pid': proc.pid,
+            'python': py_exe,
+            'script': script_path,
+            'force': bool(force),
+            'observed_at': time.time(),
+        })
+        _console_print('[Banter Lab] Auto-started companion.py (pid={}).'.format(proc.pid), _connection=_connection)
+        return True
+    except Exception:
+        _record({'type': 'error', 'traceback': traceback.format_exc()})
+        return False
+
+
+def _drain_companion_console(force_tail=0, _connection=None):
+    global _console_log_offset
+    log_path = os.path.join(_data_directory, 'companion_console.jsonl')
+    if not os.path.exists(log_path):
+        return 0
+    printed = 0
+    try:
+        if force_tail > 0:
+            with open(log_path, encoding='utf-8-sig') as stream:
+                lines = [ln for ln in stream.read().splitlines() if ln.strip()]
+                _console_log_offset = stream.tell()
+            for raw_line in lines[-force_tail:]:
+                try:
+                    rec = json.loads(raw_line)
+                    if _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection):
+                        printed += 1
+                except Exception:
+                    pass
+            return printed
+
+        if _console_log_offset is None:
+            with open(log_path, encoding='utf-8-sig') as stream:
+                lines = [ln for ln in stream.read().splitlines() if ln.strip()]
+                _console_log_offset = stream.tell()
+            if _console_logging:
+                now_ts = time.time()
+                for raw_line in lines[-2:]:
+                    try:
+                        rec = json.loads(raw_line)
+                        if (now_ts - float(rec.get('ts') or 0.0)) < 3600.0:
+                            if _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection):
+                                printed += 1
+                    except Exception:
+                        pass
+            return printed
+
+        with open(log_path, encoding='utf-8-sig') as stream:
+            stream.seek(_console_log_offset)
+            while True:
+                pos = stream.tell()
+                line = stream.readline()
+                if not line or not line.endswith('\n'):
+                    stream.seek(pos)
+                    break
+                _console_log_offset = stream.tell()
+                if _console_logging:
+                    try:
+                        rec = json.loads(line)
+                        if _console_print('[Companion] {}'.format(rec.get('text', '')), _connection=_connection):
+                            printed += 1
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+    return printed
 
 
 def _notify(title, text, owner=None, secondary_owner=None):
@@ -523,6 +724,9 @@ def _observe(interaction, hook_stage='start', outcome_result=None):
 class _ReplyPoller:
     def poll(self, _timeline_handle):
         global _enabled, _pending
+        _drain_companion_console()
+        if _enabled or _pending is not None:
+            _ensure_companion_running()
         if _pending is None or _reply_path is None or not os.path.exists(_reply_path):
             return
         try:
@@ -564,6 +768,7 @@ _poller = _ReplyPoller()
 
 def _ensure_poller_alarm():
     global _alarm, _reply_path
+    _ensure_companion_running()
     if _reply_path is None:
         bridge_config = os.path.join(_data_directory, 'bridge.json')
         if os.path.exists(bridge_config):
@@ -983,6 +1188,8 @@ def _on_zone_loaded(self, *args, **kwargs):
     ret = _original_zone_loaded(self, *args, **kwargs)
     try:
         count = _install_pie_menu_interaction()
+        _ensure_poller_alarm()
+        _drain_companion_console()
         _record({'type': 'pie_menu_installed', 'sims': count, 'observed_at': time.time()})
     except Exception:
         _record({'type': 'error', 'traceback': traceback.format_exc()})
@@ -1031,9 +1238,11 @@ def start_ai(trigger: str = 'outcome', _connection=None):
     _mode = 'ai'
     _trigger_on = 'start' if trigger == 'start' else 'outcome'
     _last_shown = 0
-    if _connection is not None:
-        sims4.commands.CheatOutput(_connection)(
-            'Banter Lab: generated mode (trigger={}); start the companion first.'.format(_trigger_on))
+    alive, hb = _companion_heartbeat()
+    comp_state = 'running (pid={})'.format(hb.get('pid')) if (alive and hb) else 'auto-starting'
+    _console_print(
+        'Banter Lab: generated mode (trigger={}, companion={}).'.format(_trigger_on, comp_state),
+        _connection=_connection)
     _record({'type': 'started', 'mode': _mode, 'trigger_on': _trigger_on,
              'observed_at': time.time(), 'active_sim': _sim_snapshot(services.get_active_sim()),
              'reply_file': _reply_path})
@@ -1166,15 +1375,56 @@ def trace_command(state: str = 'on', _connection=None):
 
 @sims4.commands.Command('banter.stop', command_type=sims4.commands.CommandType.Live)
 def stop(_connection=None):
-    global _enabled, _trace, _mute_simlish
+    global _enabled, _trace, _mute_simlish, _pending
     _enabled = False
     _trace = False
-    if _mute_simlish or _original_voice_actors:
+    _pending = None
+    if _mute_simlish:
         _mute_simlish = False
         _sync_zone_mute()
-    _cancel_polling()
     if _connection is not None:
-        sims4.commands.CheatOutput(_connection)('Banter Lab stopped and Simlish voices restored.')
+        _console_print('Banter Lab stopped and Simlish voices restored.', _connection=_connection)
+
+
+@sims4.commands.Command('banter.logs', command_type=sims4.commands.CommandType.Live)
+def logs_command(mode: str = 'tail', _connection=None):
+    """Stream companion stdout logs to the game console (`on`/`off`) or print recent lines (`tail`)."""
+    global _console_logging
+    m = (mode or 'tail').lower().strip()
+    if m in ('on', '1', 'true'):
+        _console_logging = True
+        _ensure_poller_alarm()
+        _console_print('Banter Lab console log streaming=True.', _connection=_connection)
+        _drain_companion_console(force_tail=5, _connection=_connection)
+    elif m in ('off', '0', 'false'):
+        _console_logging = False
+        _console_print('Banter Lab console log streaming=False.', _connection=_connection)
+    else:
+        count = _drain_companion_console(force_tail=10, _connection=_connection)
+        if count == 0:
+            _console_print('No companion console logs recorded yet.', _connection=_connection)
+
+
+@sims4.commands.Command('banter.companion', command_type=sims4.commands.CommandType.Live)
+def companion_command(action: str = 'status', _connection=None):
+    """Check or restart the background companion.py process."""
+    act = (action or 'status').lower().strip()
+    if act in ('restart', 'start', 'spawn'):
+        ok = _ensure_companion_running(force=True, _connection=_connection)
+        _ensure_poller_alarm()
+        if not ok:
+            _console_print('Failed to spawn companion.py; check BanterLabData/events.jsonl.', _connection=_connection)
+        return
+    alive, hb = _companion_heartbeat()
+    if alive and hb:
+        age = round(time.time() - float(hb.get('ts') or 0.0), 1)
+        _console_print(
+            'Companion: alive=True, pid={}, status={}, model={}, tts={}, heartbeat_age={}s'.format(
+                hb.get('pid'), hb.get('status'), hb.get('model'), hb.get('tts_engine'), age),
+            _connection=_connection)
+    else:
+        _console_print('Companion: alive=False (spawning now...)', _connection=_connection)
+        _ensure_companion_running(force=True, _connection=_connection)
 
 
 @sims4.commands.Command('banter.status', command_type=sims4.commands.CommandType.Live)
@@ -1185,10 +1435,13 @@ def status(_connection=None):
     vox_total = _vox_stats.get('total', 0)
     vox_cov = _vox_stats.get('covered_by_english', 0)
     vox_pct = round(100.0 * vox_cov / vox_total, 1) if vox_total else 100.0
+    alive, hb = _companion_heartbeat()
+    comp_pid = hb.get('pid') if (alive and hb) else None
     if _connection is not None:
-        sims4.commands.CheatOutput(_connection)(
-            'Banter Lab: enabled={}, mute={}, observed={}, vox_covered={}/{} ({}%), skipped={}, cost(session=${:.4f}, total=${:.4f})'.format(
-                _enabled, _mute_simlish, _event_count, vox_cov, vox_total, vox_pct, _skip_counts, sess_usd, cum_usd))
+        _console_print(
+            'Banter Lab: enabled={}, mute={}, companion_pid={}, observed={}, vox_covered={}/{} ({}%), skipped={}, cost(session=${:.4f}, total=${:.4f})'.format(
+                _enabled, _mute_simlish, comp_pid, _event_count, vox_cov, vox_total, vox_pct, _skip_counts, sess_usd, cum_usd),
+            _connection=_connection)
     nearby = []
     for info in services.sim_info_manager().values():
         sim = info.get_sim_instance()
@@ -1199,11 +1452,13 @@ def status(_connection=None):
         'enabled': _enabled,
         'trace': _trace,
         'mute_simlish': _mute_simlish,
+        'companion_alive': alive,
+        'companion_heartbeat': hb,
         'mode': _mode,
         'trigger_on': _trigger_on,
         'observed_count': _event_count,
         'skip_counts': dict(_skip_counts),
-        'vox_stats': dict(_vox_stats),
+        'vox_stats': dict(_vox_counts if hasattr(sys.modules[__name__], '_vox_counts') else _vox_stats),
         'cost_summary': cost,
         'venue': _venue_snapshot(),
         'active_sim': _sim_snapshot(services.get_active_sim()) if services.get_active_sim() else None,
@@ -1303,9 +1558,12 @@ def test_audio(mode: str = 'hello', _connection=None):
     output('Requested {} audio probe; audible playback still needs verification.'.format(mode))
 
 
+_load_original_voice_actors()
+
 try:
     if services.current_zone() is not None:
         _install_pie_menu_interaction()
+        _ensure_poller_alarm()
 except Exception:
     pass
 

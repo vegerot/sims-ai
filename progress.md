@@ -286,3 +286,12 @@ Next:
   - Updated [src/banter_lab/__init__.py](src/banter_lab/__init__.py) and deployed `BanterLab.ts4script` (`56A32A02C302995AFDA1E34324E4BF9CF295CD1533D08DCB271A47A860F1B8C4`) with `skipped` and `vox_attempt` telemetry, `3.0 s` social cooldown, `unlabelled_wave` filtering, `solo_vocal` capture (`Shout Forbidden Words`), Page-1 `Ask <FirstName> a Question (English)...` on the Active Sim, and `banter.ask` / `banter.solo` / `banter.reload` commands ([16-solo-vocal-and-ask-self/result.json](experiments/16-solo-vocal-and-ask-self/result.json)).
 - **Next:**
   - Restart The Sims 4 (once, so the newly added `banter.reload`, `Ask <FirstName> a Question`, and `solo_vocal` hooks load from `BanterLab.ts4script`), run `companion.py --data-directory "C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab\BanterLabData" --speak`, and test `Shout Forbidden Words`, `Ask <Sim> a Question`, and trilingual `gpt-audio-mini` voices live!
+
+## 2026-10-21 — Auto-launching `companion.py` from inside the game + streaming companion stdout logs to the in-game Cheat Console
+
+- **Completed:**
+  - Added single-instance heartbeat tracking (`BanterLabData/companion_heartbeat.json`) and console log mirroring (`BanterLabData/companion_console.jsonl`) to [companion.py](companion.py).
+  - Updated [src/banter_lab/__init__.py](src/banter_lab/__init__.py) to auto-start `companion.py --speak` (`subprocess.CREATE_NO_WINDOW`) on lot load (`_on_zone_loaded`) and when AI mode or Pie-Menu interactions run (`_ensure_companion_running()`), eliminating any need to run a CLI command before launching The Sims 4.
+  - Added live streaming of `companion.py` stdout lines into the in-game `Ctrl+Shift+C` Cheat Console via `services.client_manager().get_first_client_id()` + `sims4.commands.CheatOutput`, plus `banter.logs [on|off|tail]` and `banter.companion [status|restart]`.
+  - Persisted original Simlish `voice_actor` hashes in `BanterLabData/original_voice_actors.json` so `banter.mute` and `select_openrouter_voice` preserve true voice actors across `banter.reload` and saved games.
+  - Updated [build.py](build.py) to deploy `BanterLab.ts4script`, `companion.py`, and `prompt.txt` directly to `Mods/BanterLab/`.

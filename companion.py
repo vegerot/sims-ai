@@ -9,6 +9,7 @@ and synthesizes trilingual (English / Hebrew / Russian) neural speech via openai
 import argparse
 import base64
 from concurrent.futures import ThreadPoolExecutor
+import ctypes
 import html
 import json
 import os
@@ -113,12 +114,14 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     global _stbl_cache
     if _stbl_cache is not None:
         return _stbl_cache
-    if STBL_CACHE_PATH.exists():
-        _stbl_cache = {
-            int(k): v
-            for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()
-        }
-        return _stbl_cache
+    fallback_cache = Path(r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\.local\stbl_en_us.json')
+    for candidate in (STBL_CACHE_PATH, fallback_cache):
+        if candidate.exists():
+            _stbl_cache = {
+                int(k): v
+                for k, v in json.loads(candidate.read_text(encoding='utf-8')).items()
+            }
+            return _stbl_cache
     strings: dict[int, str] = {}
     if game_dir.exists():
         for pkg in sorted(game_dir.rglob('Strings_ENG_US.package')):
@@ -883,6 +886,99 @@ def generate(
     return out
 
 
+def _is_pid_running(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    if sys.platform == 'win32':
+        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, int(pid))
+        if not handle:
+            return False
+        try:
+            exit_code = ctypes.c_ulong()
+            if ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                return exit_code.value == 259
+            return True
+        finally:
+            ctypes.windll.kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def _terminate_pid(pid: int) -> None:
+    if pid <= 0 or pid == os.getpid():
+        return
+    if sys.platform == 'win32':
+        handle = ctypes.windll.kernel32.OpenProcess(0x0001, False, int(pid))
+        if handle:
+            try:
+                ctypes.windll.kernel32.TerminateProcess(handle, 0)
+            finally:
+                ctypes.windll.kernel32.CloseHandle(handle)
+
+
+def _write_heartbeat(
+    data_dir: Path,
+    model: str,
+    tts_engine: str,
+    speak: bool,
+    status: str = 'listening',
+) -> None:
+    data_dir.mkdir(parents=True, exist_ok=True)
+    hb_path = data_dir / 'companion_heartbeat.json'
+    tmp_path = hb_path.with_suffix('.tmp')
+    payload = {
+        'pid': os.getpid(),
+        'ts': time.time(),
+        'model': model,
+        'tts_engine': tts_engine,
+        'speak': bool(speak),
+        'status': status,
+    }
+    tmp_path.write_text(json.dumps(payload), encoding='utf-8')
+    os.replace(tmp_path, hb_path)
+
+
+def _claim_single_instance(
+    data_dir: Path,
+    replace: bool,
+    model: str,
+    tts_engine: str,
+    speak: bool,
+) -> bool:
+    hb_path = data_dir / 'companion_heartbeat.json'
+    if hb_path.exists():
+        try:
+            existing = json.loads(hb_path.read_text(encoding='utf-8-sig'))
+            old_pid = int(existing.get('pid') or 0)
+            old_ts = float(existing.get('ts') or 0.0)
+            if old_pid and old_pid != os.getpid() and (time.time() - old_ts) < 8.0 and _is_pid_running(old_pid):
+                if replace:
+                    _terminate_pid(old_pid)
+                    time.sleep(0.25)
+                else:
+                    return False
+        except Exception:
+            pass
+    _write_heartbeat(data_dir, model, tts_engine, speak, status='starting')
+    return True
+
+
+def _console_log(message: str, data_dir: Path | None = None) -> None:
+    print(message, flush=True)
+    if data_dir is not None:
+        try:
+            data_dir.mkdir(parents=True, exist_ok=True)
+            log_path = data_dir / 'companion_console.jsonl'
+            entry = {'ts': time.time(), 'pid': os.getpid(), 'text': message}
+            with log_path.open('a', encoding='utf-8') as stream:
+                stream.write(json.dumps(entry, ensure_ascii=False) + '\n')
+        except Exception:
+            pass
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-directory', type=Path, default=DEFAULT_MODS_DIR / 'BanterLab' / 'BanterLabData')
@@ -904,6 +1000,8 @@ def main():
                         help='OpenRouter API key; defaults to the checked-in capped project key.')
     parser.add_argument('--speak', action='store_true',
                         help='Play synthesized WAV asynchronously when the game displays the notification.')
+    parser.add_argument('--replace', action='store_true',
+                        help='Replace an existing running companion instance if one is active.')
     args = parser.parse_args()
 
     if args.once:
@@ -930,31 +1028,44 @@ def main():
         parser.error('--data-directory is required unless --once is used.')
 
     data = args.data_directory
+    data.mkdir(parents=True, exist_ok=True)
+    if not _claim_single_instance(data, args.replace, args.model, args.tts_engine, args.speak):
+        print(f'Companion already running in {data}; exiting duplicate.', flush=True)
+        return
+
     reply_file = args.reply_file or (data / 'reply.json')
     reply_file.parent.mkdir(parents=True, exist_ok=True)
     tts_dir = args.tts_dir or (ROOT / '.local' / 'tts' if args.speak else None)
     events = data / 'events.jsonl'
+    events.touch(exist_ok=True)
     recent_by_zone: dict[str, list[str]] = {}
 
     load_stbl_dictionary()
     tracker = CostTracker(data, args.api_key)
     snap = tracker.snapshot()
-    print(
+    _console_log(
         f"Cost tracker ready: cumulative=${snap['cumulative']['total_usd']:.6f} "
         f"({snap['cumulative']['exchanges']} exchanges) | "
         f"OpenRouter key remaining=${(snap['openrouter_key'].get('limit_remaining_usd') or 0):.4f}",
-        flush=True,
+        data,
     )
     if tts_dir is not None and args.tts_engine == 'sapi':
         _get_tts_worker()
 
+    last_hb = 0.0
     with events.open('r', encoding='utf-8') as incoming:
         incoming.seek(0, os.SEEK_END)
-        print(
+        _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
+        last_hb = time.monotonic()
+        _console_log(
             f'Listening for AI events in {data} (model={args.model}, tts={args.tts_engine}, reply={reply_file})',
-            flush=True,
+            data,
         )
         while True:
+            now_mono = time.monotonic()
+            if now_mono - last_hb >= 2.0:
+                _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
+                last_hb = now_mono
             offset = incoming.tell()
             line = incoming.readline()
             if not line or not line.endswith('\n'):
@@ -972,6 +1083,7 @@ def main():
                 continue
             zone_key = str(event.get('venue') or 'default')
             recent = recent_by_zone.setdefault(zone_key, [])
+            _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='generating')
             try:
                 reply = generate(
                     event,
@@ -993,22 +1105,24 @@ def main():
             temp = reply_file.with_suffix('.tmp')
             temp.write_text(json.dumps(reply, ensure_ascii=False), encoding='utf-8')
             os.replace(temp, reply_file)
+            _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
+            last_hb = time.monotonic()
             if 'cost_summary' in reply:
                 cs = reply['cost_summary']
                 tts_meta = reply.get('tts') or {}
                 v1 = (tts_meta.get('actor_voice') or {}).get('voice')
                 v2 = (tts_meta.get('target_voice') or {}).get('voice')
-                print(
+                _console_log(
                     f"[{reply['event_id']}] lang={reply.get('language')} "
                     f"chat={reply.get('elapsed_seconds')}s tts={tts_meta.get('tts_elapsed_seconds')}s "
                     f"voices=({v1}, {v2}) | "
                     f"call=${cs['last_exchange']['total_usd']:.6f} "
                     f"session=${cs['session']['total_usd']:.6f} "
                     f"total=${cs['cumulative']['total_usd']:.6f}",
-                    flush=True,
+                    data,
                 )
             else:
-                print(json.dumps(reply, ensure_ascii=False), flush=True)
+                _console_log(json.dumps(reply, ensure_ascii=False), data)
 
 
 if __name__ == '__main__':

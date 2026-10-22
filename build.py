@@ -1,11 +1,14 @@
-"""Build the experimental script mod with the game's Python bytecode version."""
+"""Build the script mod with the game's Python 3.7 bytecode and deploy to Mods/BanterLab."""
 
 import importlib.util
 from pathlib import Path
 import py_compile
+import shutil
 import sys
 import tempfile
 import zipfile
+
+DEFAULT_DEPLOY_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab')
 
 
 def main():
@@ -30,6 +33,13 @@ def main():
     with zipfile.ZipFile(str(output)) as archive:
         assert archive.testzip() is None
         print('Modules: {}'.format(', '.join(archive.namelist())))
+
+    if DEFAULT_DEPLOY_DIR.parent.exists():
+        DEFAULT_DEPLOY_DIR.mkdir(parents=True, exist_ok=True)
+        for asset in (output, root / 'companion.py', root / 'prompt.txt'):
+            dest = DEFAULT_DEPLOY_DIR / asset.name
+            shutil.copy2(str(asset), str(dest))
+            print('Deployed {}'.format(dest))
 
 
 if __name__ == '__main__':
