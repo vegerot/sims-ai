@@ -922,6 +922,29 @@ def _terminate_pid(pid: int) -> None:
                 ctypes.windll.kernel32.CloseHandle(handle)
 
 
+def _safe_write_json(target_path: Path, payload: dict, indent: int | None = None) -> None:
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    serialized = json.dumps(payload, ensure_ascii=False, indent=indent)
+    tmp_path = target_path.with_name(f'{target_path.stem}.{os.getpid()}.tmp')
+    try:
+        tmp_path.write_text(serialized, encoding='utf-8')
+        for _ in range(5):
+            try:
+                os.replace(tmp_path, target_path)
+                return
+            except PermissionError:
+                time.sleep(0.02)
+        target_path.write_text(serialized, encoding='utf-8')
+    except PermissionError:
+        pass
+    finally:
+        if tmp_path.exists():
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
+
+
 def _write_heartbeat(
     data_dir: Path,
     model: str,
@@ -929,9 +952,6 @@ def _write_heartbeat(
     speak: bool,
     status: str = 'listening',
 ) -> None:
-    data_dir.mkdir(parents=True, exist_ok=True)
-    hb_path = data_dir / 'companion_heartbeat.json'
-    tmp_path = hb_path.with_suffix('.tmp')
     payload = {
         'pid': os.getpid(),
         'ts': time.time(),
@@ -940,8 +960,7 @@ def _write_heartbeat(
         'speak': bool(speak),
         'status': status,
     }
-    tmp_path.write_text(json.dumps(payload), encoding='utf-8')
-    os.replace(tmp_path, hb_path)
+    _safe_write_json(data_dir / 'companion_heartbeat.json', payload)
 
 
 def _claim_single_instance(
@@ -1105,9 +1124,7 @@ def main():
                     del recent[:-6]
             except (urllib.error.URLError, KeyError, ValueError, json.JSONDecodeError) as exc:
                 reply = {'event_id': event['event_id'], 'error': str(exc)}
-            temp = reply_file.with_suffix('.tmp')
-            temp.write_text(json.dumps(reply, ensure_ascii=False), encoding='utf-8')
-            os.replace(temp, reply_file)
+            _safe_write_json(reply_file, reply)
             _write_heartbeat(data, args.model, args.tts_engine, args.speak, status='listening')
             last_hb = time.monotonic()
             if 'cost_summary' in reply:

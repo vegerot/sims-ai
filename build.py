@@ -270,8 +270,14 @@ def main():
             assets.append(built_ui)
         for asset in assets:
             dest = DEFAULT_DEPLOY_DIR / asset.name
-            shutil.copy2(str(asset), str(dest))
-            print('Deployed {}'.format(dest))
+            try:
+                if dest.exists() and dest.read_bytes() == asset.read_bytes():
+                    print('Up to date {}'.format(dest))
+                    continue
+                shutil.copy2(str(asset), str(dest))
+                print('Deployed {}'.format(dest))
+            except PermissionError:
+                print('Skipped locked {} (close The Sims 4 to replace .package)'.format(dest))
 
 
 if __name__ == '__main__':

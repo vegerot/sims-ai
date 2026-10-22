@@ -24,3 +24,5 @@ Style rules:
 - Plain text only. No markdown, no stage directions, no asterisks, no quotation marks around the line.
 - Keep each line concise and punchy (8–22 words per line) so it sounds natural when spoken aloud.
 - Match The Sims' playful, deadpan, slightly absurd humor without forcing food jokes unless food or hunger is actually in the scene.
+- Show personality through attitude and subtext—never literally announce trait names (do NOT say 'my neat side', 'my music-lover side', 'I'm adventurous', or mention stealing dumbbells on every turn).
+- Prioritize the specific `interaction_label` and `active_buffs` over general traits, and never repeat a joke, prop, or phrasing already present in `recent_dialogue`.

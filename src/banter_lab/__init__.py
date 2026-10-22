@@ -620,6 +620,8 @@ def _observe_solo_vocal(interaction, actor, hook_stage='start', outcome_result=N
     now = time.monotonic()
     if now - _last_solo_shown < 2.0:
         return
+    if _pending is not None and (time.time() - float(_pending.get('observed_at') or 0.0)) > 25.0:
+        _pending = None
     if _pending is not None:
         _record_skip('pending_in_flight', interaction, actor, None,
                      {'pending_event_id': _pending.get('event_id')})
@@ -681,6 +683,8 @@ def _observe(interaction, hook_stage='start', outcome_result=None):
     if interaction_name in _UNLABELLED_WAVES and not interaction_stbl:
         _record_skip('unlabelled_wave', interaction, actor, target)
         return
+    if _pending is not None and (time.time() - float(_pending.get('observed_at') or 0.0)) > 25.0:
+        _pending = None
     if _pending is not None:
         _record_skip('pending_in_flight', interaction, actor, target,
                      {'pending_event_id': _pending.get('event_id')})
@@ -787,7 +791,7 @@ def _ensure_poller_alarm():
             _reply_path = os.path.join(_data_directory, 'reply.json')
     if _alarm is None:
         _alarm = alarms.add_alarm_real_time(
-            _poller, clock.interval_in_real_seconds(0.35), _poller.poll, repeating=True)
+            _poller, clock.interval_in_real_seconds(0.35), _poller.poll, repeating=True, cross_zone=True)
 
 
 def _cancel_polling():
@@ -1197,6 +1201,9 @@ def _on_zone_loaded(self, *args, **kwargs):
     ret = _original_zone_loaded(self, *args, **kwargs)
     try:
         count = _install_pie_menu_interaction()
+        if _mute_simlish:
+            _sync_zone_mute()
+        _cancel_polling()
         _ensure_poller_alarm()
         _drain_companion_console()
         _record({'type': 'pie_menu_installed', 'sims': count, 'observed_at': time.time()})
