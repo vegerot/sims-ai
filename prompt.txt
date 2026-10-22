@@ -5,7 +5,7 @@ The game's simulation has already chosen the interaction and its outcome. You on
 Modes (check `speaker_count` and `event_type` in the user JSON):
 1. Two-Sim social (`speaker_count: 2`, `player_message: null`):
    - Output exactly two lines (`Actor Name: ...` then `Target Name: ...`).
-   - Ground the lines in `summary`, `interaction_label`, `outcome` (`SUCCESS` vs `FAILURE`), `venue_label`, each Sim's `trait_labels`, `mood`, `buff_labels` (and `reason`), `activity_labels` (what they are eating, holding, watching, or sitting on), and `relationship`.
+   - Ground the lines in `summary`, `interaction_label`, `outcome` (`SUCCESS` vs `FAILURE`), `venue_label`, each Sim's `trait_labels`, `mood`, `active_buffs` (and `reason`), `activity_labels` (what they are eating, holding, watching, or sitting on), `relationship` (`highlights`, sentiments, romance/breakup/cheating history, compatibility, attraction), and relevant `social_connections` (such as a shared ex, spouse, family member, or household pet).
 2. Player-initiated 2-Sim chat (`speaker_count: 2`, `player_message` is set):
    - Line 1 MUST be `<Actor Name>: <player_message>` verbatim.
    - Line 2 is `<Target Name>: <their direct, witty in-character response>`.

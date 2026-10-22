@@ -481,7 +481,99 @@ def _sim_snapshot(sim):
         'mood_intensity': info.get_mood_intensity(),
         'buffs': buffs[:5],
         'activities': _sim_activities(sim),
+        'social_connections': _sim_social_connections(info),
     }
+
+
+def _sim_social_connections(info):
+    tracker = getattr(info, 'relationship_tracker', None)
+    if tracker is None or not hasattr(tracker, 'get_target_sim_infos'):
+        return []
+    scored = []
+    sim_id = int(info.sim_id)
+    hh_id = getattr(info, 'household_id', None)
+    spouse_id = getattr(info, 'spouse_sim_id', None)
+    fiance_id = getattr(info, 'fiance_sim_id', None)
+    try:
+        targets = list(tracker.get_target_sim_infos())
+    except Exception:
+        return []
+    for other in targets:
+        if other is None:
+            continue
+        other_id = int(getattr(other, 'sim_id', 0) or 0)
+        if not other_id or other_id == sim_id:
+            continue
+        other_name = '{} {}'.format(getattr(other, 'first_name', ''), getattr(other, 'last_name', '')).strip()
+        if not other_name or 'do_not_remove' in other_name.lower():
+            continue
+        try:
+            bits = [b.__name__ for b in tracker.get_all_bits(other_id)]
+        except Exception:
+            bits = []
+        rev_bits = []
+        try:
+            other_tracker = getattr(other, 'relationship_tracker', None)
+            if other_tracker is not None:
+                rev_bits = [b.__name__ for b in other_tracker.get_all_bits(sim_id) if b.__name__ not in bits]
+        except Exception:
+            rev_bits = []
+        try:
+            friendship = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.FRIENDSHIP_TRACK)), 1)
+        except Exception:
+            friendship = 0.0
+        try:
+            romance = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.ROMANCE_TRACK)), 1)
+        except Exception:
+            romance = 0.0
+        same_hh = bool(hh_id and getattr(other, 'household_id', None) == hh_id)
+        all_lower = ' '.join(bits + rev_bits).lower()
+        priority = 0
+        if other_id in (spouse_id, fiance_id) or any(
+            k in all_lower for k in (
+                'married', 'engaged', 'significant_other', 'soulmates', 'sweethearts',
+                'lovebirds', 'lovers', 'havebeenexes', 'broken_up', 'divorced', 'hasbeenunfaithful',
+            )
+        ):
+            priority += 100
+        if any(
+            k in all_lower for k in (
+                'sentimentbit_', 'nolongerfriends', 'fellinlove', 'havebeenromantic',
+                'itsveryawkward', 'badromance', 'fear_beingcheatedon',
+            )
+        ):
+            priority += 80
+        if same_hh or any(
+            k in all_lower for k in (
+                'family_target_', 'familytrope_', 'romancetrope_', 'isdog', 'iscat',
+                'partnersincrime', 'wentonblinddatewith', 'hadsex_7days', 'hadlewddreamabout',
+            )
+        ):
+            priority += 70
+        if abs(romance) >= 20.0 or abs(friendship) >= 35.0 or any(
+            k in all_lower for k in (
+                'friendship-bff', 'friendship-good_friends', 'friendship-friend',
+                'friendship-disliked', 'friendship-despised', 'friendship-nemesis',
+            )
+        ):
+            priority += 40
+        if priority <= 0:
+            continue
+        scored.append((
+            -priority,
+            -(abs(romance) + abs(friendship)),
+            {
+                'id': str(other_id),
+                'name': other_name,
+                'same_household': same_hh,
+                'friendship': friendship,
+                'romance': romance,
+                'bits': bits,
+                'reverse_bits': rev_bits,
+            },
+        ))
+    scored.sort(key=lambda item: (item[0], item[1]))
+    return [item[2] for item in scored[:8]]
 
 
 def _venue_snapshot():
@@ -503,13 +595,30 @@ def _relationship_snapshot(actor_info, target_info):
         stbl = _string_hash(getattr(bit, 'display_name', None), actor_info, target_info)
         if stbl:
             bit_stbls.append(stbl)
+    bit_names = [bit.__name__ for bit in bits]
+    reverse_bits = []
+    reverse_bit_stbls = []
+    try:
+        target_tracker = getattr(target_info, 'relationship_tracker', None)
+        if target_tracker is not None:
+            for rbit in target_tracker.get_all_bits(actor_info.sim_id):
+                rname = rbit.__name__
+                if rname not in bit_names:
+                    reverse_bits.append(rname)
+                    rstbl = _string_hash(getattr(rbit, 'display_name', None), target_info, actor_info)
+                    if rstbl:
+                        reverse_bit_stbls.append(rstbl)
+    except Exception:
+        pass
     return {
         'friendship': round(actor_info.relationship_tracker.get_relationship_score(
             target_info.sim_id, RelationshipTrack.FRIENDSHIP_TRACK), 2),
         'romance': round(actor_info.relationship_tracker.get_relationship_score(
             target_info.sim_id, RelationshipTrack.ROMANCE_TRACK), 2),
-        'bits': [bit.__name__ for bit in bits],
+        'bits': bit_names,
         'bit_stbls': bit_stbls,
+        'reverse_bits': reverse_bits,
+        'reverse_bit_stbls': reverse_bit_stbls,
     }
 
 

@@ -55,6 +55,66 @@ VOICE_ACTOR_PREFERRED_VOICE = {
 }
 
 
+def _refpack_decompress(data: bytes) -> bytes:
+    pos = 0
+    if data[0] not in (0x10, 0x50, 0x90, 0xD0) or data[1] != 0xFB:
+        pos = 4
+    flags = data[pos]
+    pos += 2
+    size_len = 4 if (flags & 0x80) else 3
+    if flags & 0x01:
+        pos += size_len
+    for _ in range(size_len):
+        pos += 1
+    out = bytearray()
+    while pos < len(data):
+        b0 = data[pos]
+        pos += 1
+        if not (b0 & 0x80):
+            b1 = data[pos]
+            pos += 1
+            proc = b0 & 0x03
+            out.extend(data[pos:pos + proc])
+            pos += proc
+            offset = ((b0 & 0x60) << 3) + b1 + 1
+            count = ((b0 & 0x1C) >> 2) + 3
+            for _ in range(count):
+                out.append(out[-offset])
+        elif not (b0 & 0x40):
+            b1 = data[pos]
+            b2 = data[pos + 1]
+            pos += 2
+            proc = b1 >> 6
+            out.extend(data[pos:pos + proc])
+            pos += proc
+            offset = ((b1 & 0x3F) << 8) + b2 + 1
+            count = (b0 & 0x3F) + 4
+            for _ in range(count):
+                out.append(out[-offset])
+        elif not (b0 & 0x20):
+            b1 = data[pos]
+            b2 = data[pos + 1]
+            b3 = data[pos + 2]
+            pos += 3
+            proc = b0 & 0x03
+            out.extend(data[pos:pos + proc])
+            pos += proc
+            offset = ((b0 & 0x10) << 12) + (b1 << 8) + b2 + 1
+            count = ((b0 & 0x0C) << 6) + b3 + 5
+            for _ in range(count):
+                out.append(out[-offset])
+        else:
+            proc = ((b0 & 0x1F) + 1) << 2
+            if proc <= 0x70:
+                out.extend(data[pos:pos + proc])
+                pos += proc
+            else:
+                proc = b0 & 0x03
+                out.extend(data[pos:pos + proc])
+                break
+    return bytes(out)
+
+
 def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
     data = pkg_path.read_bytes()
     if data[:4] != b'DBPF':
@@ -172,10 +232,198 @@ def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict 
     return text
 
 
+_NOISY_REL_BIT_SUBSTRINGS = (
+    'has_met', 'specialbits_greeted', 'suppresschangebehavior',
+    'neutralto_target', 'neutralwith_target', 'nudity_reactioncooldown',
+    'recentlyhadsocialinteraction', 'persistent_boredom_reset',
+    'infant_checkon', 'socialcontext_retail_uninterested',
+    'relbit_socialcontext_', 'shortterm_recentnegativesocial',
+    'pettopet_relationshipbit_neutral', 'simtopet_relationshipbit_02_acquaintance',
+    'relationshipbit_simtosim', 'friendship-acquaintances', 'romanticcombo_acquaintances',
+)
+
+
+def humanize_rel_bit(
+    bit: str,
+    actor_name: str = 'Actor',
+    target_name: str = 'Target',
+    is_reverse: bool = False,
+) -> str | None:
+    if not bit:
+        return None
+    b = bit.strip()
+    bl = b.lower()
+    if any(x in bl for x in _NOISY_REL_BIT_SUBSTRINGS):
+        return None
+    subj = target_name if is_reverse else actor_name
+    obj = actor_name if is_reverse else target_name
+
+    exact_map = {
+        'romantic-married': 'Married spouses',
+        'romantic-engaged': 'Engaged fiancés',
+        'romantic-significant_other': 'Romantic partners (Significant Others)',
+        'romantic-broken_up': 'Broke up (ex-partners)',
+        'romantic-divorced': 'Divorced ex-spouses',
+        'romantic-hasbeenunfaithful': 'Cheated / unfaithful history',
+        'romantic-havedonewoohoo_recently': 'Recently had WooHoo',
+        'romantic-havedonewoohoo': 'Have had WooHoo together',
+        'romantic_firstkiss': 'Shared their first kiss',
+        'havebeenexes': 'Exes (used to date)',
+        'havebeenromantic': 'Romantic history together',
+        'hasbeenfriends': 'Used to be friends',
+        'bit_nolongerfriends': 'Had a falling out (no longer friends)',
+        'lifemilestonebit_fellinlove': 'Fell in love with each other',
+        'shortterm_justbrokeupordivorced': 'Just broke up or divorced',
+        'romanticcombo_soulmates': 'Soulmates',
+        'romanticcombo_sweethearts': 'Sweethearts',
+        'romanticcombo_lovebirds': 'Lovebirds',
+        'romanticcombo_lovers': 'Lovers',
+        'romanticcombo_romanticinterest': 'Romantic interest',
+        'romanticcombo_itsveryawkward': "Romantic status: It's Very Awkward",
+        'romanticcombo_badromance': 'Bad Romance',
+        'romanticcombo_awkwardfriends': 'Awkward Friends',
+        'romancetrope_wholesome': 'Wholesome romance dynamic',
+        'romancetrope_unpredictable': 'Unpredictable / volatile romance dynamic',
+        'familytrope_difficult': 'Difficult / strained family dynamic',
+        'familytrope_distant': 'Distant family dynamic',
+        'familytrope_close': 'Close family dynamic',
+        'familytrope_jokesters': 'Jokesters family dynamic',
+        'friendship-bff': 'Best Friends Forever (BFF)',
+        'friendship-good_friends': 'Good friends',
+        'friendship-friend': 'Friends',
+        'friendship-disliked': 'Dislike each other',
+        'friendship-despised': 'Despise each other',
+        'friendship-nemesis': 'Sworn nemeses',
+        'relationshipbits_mischief_partnersincrime': 'Partners in Crime',
+        'relationshipbit_coworkers': 'Coworkers',
+        'relationshipbit_compatibility_amazing': 'Amazing personality compatibility',
+        'relationshipbit_compatibility_good': 'Good personality compatibility',
+        'relationshipbit_compatibility_bad': 'Bad personality compatibility',
+        'relationshipbit_compatibility_awful': 'Awful personality compatibility',
+        'relationshipbit_fear_beingcheatedon_tracker': f'{subj} fears {obj} might cheat',
+        'relationshipbit_fear_beingjudged_meantracker': f'{subj} fears being judged by {obj}',
+        'relationshipbit_matchmaking_wentonblinddatewith': "Went on a blind date together (Cupid's Corner)",
+        'relationshipbit_matchmaking_addedonmatchmakingapp': "Matched on Cupid's Corner dating app",
+        'relationshipbit_metdisguisedalien': 'Met while disguised as an Alien',
+        'relationshipbit_hsteam_rival': 'High School team rivals',
+        'simtopet_relationshipbit_03_friend': 'Pet friend',
+        'simtopet_relationshipbit_04_goodfriend': 'Beloved pet companion (Good Friend)',
+        'relationshipbit_target_isdogownedby_actor': f"{obj} is {subj}'s pet dog",
+        'relationshipbit_target_isdogownerof_actor': f"{obj} is {subj}'s human dog owner",
+        'relationshipbit_target_iscatownedby_actor': f"{obj} is {subj}'s pet cat",
+        'relationshipbit_target_iscatownerof_actor': f"{obj} is {subj}'s human cat owner",
+        'turbodriver:wickedwhims_relbit_hadsex_7days': 'Had sex within the last 7 days',
+        'turbodriver:wickedwhims_relbit_sex_relationships_lastsexpartner': f"{obj} is {subj}'s most recent sex partner",
+        'turbodriver:wickedwhims_relbit_memories_memorytype_sex_firsttime': "Were each other's first-time sex partner",
+        'turbodriver:wickedwhims_relbit_hadlewddreamabout': f'{subj} had a lewd dream about {obj}',
+        'turbodriver:wickedwhims_relbit_attractiveness_noticed_hot': f'{subj} noticed {obj} is hot',
+        'turbodriver:wickedwhims_relbit_attractiveness_visual_veryhigh': f'{subj} finds {obj} extremely attractive',
+        'turbodriver:wickedwhims_relbit_attractiveness_visual_high': f'{subj} finds {obj} very attractive',
+        'relbit_attraction_5_actor_veryattractedto_target': f'{subj} is very attracted to {obj}',
+        'relbit_attraction_4_actor_attractedto_target': f'{subj} is attracted to {obj}',
+        'relbit_attraction_2_actor_repelledby_target': f'{subj} is turned off / repelled by {obj}',
+        'relbit_attraction_1_actor_veryrepelledby_target': f'{subj} is strongly repelled by {obj}',
+        'relbit_relsat_4_actor_satisfiedwith_target': f'{subj} feels satisfied in relationship with {obj}',
+        'relbit_relsat_2_actor_unsatisfiedwith_target': f'{subj} feels unsatisfied in relationship with {obj}',
+        'relbit_relsat_1_actor_veryunsatisfiedwith_target': f'{subj} feels very unsatisfied in relationship with {obj}',
+    }
+    if bl in exact_map:
+        return exact_map[bl]
+
+    m_fam = re.match(r'^family_target_is([a-z]+)of_actor$', bl)
+    if m_fam:
+        role_raw = m_fam.group(1)
+        role_map = {
+            'sonordaughter': 'child (son/daughter)',
+            'parent': 'parent',
+            'brothersister': 'sibling',
+            'halfsibling': 'half-sibling',
+            'stepsibling': 'step-sibling',
+            'stepparent': 'step-parent',
+            'stepchild': 'step-child',
+            'grandparent': 'grandparent',
+            'grandchild': 'grandchild',
+            'auntuncle': 'aunt/uncle',
+            'niecenephew': 'niece/nephew',
+            'cousin': 'cousin',
+            'parentinlaw': 'parent-in-law',
+            'siblinginlaw': 'sibling-in-law',
+            'childinlaw': 'child-in-law',
+            'relativeinlaw': 'in-law relative',
+        }
+        role = role_map.get(role_raw, role_raw)
+        return f"{obj} is {subj}'s {role}"
+
+    if 'familytrope_loving_target_isauthorityof_actor' in bl:
+        return f'Loving family dynamic ({obj} is parent/authority to {subj})'
+    if 'familytrope_loving_target_issubordinateof_actor' in bl:
+        return f'Loving family dynamic ({subj} is parent/authority to {obj})'
+    if 'familytrope_permissive' in bl:
+        return 'Permissive family dynamic'
+    if 'familytrope_compliant' in bl:
+        return 'Compliant / respectful family dynamic'
+
+    m_sent = re.match(r'^sentimentbit_actor_([a-z]+)_target_(st|lt)_([a-z0-9_]+)$', bl)
+    if m_sent:
+        emo_raw, dur, reason_raw = m_sent.groups()
+        emo_map = {
+            'bitterat': 'bitter toward',
+            'furiousat': 'furious at',
+            'hurtby': 'hurt by',
+            'enamoredby': 'enamored with',
+            'adoringto': 'adoring toward',
+            'closeto': 'close to',
+            'hascrushon': 'crushing on',
+            'motivatedby': 'motivated by',
+            'guiltyat': 'feeling guilty toward',
+            'awkwardaround': 'awkward around',
+        }
+        reason_map = {
+            'breakup': 'over their breakup',
+            'cheating': 'over cheating',
+            'saddened': 'after being hurt/saddened',
+            'sleepcuddled': 'from cuddling in bed together',
+            'movein_frommovingin': 'from moving in together',
+            'qualitytime': 'from spending quality time together',
+            'friendlyadvice': 'after friendly advice',
+            'party': 'after a great party together',
+            'impressed': 'and deeply impressed',
+            'generic': '',
+        }
+        emo = emo_map.get(emo_raw, emo_raw)
+        reason = reason_map.get(reason_raw, reason_raw.replace('_', ' '))
+        dur_str = 'deeply ' if dur == 'lt' else ''
+        suffix = f' ({reason})' if reason else ''
+        return f'Sentiment: {subj} feels {dur_str}{emo} {obj}{suffix}'
+
+    return None
+
+
+def _summarize_rel_tags(
+    bits: list[str],
+    reverse_bits: list[str] | None,
+    actor_name: str,
+    target_name: str,
+) -> list[str]:
+    tags: list[str] = []
+    for b in bits or []:
+        label = humanize_rel_bit(b, actor_name, target_name, is_reverse=False)
+        if label and label not in tags:
+            tags.append(label)
+    for rb in reverse_bits or []:
+        label = humanize_rel_bit(rb, actor_name, target_name, is_reverse=True)
+        if label and label not in tags:
+            tags.append(label)
+    return tags
+
+
 def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     cleaned = {
         k: v for k, v in sim.items()
-        if k not in ('id', 'trait_stbls', 'buffs', 'activities', 'voice_actor', 'voice_actor_muted', 'voice_pitch')
+        if k not in (
+            'id', 'trait_stbls', 'buffs', 'activities',
+            'voice_actor', 'voice_actor_muted', 'voice_pitch', 'social_connections',
+        )
     }
     if sim.get('mood') and str(sim['mood']).startswith('Mood_'):
         cleaned['mood_label'] = str(sim['mood'])[5:]
@@ -216,6 +464,38 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         activity_labels.append(act_entry)
     if activity_labels:
         cleaned['activity_labels'] = activity_labels
+
+    partner_id = str(partner.get('id') or '') if isinstance(partner, dict) else ''
+    partner_name = str(partner.get('name') or '') if isinstance(partner, dict) else ''
+    sim_name = str(sim.get('name') or 'Sim')
+    connections = []
+    for conn in sim.get('social_connections', []) or []:
+        if not isinstance(conn, dict):
+            continue
+        cid = str(conn.get('id') or '')
+        cname = str(conn.get('name') or '')
+        if (partner_id and cid == partner_id) or (partner_name and cname == partner_name):
+            continue
+        tags = _summarize_rel_tags(
+            conn.get('bits') or [],
+            conn.get('reverse_bits') or [],
+            sim_name,
+            cname or 'Sim',
+        )
+        if conn.get('same_household') and 'Lives in same household' not in tags:
+            tags.insert(0, 'Lives in same household')
+        if not tags and abs(float(conn.get('romance') or 0.0)) < 20.0 and abs(float(conn.get('friendship') or 0.0)) < 35.0:
+            continue
+        entry = {'name': cname}
+        if conn.get('friendship'):
+            entry['friendship'] = conn['friendship']
+        if conn.get('romance'):
+            entry['romance'] = conn['romance']
+        if tags:
+            entry['highlights'] = tags[:8]
+        connections.append(entry)
+    if connections:
+        cleaned['social_connections'] = connections[:6]
     return cleaned
 
 
@@ -429,14 +709,29 @@ def build_scene(
         'target': _clean_sim_for_prompt(target, actor) if target else None,
     }
     if target and isinstance(event.get('relationship'), dict):
-        rel = {k: v for k, v in event['relationship'].items() if k not in ('bit_stbls', 'bits')}
-        rel['bits'] = [b for b in event['relationship'].get('bits', []) if ':' not in b]
+        raw_rel = event['relationship']
+        rel = {
+            k: v for k, v in raw_rel.items()
+            if k not in ('bit_stbls', 'bits', 'reverse_bits', 'reverse_bit_stbls')
+        }
+        raw_bits = list(raw_rel.get('bits') or [])
+        rev_bits = list(raw_rel.get('reverse_bits') or [])
+        rel['bits'] = [
+            b for b in raw_bits
+            if not any(x in b.lower() for x in _NOISY_REL_BIT_SUBSTRINGS)
+        ]
         bit_labels = [
-            label for label in (resolve_stbl(s, actor, target) for s in event['relationship'].get('bit_stbls', []))
+            label for label in (resolve_stbl(s, actor, target) for s in raw_rel.get('bit_stbls', []))
             if label
         ]
+        for rlabel in (resolve_stbl(s, target, actor) for s in raw_rel.get('reverse_bit_stbls', [])):
+            if rlabel and rlabel not in bit_labels:
+                bit_labels.append(rlabel)
         if bit_labels:
             rel['bit_labels'] = bit_labels
+        highlights = _summarize_rel_tags(raw_bits, rev_bits, actor_name, target_name)
+        if highlights:
+            rel['highlights'] = highlights
         scene['relationship'] = rel
 
     if event.get('player_message'):
