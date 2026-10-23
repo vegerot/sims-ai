@@ -488,14 +488,19 @@ MOOD_TO_DELIVERY_TONE = {
 }
 
 
+def _word_set(text: str) -> set[str]:
+    clean = re.sub(r'[\u0300-\u036f\u0591-\u05c7]', '', text.lower().replace('ё', 'е'))
+    return set(re.findall(r'\w+', clean))
+
+
 def _transcript_matches(spoken_text: str, transcript: str) -> bool:
-    spoken = set(re.findall(r'\w+', spoken_text.lower()))
-    return not spoken or len(spoken & set(re.findall(r'\w+', transcript.lower()))) / len(spoken) >= 0.6
+    spoken = _word_set(spoken_text)
+    return not spoken or len(spoken & _word_set(transcript)) / len(spoken) >= 0.6
 
 
 def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) -> dict:
     tone = MOOD_TO_DELIVERY_TONE.get(_clean_mood(mood) or 'Fine', 'natural, expressive, playful')
-    spoken_words = set(re.findall(r'\w+', spoken_text.lower()))
+    spoken_words = _word_set(spoken_text)
     payload = {
         'model': TTS_MODEL,
         'modalities': ['text', 'audio'],
@@ -544,7 +549,7 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
                     pcm_chunks.append(base64.b64decode(audio['data']))
                 if audio.get('transcript'):
                     transcript_parts.append(audio['transcript'])
-                    tr_words = set(re.findall(r'\w+', ''.join(transcript_parts).lower()))
+                    tr_words = _word_set(''.join(transcript_parts))
                     if spoken_words and len(tr_words) >= 4 and not (tr_words & spoken_words):
                         break
     ttlt = round(time.monotonic() - t0, 3)
@@ -617,7 +622,7 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
 
 def _strip_outer_quotes(text: str) -> str:
     s = text.strip(' *')
-    return s[1:-1].strip() if len(s) >= 2 and s[0] in '"“”' and s[-1] in '"“”' else s
+    return s[1:-1].strip() if len(s) >= 2 and s[0] in '"“”«' and s[-1] in '"“”»' else s
 
 
 def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
