@@ -751,12 +751,13 @@ def main():
     reply_file = data / 'reply.json'
     events = data / 'events.jsonl'
     events.touch(exist_ok=True)
-    with events.open('r', encoding='utf-8') as incoming:
-        incoming.seek(0, os.SEEK_END)
-        with events.open('rb') as bf:
-            bf.seek(max(0, events.stat().st_size - 32768))
-            raw_tail = bf.read().splitlines()
-        startup_line = (raw_tail[-1].decode('utf-8', errors='replace') + '\n') if raw_tail else None
+    started_at = time.time()
+    with events.open('rb') as incoming:
+        base = max(0, events.stat().st_size - 32768)
+        incoming.seek(base)
+        chunk = incoming.read()
+        nl = chunk.rfind(b'\n', 0, max(0, len(chunk) - 1))
+        incoming.seek((base + nl + 1) if nl >= 0 else base)
         load_stbl_dictionary()
         memories = MemoryStore(data)
         tracker = CostTracker(data)
@@ -772,24 +773,20 @@ def main():
                 if not _is_pid_running(args.parent_pid):
                     print('The game exited; companion exiting.', flush=True)
                     return
-            if startup_line is not None:
-                line, startup_line = startup_line, None
-                if time.time() - float(json.loads(line).get('observed_at') or 0) > 15.0:
-                    continue
-            else:
-                offset = incoming.tell()
-                line = incoming.readline()
-                if not line or not line.endswith('\n'):
-                    incoming.seek(offset)
-                    time.sleep(0.15)
-                    continue
+            offset = incoming.tell()
+            line = incoming.readline()
+            if not line or not line.endswith(b'\n'):
+                incoming.seek(offset)
+                time.sleep(0.15)
+                continue
             event = json.loads(line)
             if event.get('type') == 'displayed':
                 audio_path = (event.get('tts') or {}).get('audio_file')
-                if audio_path:
+                if audio_path and float(event.get('displayed_at') or 0) >= started_at - 5.0:
                     winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 continue
-            if event.get('type') not in ('social', 'player_chat', 'player_ask_self'):
+            if (event.get('type') not in ('social', 'player_chat', 'player_ask_self')
+                    or float(event.get('observed_at') or 0) < started_at - 15.0):
                 continue
             try:
                 reply = generate(event, memories, tts_dir=TTS_DIR, cost_tracker=tracker)
