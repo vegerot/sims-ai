@@ -49,7 +49,7 @@ Python 3.15, standard library only. The game starts it; it exits when the game e
 Generate text for one captured event (offline prompt experiments, no audio):
 
 ```powershell
-python3.15 '.\companion.py' --once '.\.local\scene.json'
+python3.15 '.\companion.py' --once '.\experiments\replay-set'
 ```
 
 ## Verified experiments

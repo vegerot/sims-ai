@@ -743,11 +743,16 @@ def main():
     data = args.data_directory
 
     if args.once:
-        event = json.loads(args.once.read_text(encoding='utf-8-sig'))
-        res = generate(event, MemoryStore())
-        res.pop('_scene', None)
-        res.pop('_cost_usd', None)
-        print(json.dumps(res, ensure_ascii=False, indent=2))
+        mem = MemoryStore()
+        for path in (sorted(args.once.glob('*.json')) if args.once.is_dir() else [args.once]):
+            event = json.loads(path.read_text(encoding='utf-8-sig'))
+            res = generate(event, mem)
+            mem.record(event, res.pop('_scene'), res['text'])
+            res.pop('_cost_usd', None)
+            if args.once.is_dir():
+                print(f"=== {path.name} ({res['elapsed_seconds']}s, {res['language']}) ===\n{res['text']}\n", flush=True)
+            else:
+                print(json.dumps(res, ensure_ascii=False, indent=2))
         return
 
     lock = _acquire_single_instance_lock()
