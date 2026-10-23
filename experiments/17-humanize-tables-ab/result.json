@@ -1,0 +1,85 @@
+{
+  "experiment": "17-humanize-tables-ab",
+  "date": "2026-10-22",
+  "question": "Do the 389 lines of hand-written humanize_* lookup tables in companion.py measurably improve openai/gpt-6-luna dialogue over raw tuning names + STBL labels on real events captured from her save?",
+  "model": "openai/gpt-6-luna",
+  "reasoning_effort": "none",
+  "scenes_tested": [
+    {
+      "event_id": "1792724276127-1",
+      "lot": "Boiling Point",
+      "interaction": "hostStation_Host_HeresYourTable (Be Seated)",
+      "variant_a_humanized": {
+        "prompt_tokens": 2328,
+        "elapsed_seconds": 3.599,
+        "text": "Hitomi Ishii: Your table’s ready. Please enjoy it quietly; strangers are making my stress feel social.\nKenya Bower: Perfect. I’ll sit with my superb grub and pretend that horrible date was just a menu item."
+      },
+      "variant_b_raw_stbl": {
+        "prompt_tokens": 2545,
+        "elapsed_seconds": 2.617,
+        "text": "Hitomi Ishii: Your table’s ready. Please enjoy it quietly; the strangers are making my shoulders tense.\nKenya Bower: Superb grub, terrible date, and now a table. Honestly, this evening keeps finding new ways to be competent."
+      }
+    },
+    {
+      "event_id": "1792724763151-3",
+      "lot": "Boiling Point",
+      "interaction": "mixer_social_JokeAboutBodyHair_targeted_Funny_alwaysOn (Joke about Body Hair)",
+      "variant_a_humanized": {
+        "prompt_tokens": 2368,
+        "elapsed_seconds": 2.034,
+        "text": "Olive Tinker: Body hair is just your body growing its own tiny winter coat. Very efficient.\nKenya Bower: Finally, a grooming tip that costs less than my dinner and still makes me feel judged."
+      },
+      "variant_b_raw_stbl": {
+        "prompt_tokens": 2760,
+        "elapsed_seconds": 2.333,
+        "text": "Olive Tinker: Puberty is when your hair starts making independent career choices.\nKenya Bower: At least mine has a better job rating than my odd-job profile."
+      }
+    },
+    {
+      "event_id": "1792728038351-1",
+      "lot": "3 Sequoia Cottage",
+      "interaction": "petSocial_PetToSim_Greeting_Friendly_SI (Friendly)",
+      "variant_a_humanized": {
+        "prompt_tokens": 2304,
+        "elapsed_seconds": 3.066,
+        "text": "meimei: Woof! (Translation: Hello, fellow dog enthusiast. I’m excited, but this standing still is becoming a lifestyle.)\nKenya Bower: Hi, meimei! You’re adorable. Let’s keep the barking below rental-review volume."
+      },
+      "variant_b_raw_stbl": {
+        "prompt_tokens": 2549,
+        "elapsed_seconds": 2.008,
+        "text": "meimei: Yip! (Translation: Hello, human. I’m thrilled, under-exercised, and willing to inspect your computer.)\nKenya Bower: Hello, tiny neighbor! You’re much better company than my last date—and you don’t hate fruitcake."
+      }
+    },
+    {
+      "event_id": "ask-1792729131503-2",
+      "lot": "3 Sequoia Cottage",
+      "interaction": "player_ask_active_sim (How does it feel being back home with meimei?)",
+      "variant_a_humanized": {
+        "prompt_tokens": 1925,
+        "elapsed_seconds": 1.938,
+        "text": "Kenya Bower: Honestly? Home feels right again—especially with meimei nearby and my very important book in hand."
+      },
+      "variant_b_raw_stbl": {
+        "prompt_tokens": 2121,
+        "elapsed_seconds": 2.025,
+        "text": "Kenya Bower: Happy, honestly. Meimei’s here, I’ve rediscovered myself, and the book is excellent company too."
+      }
+    },
+    {
+      "event_id": "chat-1792729922727-3",
+      "lot": "3 Sequoia Cottage",
+      "interaction": "player_direct_chat (Did you bark at the vacuum while I was at Boiling Point?)",
+      "variant_a_humanized": {
+        "prompt_tokens": 2275,
+        "elapsed_seconds": 1.879,
+        "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: It started it. Also, I’m bored and would like an adventure.)"
+      },
+      "variant_b_raw_stbl": {
+        "prompt_tokens": 2518,
+        "elapsed_seconds": 1.736,
+        "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: It started it. I’m still recovering from its suspicious wheels.)"
+      }
+    }
+  ],
+  "conclusion": "Variant B (STBL labels + filtered raw tuning names, 0 lines of humanize_* tables) grounded jokes in specific pet quirks (trait_PetQuirk_Obsessed_Computer, trait_PetQuirk_Obsessed_RobotVacuum), careers, and buffs just as well as Variant A while deleting 389 lines of hand-maintained lookup tables and the redundant highlights triple."
+}

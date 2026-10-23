@@ -21,15 +21,12 @@ Console commands (`Ctrl+Shift+C`):
 
 | Command | Effect |
 | --- | --- |
-| `banter.ai` / `banter.stop` | Turn English banter on / off (same as the pie menu). |
-| `banter.talk <first> <last>` | Open the text box to speak as your active Sim to a Sim on this lot. |
-| `banter.ask [question]` | Ask your active Sim a question (no question opens the text box). |
-| `banter.mute on` / `off` | Toggle selective Simlish muting (`voice_actor = 0x7FFFFFFF` only while a Sim's line is actively replaced by English). |
 | `banter.status` | Print state, skip counts, and cost; log a full snapshot to `events.jsonl`. |
 | `banter.logs [on|off|tail]` | Mirror companion log lines into the console. |
 | `banter.reload` | Hot-reload `BanterLab.ts4script`. |
+| `banter.stop` | Turn English banter off and restore any muted Simlish voices. |
 
-Experiment-only commands (`banter.start`, `trace`, `test`, `audio`, `summon`, `say`, `solo`, `menu`) were removed on 2026-10-22; their results live in `experiments/` and git history.
+All player controls (**Enable/Disable English Banter**, **Ask <Sim> a Question (English)...**, and **Speak to <Sim> (English)...**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
 
 Build using Python 3.7, matching the installed game:
 
@@ -37,7 +34,7 @@ Build using Python 3.7, matching the installed game:
 & '.\.local\python37\python.exe' '.\build.py'
 ```
 
-The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs and `reply.json` live in its `BanterLabData` child directory. Rebuild after any game update: `BanterLabUI.package` ships patched copies of `Notifications.gfx` and `Dialog.gfx`.
+The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs and `reply.json` live in its `BanterLabData` child directory. Rebuild after any game update: `BanterLabUI.package` ships a patched copy of `Notifications.gfx` (`ShowNextMessage` honors `notification.timeout_duration`).
 
 ## Generation companion (`companion.py`)
 
@@ -75,3 +72,5 @@ python3.15 '.\companion.py' --once '.\.local\scene.json'
 14. **[14 — Mercury 3 vs. GPT-6-Luna & OpenRouter TTS benchmark](experiments/14-mercury-vs-luna-benchmark/result.json):** Measured TTFT vs. TTLT across `none` and `low` effort, compared humor on 5 real playtest scenes, and verified English/Hebrew/Russian speech synthesis on `openai/gpt-audio-mini`.
 15. **[15 — Cost tracking & OpenRouter neural TTS](experiments/15-cost-and-openrouter-tts/result.json):** Verified `openai/gpt-audio-mini` streaming PCM16 TTS in-game (`1.26–1.46 s` parallel 2-speaker synthesis across 11 voices) and OpenRouter cost tracking (note: the Gemini TTS comparison in `result.json` hit the chat model `google/gemini-3.8-flash`, not `google/gemini-3.8-flash-tts`).
 16. **[16 — Ask-Self Pie Menu & solo vocalizations](experiments/16-solo-vocal-and-ask-self/result.json):** Verified **`Ask <Sim> a Question (English)...`** live in-game (4 events in `events.jsonl`); note that `result.json`'s `solo_vocal` and `vox_attempt` metrics came from a local mock harness, not the game.
+
+17. **[17 — Humanize tables A/B](experiments/17-humanize-tables-ab/result.json):** Compared the 389-line `humanize_*` lookup tables against STBL labels + filtered raw tuning names across 5 real events from her save (`Slot_00000002.save`), confirming `openai/gpt-6-luna` grounds jokes just as well without the lookup tables and enabling a `-55.1%` total codebase reduction (`4,049` → `1,816` lines).

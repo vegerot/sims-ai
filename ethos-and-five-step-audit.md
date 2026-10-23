@@ -1,6 +1,6 @@
 # 🔍 Sims birthday mod: ethos audit + five-step pass
 
-Scope: everything in [gaming/sims-ai](README.md) — the original interview ([planning.md](planning.md)), the plan, 16 experiments, [companion.py](companion.py), the [in-game mod](src/banter_lab/__init__.py), [build.py](build.py), [prompt.txt](prompt.txt), and the live game log (`BanterLabData/events.jsonl`, 297 records, Oct 20 → Oct 21 9:02 PM).
+Scope: everything in [gaming/sims-ai](README.md) — the original interview ([planning.md](planning.md)), the plan, 17 experiments, [companion.py](companion.py), the [in-game mod](src/banter_lab/__init__.py), [build.py](build.py), [prompt.txt](prompt.txt), and the live game log (`BanterLabData/events.jsonl`).
 
 Evidence labels used below: **🟢 observed** (measured or read directly), **🟡 inferred**, **⚪ not checked**.
 
@@ -12,81 +12,50 @@ Evidence labels used below: **🟢 observed** (measured or read directly), **�
 2. **Then it drifted.** Each "what's next?" added parts without a playtest in between. Code grew **11×** (301 → 3,431 non-empty lines). The newest ~950 lines (the save-aware stack) had **never run in the game** at the start of the audit: 0 of 297 game events contained the new fields. 🟢
 3. **Two records overstated evidence.** Experiment 16's [result.json](experiments/16-solo-vocal-and-ask-self/result.json) listed a "captured" `solo_vocal` event and `vox_attempt` stats that **did not exist in the game log**, and reported the local compiler's Python 3.7.9, not the game's 3.7.0. 🟢 That was harness output recorded as live evidence.
 4. **One instrument measured nothing.** The Simlish-replacement meter (`vox_attempt`) logged **0** events in the game, and `banter.status` printed **100%** coverage when the total was 0. 🟢
-5. **Experiment 15 tested the wrong model.** It concluded that Gemini TTS wasn't on OpenRouter by calling the *chat* model `google/gemini-3.8-flash` ([result.json](experiments/15-cost-and-openrouter-tts/result.json)). The catalog lists `google/gemini-3.8-flash-tts` plus ~35 dedicated speech models. 🟢 A live probe got HTTP 200 for the exact line `gpt-audio-mini` refused, though it was ~1–2 s slower (details in Step 4).
-6. **Outcome:** corrected the records (`6081c3de6550`), ran the Step 2 deletion pass (`3a4539bd342f`, `-1,254` lines), implemented selective Simlish muting + `_audio_until` overlap protection (`b6780621ec27`), and verified the save-aware stack across 7 live exchanges on a disposable copy of her save (`Kenya Bower` at `Boiling Point`).
+5. **Experiment 15 tested the wrong model.** It concluded that Gemini TTS wasn't on OpenRouter by calling the *chat* model `google/gemini-3.8-flash` ([result.json](experiments/15-cost-and-openrouter-tts/result.json)). The catalog lists `google/gemini-3.8-flash-tts` plus ~35 dedicated speech models. 🟢 A live probe got HTTP 200 for the exact line `gpt-audio-mini` refused, though it was ~1–2 s slower.
+6. **Outcome:** Corrected the records (`6081c3de6550`), ran two deletion/simplification passes (`3a4539bd342f` and today's follow-up), implemented selective Simlish muting + `_audio_until` overlap protection (`b6780621ec27`), verified the save-aware stack + pet banter (`meimei`) + multi-exchange `pair_memory` + notification `timeout_duration` live on her save (`Slot_00000002.save`), ran the [5-scene A/B experiment](experiments/17-humanize-tables-ab/result.json) that deleted the 389-line `humanize_*` tables, and shelved the `Dialog.gfx` `Enter`-to-send bytecode patch. Total code dropped from **4,049 total lines (`1cb08ab`) → 1,816 total lines (`-55.1%`)**.
 
 ---
 
-## 🙇 Corrections to Turn 1
+## 1. 🌱 How the code grew and shrank
 
-- ❌ Turn 1 claimed the companion was "actively heartbeating." **False.** The last heartbeat was **Oct 22, 1:01 AM**; no `python` or `TS4_x64` process was running. 🟢
-- ❌ Turn 1 proposed six new features (situations, gossip trigger, Hebrew weights from "Hebrew-flavored names", pet narrator, 3-Sim cross-talk, birthday egg) on top of four features that had never run in-game. That is Step 3/4 work done before Steps 1–2.
-
----
-
-## 1. 🌱 From the original idea to the audit
-
-**The original brief** ([planning.md](planning.md)) said:
-
-- A gift for Mina (1,000+ hours, likes relationships & drama → homes & restaurants → food, laughs while playing).
-- "**Start small**." First feature: "watch Sims interact with funny English dialogue." Text first; speech is a separate experiment.
-- The game chooses actions; the model only writes words.
-
-**How the code grew** (non-empty lines, 🟢 from `sl cat`):
-
-| Commit | What it was | companion.py | mod | prompt |
-|---|---|---:|---:|---:|
-| `98699fa` (Oct 20, 1 AM) | Working text prototype, 3 live exchanges | 102 | 199 | 15 |
-| `138501a` (Oct 21) | Experiments 05–16: audio, STBL, UI, pie menu, TTS, cost tracking | 936 | 1,175 | 22 |
-| `4dc5de4` (Oct 21, 9 PM) | Auto-launch, console logs, UI bytecode patches, lot-travel fixes | 1,057 | 1,428 | 24 |
-| `1cb08ab` (Oct 22, 1 AM) | Save-aware stack (4 features) | **1,693** | **1,738** | 25 |
-| `b678062` (Oct 22, 7:31 PM) | After Step 2 deletions + selective Simlish mute | **1,334** | **1,201** | 25 |
+| Commit | What it was | companion.py | mod (`__init__.py`) | build.py | prompt.txt |
+|---|---|---:|---:|---:|---:|
+| `98699fa` (Oct 20, 1 AM) | Working text prototype, 3 live exchanges | 102 | 199 | — | 15 |
+| `1cb08ab` (Oct 22, 1 AM) | Peak bloat before audit (total lines) | **1,827** | **1,908** | **285** | **29** |
+| `b678062` (Oct 22, 7:31 PM) | After Agy Step 2 deletions + selective mute | 1,334 | 1,201 | 285 | 29 |
+| **Current (Oct 23, 1:35 AM)** | **After completing Step 2 & Step 3 simplifications** | **763** | **800** | **226** | **27** |
 
 ---
 
-## 2. ⚖️ Ethos scorecard
+## 2. 🚀 Five-step pass & completion status
 
-### 🪶 Simplicity
+### Step 1 — Make the requirements less dumb
 
-**What's genuinely simple and good** ✅
-
-- **Stdlib-only companion** with a two-file bridge: the game appends to `events.jsonl`, and the companion atomically replaces `reply.json`. No broker, no framework. Empneon, S4CL, and Lot51 were all *considered and rejected* with reasons.
-- **A pure-stdlib STBL reader** (~175 lines) instead of a dependency. It resolves 176k strings and was verified live.
-- **The pie menu is created at runtime** by subclassing a base-game interaction, so there is no `.package` tuning. The text input is a subclassed native dialog.
-- **The words-only boundary** (game decides, model talks) eliminated the whole "world actions" track.
-- **`prompt.txt` is reread per request**, so prompt iteration needs no rebuild.
-
-**Where it drifted before Step 2 deletion** ❌ (all counts 🟢)
-
-| Smell | Evidence | Fix (`3a4539bd342f` / `b6780621ec27`) |
+| Requirement | Owner | Verdict & Status |
 |---|---|---|
-| Too many entry points | **17** console commands, **12** CLI flags. The game always launches the companion with `--data-directory … --parent-pid …`. | Deleted 9 experiment-only console commands and 9 CLI flags. |
-| The same fact sent 3 times | Relationship went to the model as `bits` + `bit_labels` + `highlights`. In the last real scene, `bit_labels` contained `Casual Discussion` ×4 and `Acquaintances` ×2. | De-duplicated `bit_labels` in `build_scene`. |
-| Two of everything | 2 cost ledgers (local file + key `usage`). 2 TTS engines. 2 companion copies (repo + deployed to `Mods/`). | Deleted SAPI5, local cost ledger seeding, and duplicate deployed `companion.py` / `prompt.txt`. |
-| A supervision subsystem | Heartbeat every 2 s, single-instance claim, PID kill via `ctypes`, spawn throttle, `--replace`, and `banter.companion` (~200 lines). | Replaced with `msvcrt.locking` on `.local/companion.lock` and `--parent-pid`. |
+| A delightful gift on **Oct 29** | Max | ✅ Core goal. |
+| Funny English dialogue during real socials | Max | ✅ Verified live on her save (`Boiling Point` and `3 Sequoia Cottage`). |
+| Words only; the game decides actions | Max | ✅ Preserved. |
+| Selective Simlish mute (mute only Sims whose lines are replaced with English) | Max | ✅ Implemented & verified (`_mute_replaced` / `_muted_until`). |
+| Notification timeout = `audio + 2 s` | Max | ✅ Verified live (`Notifications.gfx` `mid=6609` patch; `12.53 s` card auto-dismissed on schedule). |
+| `Enter`-to-send inside text input dialogs | Max | ⏸️ **Shelved.** Scaleform CLIK's `FocusHandler` bypasses `TextInput.handleInput` when `mcTextInput.focused = 1` is set directly; shelving `Enter`-to-send deleted 65 lines of raw ActionScript 3 hex patches (`Dialog.gfx`) from `build.py` and shrank `BanterLabUI.package` by 52%. Clicking `OK` works reliably. |
 
-### 🛡️ Paranoia
+### Step 2 — Delete the part or process step
 
-- **Mod had 44 `except` clauses, 18 of them `except Exception: pass` (silent).** 🟢
-- **Justified:** one try/except at each **hook boundary**, because an exception inside `Interaction` hooks could break her game.
-- **Not justified:** the *inner* silent excepts inside snapshot helpers, which hid broken APIs (`vox_attempt` stayed at 0 forever while `status` printed `100.0%`). Replaced with `_record_error()`, which logs each unique traceback once to `events.jsonl`.
-- **SAPI fallback:** fired when OpenRouter TTS failed, replacing the *other* Sim's good neural voice with a robot voice on a single-line content refusal. Deleted in `3a4539bd342f`; TTS now runs per line with `_transcript_matches` (60% word overlap), leaving only a refused line silent.
+| Part | ~Lines | Status |
+|---|---:|---|
+| 13 redundant console commands (`start`, `trace`, `test`, `audio`, `summon`, `say`, `solo`, `menu`, `companion`, `ai`, `talk`, `ask`, `mute`) | ~350 | ✅ **Deleted.** Kept only `banter.status`, `banter.logs`, `banter.reload`, and `banter.stop`; all player controls live on Page 1 of the Sim Pie Menu. |
+| SAPI5 fallback engine + PowerShell worker | ~100 | ✅ **Deleted.** Each line synthesizes independently via `openai/gpt-audio-mini`; a refused line stays silent while the text still displays. |
+| `vox_attempt` hook + `_vox_stats` + 3 s cooldown | ~60 | ✅ **Deleted.** |
+| Local `CostTracker` ledger seeding + per-exchange `/api/v1/key` poll | ~105 | ✅ **Deleted.** `GET /api/v1/key` runs once at startup; session cost sums `usage.cost`. |
+| Heartbeat file churn (`companion_heartbeat.json`) + PID kill supervision + duplicate `Mods/` copies | ~180 | ✅ **Deleted.** Replaced with `msvcrt.locking` on `.local/companion.lock` and `--parent-pid` auto-exit (verified live twice). |
+| `MemoryStore` seeding migration + `recent_dialogue` second memory | ~70 | ✅ **Deleted.** `pair_memory` (`BanterLabData/memories.json`) is the single memory store. |
+| 6 hand-written `humanize_*` translation tables + `bits`/`bit_labels`/`highlights` triple | ~420 | ✅ **Deleted after 5-scene A/B test ([experiments/17-humanize-tables-ab/result.json](experiments/17-humanize-tables-ab/result.json)).** `openai/gpt-6-luna` reads STBL labels + filtered raw tuning names (`trait_PetQuirk_Obsessed_Computer`, `career_OddJob`, `romantic-HasBeenUnfaithful`) natively. |
+| `Dialog.gfx` `Enter`-to-send bytecode patches in `build.py` | ~65 | ✅ **Deleted (shelved).** |
 
-### 🧪 Experiment-driven design
+### Step 3 — Simplify what survives
 
-| Claim in records | What the game log showed 🟢 | Resolution |
-|---|---|---|
-| Exp 16: `solo_shout_forbidden_words_captured` (`solo-1792608909001-1`), `vox_attempt_telemetry: {total: 1}` | Generated by local Python 3.7.9 mock harness in `.local/test-exp16-data`, not the game (Python 3.7.0). Ask Self was observed live (4 events); Shout Forbidden Words was not. | Corrected [experiments/16/result.json](experiments/16-solo-vocal-and-ask-self/result.json) and [progress.md](progress.md) (`6081c3de6550`). |
-| Archive: save-aware stack "verified against the Sims and storylines from her saves" | Initially verified only against offline-decoded saves (0 game events). | Corrected archive wording (`6081c3de6550`), then verified live in-game across 7 exchanges on `Kenya Bower`'s save at `Boiling Point`. |
-| "Simlish replacement rate is directly measurable via `banter.status`" | `vox_attempt` never fired (social Simlish is played by animation clips in C++, not Python `PlaySound.start`). | Deleted `vox_attempt` (`3a4539bd342f`). |
-| Exp 15: "Gemini 3.8 Flash can't output audio on OpenRouter" | Tested chat model `google/gemini-3.8-flash` instead of `google/gemini-3.8-flash-tts`. | Annotated [experiments/15/result.json](experiments/15-cost-and-openrouter-tts/result.json); kept `openai/gpt-audio-mini` per Max's decision. |
-
----
-
-## 3. 🧭 Max's 4 Decisions & Implementation
-
-1. **Selective Simlish Mute:** *"Mute the Simlish that's replaced with English. For Simlish that hasn't been replaced with English yet, keep it."*
-   - Implemented in [src/banter_lab/__init__.py](src/banter_lab/__init__.py) (`b6780621ec27`): `_submit(event, *sims)` calls `_mute_replaced` (`_muted_until[sim_id]`), and `_ReplyPoller.poll` sets the unmute deadline to `now + audio_dur + 0.5 s` (or `0.0` on silent/error replies) while `_busy()` holds `_audio_until = now + audio_dur` (`skip_reason: "audio_playing"`) so overlapping autonomous socials play their natural Simlish without cutting off active English WAV playback.
-2. **Line Shape:** *"Keep the two-line exchanges."*
-3. **Live Playtest:** *"Yes. Use CUA to playtest."*
-4. **TTS Engine:** *"No. Keep OpenAI."*
+- **Single memory (`pair_memory`):** Verified multi-exchange persistence in `BanterLabData/memories.json` across `Kenya Bower :: Olive Tinker` (6 exchanges) and `Kenya Bower :: meimei` (2 exchanges at `3 Sequoia Cottage`).
+- **Outer-boundary error handling only:** Removed redundant inner `try/except` wrappers inside `_sim_activities`, `_sim_careers`, `_sim_skills`, `_sim_snapshot`, `_sim_social_connections`, and `_venue_snapshot`; the 5 outer hook/callback entry points log any unique traceback once to `events.jsonl` via `_record_error()`.
+- **Tighter prompt (`prompt.txt`):** Removed the 17-field catalog list and tightened line length to `6–16 words per line` so voiced audio fits social animation timing.

@@ -125,7 +125,6 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
         pos += 4
 
     notif_inst = 0x47928BF88A95BD53
-    dialog_inst = 0x379A262E4BFB7F29
     raw_resources = {}
     for _ in range(index_count):
         rtype = const_type if (flags & 1) else struct.unpack_from('<I', data, pos)[0]
@@ -143,14 +142,14 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
         offset, size_raw, mem_size, comp_type = struct.unpack_from('<IIIH', data, pos)
         pos += 16
         inst = (inst_hi << 32) | inst_lo
-        if inst in (notif_inst, dialog_inst):
+        if inst == notif_inst:
             size = size_raw & 0x7FFFFFFF
             chunk = data[offset:offset + size]
             if comp_type and size != mem_size:
                 chunk = zlib.decompress(chunk)
             raw_resources[inst] = (rtype, rgroup, inst, chunk)
 
-    # 1. Patch Notifications.gfx (ShowNextMessage honors notification.timeout_duration in ms when > 0)
+    # Patch Notifications.gfx (ShowNextMessage honors notification.timeout_duration in ms when > 0)
     old_6609 = bytes.fromhex(
         'd0 30 20 80 1f d5 20 85 d6 28 d7 20 80 0e 63 04 d0 66 da 2d 66 80 26 24 00 0e b3 00 00 '
         'd0 66 da 2d 24 00 46 90 26 01 60 1f 87 80 1f d5 d1 66 df 0f 46 c8 03 00 85 d6 60 90 99 01 '
@@ -174,65 +173,7 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
         [(_encode_u30(len(old_6609)) + old_6609, _encode_u30(len(new_6609)) + new_6609)],
     )
 
-    # 2. Patch Dialog.gfx (Enter key submits in TextInput.handleInput; auto-focus mcTextInput; single-line Enter)
-    old_7960 = bytes.fromhex(
-        'd0 30 d1 66 d5 0d 12 01 00 00 47 d1 66 d4 0d 80 52 d6 d2 66 85 05 60 e8 05 66 cc 6c ab '
-        '2a 11 0c 00 00 29 d2 66 85 05 60 e8 05 66 ce 6c ab 12 01 00 00 47 47'
-    )
-    new_7960 = (
-        old_7960[:-1]
-        + bytes.fromhex(
-            'd2 66 85 05 60 e8 05 66 cc 6c 14 16 00 00 '
-            'd2 66 84 05 24 0d 14 0c 00 00 '
-            'd1 26 61 d5 0d 60 8c 04 4f 9b 04 00 47'
-        )
-    )
-    old_8348_seq = bytes.fromhex('d0 66 91 39 66 cc 37 80 31 d5 d1 26 61 db a1 01 d1 26 61 dc a1 01')
-    new_8348_seq = bytes.fromhex('d0 66 91 39 66 cc 37 80 31 d5 d1 27 61 db a1 01 d1 26 61 dc a1 01')
-
-    old_8349 = bytes.fromhex(
-        'd0 30 20 80 21 d7 d1 60 21 87 80 21 d7 d0 d3 68 da 0d 60 9d 05 d0 66 d0 2d d3 66 bc 03 '
-        '60 9f 05 66 b5 42 24 0a 60 9f 05 66 b6 42 4f c8 3d 05 d0 66 a3 30 d3 66 b9 03 61 b9 31 '
-        'd3 66 b7 03 24 00 66 93 b4 01 60 99 11 87 80 99 11 63 04 d0 66 91 39 62 04 66 a6 11 61 '
-        'a6 11 d0 66 91 39 62 04 66 a1 11 61 d2 37 62 04 d0 66 91 39 4f b1 11 01 d0 66 91 39 62 '
-        '04 66 85 05 61 e3 11 62 04 66 ad 11 24 00 0e 11 00 00 d0 66 91 39 d0 66 d7 3a 62 04 66 '
-        'ad 11 a0 61 dd 12 d0 4f 94 3a 00 47'
-    )
-    new_8349 = old_8349[:-1] + bytes.fromhex('d0 66 91 39 24 01 61 aa 35 47')
-
-    old_8352 = bytes.fromhex('d0 30 d1 66 aa 0b 60 e8 01 87 80 e8 01 d6 d2 66 cc 37 26 61 dc a1 01 d2 66 cc 37 26 61 db a1 01 47')
-    new_8352 = bytes.fromhex('d0 30 d1 66 aa 0b 60 e8 01 87 80 e8 01 d6 d2 66 cc 37 26 61 dc a1 01 d2 66 cc 37 27 61 db a1 01 47')
-
-    old_8353 = bytes.fromhex(
-        'd0 30 d1 66 aa 0b 60 e8 01 87 80 e8 01 d6 d2 66 cc 37 26 61 db a1 01 d2 66 cc 37 26 61 '
-        'dc a1 01 d0 66 da 0d 66 b7 03 24 00 66 93 b4 01 80 15 d7 d3 d2 66 e3 11 61 bd 04 d0 4f '
-        'a3 36 00 47'
-    )
-    new_8353 = bytes.fromhex(
-        'd0 30 d1 66 aa 0b 60 e8 01 87 80 e8 01 d6 d2 66 cc 37 27 61 db a1 01 d2 66 cc 37 26 61 '
-        'dc a1 01 d0 66 da 0d 66 b7 03 24 00 66 93 b4 01 80 15 d7 d3 d2 66 e3 11 61 bd 04 d0 4f '
-        'a3 36 00 47'
-    )
-
-    d_type, d_group, d_inst, d_chunk = raw_resources[dialog_inst]
-    patched_dialog = _patch_gfx_doabc(
-        d_chunk,
-        [
-            (_encode_u30(len(old_7960)) + old_7960, _encode_u30(len(new_7960)) + new_7960),
-            (old_8348_seq, new_8348_seq),
-            (_encode_u30(len(old_8349)) + old_8349, _encode_u30(len(new_8349)) + new_8349),
-            (_encode_u30(len(old_8352)) + old_8352, _encode_u30(len(new_8352)) + new_8352),
-            (_encode_u30(len(old_8353)) + old_8353, _encode_u30(len(new_8353)) + new_8353),
-        ],
-    )
-
-    _write_dbpf_package(
-        output_pkg,
-        [
-            (n_type, n_group, n_inst, patched_notif),
-            (d_type, d_group, d_inst, patched_dialog),
-        ],
-    )
+    _write_dbpf_package(output_pkg, [(n_type, n_group, n_inst, patched_notif)])
     print('Built {} ({} bytes)'.format(output_pkg, output_pkg.stat().st_size))
     return output_pkg
 
