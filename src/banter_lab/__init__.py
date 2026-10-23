@@ -492,11 +492,11 @@ def _submit(event, *sims):
 def _observe(interaction, outcome_result):
     if not _enabled:
         return
-    actor, target = _social_participants(interaction)
-    if actor is None:
-        return
     interaction_name = type(interaction).__name__
     if interaction_name in _PASSIVE_CONTAINERS:
+        return
+    actor, target = _social_participants(interaction)
+    if actor is None:
         return
     interaction_stbl = _string_hash(getattr(interaction, 'display_name', None), actor, target)
     if interaction_name in _UNLABELLED_WAVES and not interaction_stbl:
