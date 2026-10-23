@@ -50,7 +50,7 @@ _skip_counts = {}
 
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
-_PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate')
+_PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'simToPet_Socials_Converse', 'petSocial_DogToDog_SocialGroup', 'petSocial_PetToPet_SocialGroup')
 _UNLABELLED_WAVES = ('socialMixer_Greetings_Wave', 'nonTouching_Unpaired_Greeting_Wave')
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit', 'dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
