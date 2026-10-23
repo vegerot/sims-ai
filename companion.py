@@ -599,6 +599,7 @@ def _synthesize_pet_windows_tts(spoken_text: str, sim: dict) -> dict:
         input=spoken_text.encode('utf-8'),
         capture_output=True,
         timeout=15,
+        check=True,
         creationflags=subprocess.CREATE_NO_WINDOW,
     )
     return {
