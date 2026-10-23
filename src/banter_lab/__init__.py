@@ -469,11 +469,9 @@ def _observe(interaction, outcome_result):
         return
     interaction_name = type(interaction).__name__
     if interaction_name in _PASSIVE_CONTAINERS:
-        _record_skip('passive_container', interaction, actor, target)
         return
     interaction_stbl = _string_hash(getattr(interaction, 'display_name', None), actor, target)
     if interaction_name in _UNLABELLED_WAVES and not interaction_stbl:
-        _record_skip('unlabelled_wave', interaction, actor, target)
         return
     if not _busy(interaction, actor, target):
         _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result), actor, target)
