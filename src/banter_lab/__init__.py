@@ -754,11 +754,11 @@ Zone.on_loading_screen_animation_finished = _on_zone_loaded
 
 @sims4.commands.Command('banter.stop', command_type=sims4.commands.CommandType.Live)
 def stop(_connection=None):
-    global _enabled, _pending, _audio_until
+    global _enabled, _pending, _audio_until, _last_social
     _enabled = False
     _pending = None
     _audio_until = 0.0
-_last_social = None
+    _last_social = None
     _restore_mutes(force=True)
     if _connection is not None:
         sims4.commands.CheatOutput(_connection)('Banter Lab stopped and Simlish voices restored.')
