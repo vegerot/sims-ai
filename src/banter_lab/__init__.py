@@ -17,6 +17,8 @@ import zipimport
 
 import alarms
 import clock
+import services
+import sims4.commands
 from distributor.ops import SetVoiceActor
 from distributor.shared_messages import IconInfoData
 from distributor.system import Distributor
@@ -24,15 +26,12 @@ from event_testing.results import TestResult
 from interactions import ParticipantType
 from interactions.base.interaction import Interaction
 from relationships.relationship_track import RelationshipTrack
-import services
-import sims4.commands
 from sims4.localization import LocalizationHelperTuning
 from sims4.utils import flexmethod
 from singletons import DEFAULT
 from ui.ui_dialog_generic import UiDialogTextInputOkCancel
 from ui.ui_dialog_notification import UiDialogNotification
 from zone import Zone
-
 
 _enabled = True
 _original_voice_actors = globals().get('_original_voice_actors', {})
@@ -112,7 +111,7 @@ def _string_hash(value, *tokens):
 
 def _sim_name(sim_or_info):
     info = getattr(sim_or_info, 'sim_info', sim_or_info)
-    return '{} {}'.format(info.first_name, info.last_name).strip()
+    return f'{info.first_name} {info.last_name}'.strip()
 
 
 def _true_voice_actor(info):
@@ -442,7 +441,7 @@ def _make_event(event_type, id_prefix, actor, target, interaction_name, interact
     venue = _venue_snapshot()
     event = {
         'type': event_type, 'outcome': outcome,
-        'event_id': '{}{}-{}'.format(id_prefix, int(time.time() * 1000), _event_count),
+        'event_id': f'{id_prefix}{int(time.time() * 1000)}-{_event_count}',
         'observed_at': time.time(),
         'interaction': interaction_name, 'interaction_stbl': interaction_stbl,
         'venue': venue['id'], 'venue_stbl': venue['stbl'],
@@ -503,7 +502,7 @@ def _observe(interaction, outcome_result):
 
 class _ReplyPoller:
     def poll(self, _timeline_handle):
-        global _enabled, _pending, _audio_until
+        global _pending, _audio_until
         try:
             _restore_mutes()
             if _pending is None or not os.path.exists(_reply_path):
@@ -540,7 +539,7 @@ class _ReplyPoller:
                     _muted_until[sim_id] = now + audio_dur + 0.5 if audio_dur > 0.0 else 0.0
             _restore_mutes()
             shown_dur = audio_dur if audio_dur > 0.0 else max(2.0, len(reply.get('text', '')) / 18.0)
-            timeout_ms = int(round((shown_dur + 2.0) * 1000))
+            timeout_ms = round((shown_dur + 2.0) * 1000)
             _notify(title, reply['text'], actor_info, target_info, timeout_ms=timeout_ms)
             _record(dict(reply, type='displayed', displayed_at=time.time(), timeout_duration_ms=timeout_ms))
         except Exception:
@@ -605,8 +604,8 @@ def _on_pie_main(actor_sim, target_sim):
     elif getattr(target_sim, 'is_sim', False):
         a_info, t_info = actor_sim.sim_info, target_sim.sim_info
         _open_text_dialog(
-            a_info, '{} → {}'.format(_sim_name(a_info), _sim_name(t_info)),
-            'What does {} say to {}?'.format(a_info.first_name, t_info.first_name), t_info,
+            a_info, f'{_sim_name(a_info)} → {_sim_name(t_info)}',
+            f'What does {a_info.first_name} say to {t_info.first_name}?', t_info,
             lambda text: _submit(_make_event(
                 'player_chat', 'chat-', actor_sim, target_sim, 'player_direct_chat', None,
                 'PLAYER_INITIATED', player_message=text), actor_sim, target_sim))
@@ -616,8 +615,8 @@ def _on_pie_ask_self(actor_sim, _target_sim):
     if actor_sim is not None:
         a_info = actor_sim.sim_info
         _open_text_dialog(
-            a_info, 'Ask {}'.format(_sim_name(a_info)),
-            'Ask {} a question in English (or Hebrew / Russian):'.format(a_info.first_name), None,
+            a_info, f'Ask {_sim_name(a_info)}',
+            f'Ask {a_info.first_name} a question in English (or Hebrew / Russian):', None,
             lambda text: _submit(_make_event(
                 'player_ask_self', 'ask-', actor_sim, None, 'player_ask_active_sim', None,
                 'PLAYER_INITIATED', player_message=text), actor_sim))
@@ -677,12 +676,12 @@ def _install_pie_menu_interaction():
         _pie_interaction_cls = _make_pie_cls(
             base_cls, affordance_mgr, 0xBA47E21AB0000001, 30, False,
             lambda actor, target, fname: ('Disable English Banter' if _enabled else 'Enable English Banter')
-            if target is actor else 'Speak to {} (English)...'.format(fname),
+            if target is actor else f'Speak to {fname} (English)...',
             _on_pie_main)
     if _pie_ask_self_cls is None:
         _pie_ask_self_cls = _make_pie_cls(
             base_cls, affordance_mgr, 0xBA47E21AB0000002, 29, True,
-            lambda _actor, _target, fname: 'Ask {} a Question (English)...'.format(fname),
+            lambda _actor, _target, fname: f'Ask {fname} a Question (English)...',
             _on_pie_ask_self)
     count = 0
     seen_types = set()
@@ -765,13 +764,16 @@ def logs_command(_connection=None):
         return
     with open(log_path, encoding='utf-8-sig') as stream:
         for line in [ln for ln in stream.read().splitlines() if ln.strip()][-10:]:
-            out('[Companion] {}'.format(line))
+            out(f'[Companion] {line}')
 
 
 @sims4.commands.Command('banter.status', command_type=sims4.commands.CommandType.Live)
 def status(_connection=None):
     cost_path = os.path.join(_data_directory, 'cost_summary.json')
-    cost = json.load(open(cost_path, encoding='utf-8-sig')) if os.path.exists(cost_path) else {}
+    cost = {}
+    if os.path.exists(cost_path):
+        with open(cost_path, encoding='utf-8-sig') as stream:
+            cost = json.load(stream)
     if _connection is not None:
         sims4.commands.CheatOutput(_connection)(
             'Banter Lab: enabled={}, companion_alive={}, observed={}, skipped={}, cost(session=${:.4f}, total=${:.4f})'.format(
@@ -788,10 +790,10 @@ def reload_command(_connection=None):
         mod = importlib.reload(sys.modules[__name__])
         count = mod._install_pie_menu_interaction()
         if _connection is not None:
-            sims4.commands.CheatOutput(_connection)('Banter Lab hot-reloaded ({} Sims).'.format(count))
+            sims4.commands.CheatOutput(_connection)(f'Banter Lab hot-reloaded ({count} Sims).')
     except Exception as exc:
         if _connection is not None:
-            sims4.commands.CheatOutput(_connection)('Reload failed: {}'.format(exc))
+            sims4.commands.CheatOutput(_connection)(f'Reload failed: {exc}')
         _record_error()
 
 

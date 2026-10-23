@@ -1,7 +1,6 @@
 """Build BanterLab.ts4script and BanterLabUI.package, then deploy to Mods/BanterLab."""
 
 import importlib.util
-from pathlib import Path
 import py_compile
 import shutil
 import struct
@@ -9,6 +8,7 @@ import sys
 import tempfile
 import zipfile
 import zlib
+from pathlib import Path
 
 DEFAULT_DEPLOY_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab')
 DEFAULT_UI_PACKAGE = Path(r'C:\Program Files\EA Games\The Sims 4\Data\Client\UI.package')
@@ -44,7 +44,7 @@ def _patch_gfx_doabc(chunk, replacements):
             tag_data = chunk[data_start:data_end]
             for old_bytes, new_bytes in replacements:
                 count = tag_data.count(old_bytes)
-                assert count == 1, 'Expected 1 occurrence of ABC pattern, found {}'.format(count)
+                assert count == 1, f'Expected 1 occurrence of ABC pattern, found {count}'
                 tag_data = tag_data.replace(old_bytes, new_bytes, 1)
             new_tl = len(tag_data)
             assert len_pos is not None
@@ -103,7 +103,7 @@ def _write_dbpf_package(output_path, resources):
 
 def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
     if not ui_pkg.exists():
-        print('Skipping UI package build ({} not found)'.format(ui_pkg))
+        print(f'Skipping UI package build ({ui_pkg} not found)')
         return None
     data = ui_pkg.read_bytes()
     index_count = struct.unpack_from('<I', data, 36)[0]
@@ -174,7 +174,7 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
     )
 
     _write_dbpf_package(output_pkg, [(n_type, n_group, n_inst, patched_notif)])
-    print('Built {} ({} bytes)'.format(output_pkg, output_pkg.stat().st_size))
+    print(f'Built {output_pkg} ({output_pkg.stat().st_size} bytes)')
     return output_pkg
 
 
@@ -187,17 +187,16 @@ def main():
     output = root / 'dist' / 'BanterLab.ts4script'
     ui_pkg_output = root / 'dist' / 'BanterLabUI.package'
     output.parent.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory() as temporary:
-        with zipfile.ZipFile(str(output), 'w', zipfile.ZIP_DEFLATED) as archive:
-            for path in sorted(source.rglob('*.py')):
-                relative = path.relative_to(source).with_suffix('.pyc')
-                compiled = Path(temporary) / relative
-                compiled.parent.mkdir(parents=True, exist_ok=True)
-                py_compile.compile(str(path), cfile=str(compiled),
-                                   dfile=relative.as_posix(), doraise=True)
-                assert compiled.read_bytes()[:4] == importlib.util.MAGIC_NUMBER
-                archive.write(str(compiled), relative.as_posix())
-    print('Built {}'.format(output))
+    with tempfile.TemporaryDirectory() as temporary, zipfile.ZipFile(str(output), 'w', zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(source.rglob('*.py')):
+            relative = path.relative_to(source).with_suffix('.pyc')
+            compiled = Path(temporary) / relative
+            compiled.parent.mkdir(parents=True, exist_ok=True)
+            py_compile.compile(str(path), cfile=str(compiled),
+                               dfile=relative.as_posix(), doraise=True)
+            assert compiled.read_bytes()[:4] == importlib.util.MAGIC_NUMBER
+            archive.write(str(compiled), relative.as_posix())
+    print(f'Built {output}')
     with zipfile.ZipFile(str(output)) as archive:
         assert archive.testzip() is None
         print('Modules: {}'.format(', '.join(archive.namelist())))
@@ -214,12 +213,12 @@ def main():
             dest = DEFAULT_DEPLOY_DIR / asset.name
             try:
                 if dest.exists() and dest.read_bytes() == asset.read_bytes():
-                    print('Up to date {}'.format(dest))
+                    print(f'Up to date {dest}')
                     continue
                 shutil.copy2(str(asset), str(dest))
-                print('Deployed {}'.format(dest))
+                print(f'Deployed {dest}')
             except PermissionError:
-                print('Skipped locked {} (close The Sims 4 to replace .package)'.format(dest))
+                print(f'Skipped locked {dest} (close The Sims 4 to replace .package)')
 
 
 if __name__ == '__main__':

@@ -8,12 +8,10 @@ speech with openai/gpt-audio-mini, and plays it when the game logs `displayed`.
 
 import argparse
 import base64
-from concurrent.futures import ThreadPoolExecutor
 import ctypes
 import json
 import msvcrt
 import os
-from pathlib import Path
 import random
 import re
 import struct
@@ -24,7 +22,8 @@ import urllib.request
 import wave
 import winsound
 import zlib
-
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_GAME_DIR = Path(r'C:\Program Files\EA Games\The Sims 4')
@@ -183,8 +182,8 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
         for pkg in sorted(DEFAULT_MODS_DIR.rglob('*.package')):
             try:
                 strings.update(_read_package_stbls(pkg))
-            except Exception:
-                pass
+            except (OSError, struct.error, zlib.error, IndexError):
+                continue
     if strings:
         STBL_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
         STBL_CACHE_PATH.write_text(json.dumps(strings, ensure_ascii=False), encoding='utf-8')
