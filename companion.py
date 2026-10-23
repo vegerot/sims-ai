@@ -592,6 +592,8 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
             wf.setsampwidth(2)
             wf.setframerate(sample_rate)
             wf.writeframes(combined_pcm)
+        for old in sorted(wav_path.parent.glob('*.wav'), key=lambda p: p.stat().st_mtime)[:-30]:
+            old.unlink(missing_ok=True)
     return {
         'model': TTS_MODEL,
         'audio_file': str(wav_path) if combined_pcm else None,

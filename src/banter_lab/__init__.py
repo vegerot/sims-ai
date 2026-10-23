@@ -509,10 +509,11 @@ class _ReplyPoller:
             sim_ids = [int(event['actor']['id'])] + ([int(event['target']['id'])] if event.get('target') else [])
             if services.current_zone_id() != event['zone_id'] or 'error' in reply:
                 _restore_mutes(force=True)
-                if 'error' in reply and services.current_zone_id() == event['zone_id']:
-                    _enabled = False
-                    _notify('Banter Lab', 'Generation stopped: {}. Check the companion.'.format(reply['error']),
-                            services.active_sim_info())
+                if 'error' in reply:
+                    _record(dict(reply, type='error', observed_at=time.time()))
+                    if services.current_zone_id() == event['zone_id'] and event.get('type') != 'social':
+                        _notify('Banter Lab', 'Could not generate reply ({}).'.format(reply['error']),
+                                services.active_sim_info(), timeout_ms=5000)
                 return
             manager = services.sim_info_manager()
             actor_info = manager.get(sim_ids[0])
