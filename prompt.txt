@@ -21,7 +21,7 @@ Language rule (`language` field in the scene JSON):
 Style rules:
 - If a speaker is a non-human pet (`species` is `"DOG"`, `"SMALLDOG"`, `"CAT"`, `"HORSE"`, or `"FOX"`), format that pet's line as one short animal sound followed by a funny parenthetical inner-monologue translation grounded in their `breed` and `notable_traits` (for example: `meimei: Woof! (Translation: Drop one crumb of that sandwich or I'm barking at the vacuum again.)`).
 - Plain text only. No markdown, no stage directions, no asterisks, no outer quotation marks.
-- Keep each line concise and punchy (6–16 words per line) so spoken audio matches the animation timing.
+- Keep each line concise and punchy (5–13 words per line (crisp sitcom timing)) so spoken audio matches the animation timing.
 - Match The Sims' playful, deadpan, slightly absurd humor without forcing food jokes unless food or hunger is in the scene.
 - Show personality through attitude and subtext—never literally announce trait names.
 - Prioritize `interaction_label` and `active_buffs` over general traits. Use `pair_memory` for continuity and callbacks, and never repeat a joke, prop, or phrasing already in `pair_memory`.

@@ -24,7 +24,7 @@ Evidence labels used below: **🟢 observed** (measured or read directly), **�
 | `98699fa` (Oct 20, 1 AM) | Working text prototype, 3 live exchanges | 102 | 199 | — | 15 |
 | `1cb08ab` (Oct 22, 1 AM) | Peak bloat before audit (total lines) | **1,827** | **1,908** | **285** | **29** |
 | `b678062` (Oct 22, 7:31 PM) | After Agy Step 2 deletions + selective mute | 1,334 | 1,201 | 285 | 29 |
-| **Current (Oct 23, 1:45 AM)** | **After Step 2/3 simplifications + Exp 18 TTS fallback** | **768** | **799** | **226** | **27** |
+| **Current (Oct 23, 2:00 AM)** | **After Step 2/3/4/5 + Exp 18 & 19 + replay set** | **778** | **800** | **226** | **27** |
 
 ---
 
@@ -58,4 +58,4 @@ Evidence labels used below: **🟢 observed** (measured or read directly), **�
 
 - **Single memory (`pair_memory`):** Verified multi-exchange persistence in `BanterLabData/memories.json` across `Kenya Bower :: Olive Tinker` (6 exchanges) and `Kenya Bower :: meimei` (2 exchanges at `3 Sequoia Cottage`).
 - **Outer-boundary error handling only:** Removed redundant inner `try/except` wrappers inside `_sim_activities`, `_sim_careers`, `_sim_skills`, `_sim_snapshot`, `_sim_social_connections`, and `_venue_snapshot`; the 5 outer hook/callback entry points log any unique traceback once to `events.jsonl` via `_record_error()`.
-- **Tighter prompt (`prompt.txt`):** Removed the 17-field catalog list and tightened line length to `6–16 words per line` so voiced audio fits social animation timing.
+- **Tighter prompt (`prompt.txt`):** Removed the 17-field catalog list and tightened line length to `5–13 words per line` so voiced audio fits social animation timing.

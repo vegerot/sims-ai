@@ -1,0 +1,453 @@
+{
+  "type": "player_chat",
+  "outcome": "PLAYER_INITIATED",
+  "event_id": "chat-1792729922727-3",
+  "observed_at": 1792729922.7270882,
+  "interaction": "player_direct_chat",
+  "interaction_stbl": null,
+  "venue": "venue_MultiUnit",
+  "venue_stbl": 574271278,
+  "lot_name": "3 Sequoia Cottage",
+  "lot_traits": [
+    "zoneModifier_Hidden_WaterHeater_Off",
+    "ZoneModifiers_Hidden_BBGameplayEffects",
+    "zoneModifier_lotTrait_GreatAcoustics",
+    "zoneModifier_lotTrait_HighSpeedInternet",
+    "zoneModifier_Hidden_WaterHeater_On"
+  ],
+  "business": {
+    "type": "RENTAL_UNIT",
+    "is_open": true,
+    "is_owned_by_active": false
+  },
+  "actor": {
+    "id": "949439442525423711",
+    "name": "Kenya Bower",
+    "age": "ADULT",
+    "gender": "FEMALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "voice_actor": 1802970399,
+    "voice_pitch": -0.16,
+    "traits": [
+      "trait_DogLover",
+      "trait_Jealous",
+      "trait_Gloomy",
+      "trait_Neat",
+      "trait_Snob"
+    ],
+    "trait_stbls": [
+      53941181,
+      2970936615,
+      1499956916,
+      2332510722,
+      3953317174
+    ],
+    "extra_traits": [
+      "trait_Attraction_Fashion_Hipster_TurnOn",
+      "trait_Attraction_SkillArchetypes_SenseOfHumor_TurnOn",
+      "trait_PracticeMakesPerfect_Tracking_Mental",
+      "trait_SimPreference_Dislikes_Color_Yellow",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "trait_GenderOptions_Toilet_Sitting",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "trait_Attraction_SkillArchetypes_Interpersonal_TurnOn",
+      "trait_Occult_NoOccult",
+      "trait_GenderOptions_AttractedTo_Male",
+      "Basemental:Autonomy_cannabis_normal_Trait",
+      "Basemental:Trait_No_GetFamous",
+      "trait_Species_Human",
+      "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+      "trait_Attraction_HairColor_Auburn_TurnOn",
+      "Basemental:Not_Predisposed_to_Addictions_Trait",
+      "trait_Attraction_OutfitColor_Gray_TurnOn",
+      "trait_GenderOptions_Sexuality_Exploring",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "trait_GenderOptions_Frame_Feminine",
+      "trait_GenderFemale",
+      "trait_GenderOptions_Lactate_Can",
+      "trait_Attraction_Characteristics_Cerebral_TurnOff",
+      "trait_Hidden_Hates_Fruitcake",
+      "trait_SimPreference_Likes_Characteristic_HardWorker",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+      "trait_SimPreference_NoOpinion_Activities_Fitness",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+      "trait_Attraction_OutfitColor_Purple_TurnOn",
+      "trait_Attraction_RomanceStyles_Affection_TurnOn",
+      "trait_SexualOrientation_WooHooInterests_Male",
+      "trait_SimPreference_Dislikes_Communication_Malicious",
+      "trait_WalkStyleDefault",
+      "trait_GenderOptions_Clothing_WomensWear",
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+      "trait_CivicPolicy_SkillBased_JuicedCommunity",
+      "trait_Attraction_Characteristics_PetEnthusiast_TurnOn",
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sinister_Minor",
+      "trait_Attraction_OutfitColor_Orange_TurnOn",
+      "trait_adult",
+      "trait_GenderOptions_AttractedTo_NotFemale",
+      "Basemental:Autonomy_cannabis_Trait",
+      "trait_Handedness_Right",
+      "trait_Hidden_ReceivedExperimentalFoodTNS",
+      "trait_Animal_Attraction",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Major",
+      "trait_HomeTurf",
+      "trait_GenderOptions_Pregnancy_CanNotImpregnate"
+    ],
+    "aspiration": "Track_Animal_A",
+    "aspiration_stbl": null,
+    "household_funds": 281,
+    "careers": [
+      {
+        "id": "career_OddJob",
+        "track_id": "careerTrack_OddJob",
+        "track_stbl": 3215599475,
+        "title_stbl": 1973803617,
+        "level": 2,
+        "at_work": false
+      }
+    ],
+    "skills": [
+      {
+        "id": "statistic_Skill_AdultMajor_Romance",
+        "stbl": 1559876043,
+        "level": 3,
+        "points": 6209.5
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_HomestyleCooking",
+        "stbl": 3133829100,
+        "level": 3,
+        "points": 4372.6
+      },
+      {
+        "id": "skill_Fitness",
+        "stbl": 656926678,
+        "level": 2,
+        "points": 3453.1
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Handiness",
+        "stbl": 1308655789,
+        "level": 2,
+        "points": 2567.4
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Mischief",
+        "stbl": 149372076,
+        "level": 1,
+        "points": 1396.0
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Gardening",
+        "stbl": 2243298849,
+        "level": 1,
+        "points": 1232.8
+      }
+    ],
+    "mood": "Mood_Happy",
+    "mood_intensity": 0,
+    "buffs": [
+      {
+        "id": "buff_SelfDiscovery_DiscoveryMoment",
+        "name_stbl": 1985254353,
+        "reason_stbl": 2866713582
+      }
+    ],
+    "activities": [
+      {
+        "id": "carry_holdobject",
+        "stbl": null,
+        "target": "book_Fun_Set14",
+        "target_stbl": 3181233102,
+        "recipe": null,
+        "recipe_stbl": null
+      },
+      {
+        "id": "carrying",
+        "stbl": null,
+        "target": "book_Fun_Set14",
+        "target_stbl": 3181233102,
+        "recipe": null,
+        "recipe_stbl": null
+      }
+    ],
+    "social_connections": [
+      {
+        "id": "152301827798007883",
+        "name": "tal or akiva",
+        "same_household": false,
+        "friendship": 0.0,
+        "romance": -92.8,
+        "bits": [
+          "RomanticCombo_ItsVeryAwkward",
+          "friendship-acquaintances",
+          "relbit_SocialContext_Romance_Casual",
+          "SpecialBits_Greeted",
+          "HaveBeenExes",
+          "romantic-Broken_Up",
+          "bit_NoLongerFriends",
+          "romantic-HasBeenUnfaithful",
+          "lifeMilestoneBit_FellInLove",
+          "HasBeenFriends",
+          "relationshipbit_Compatibility_Good",
+          "has_met",
+          "relbit_SocialContext_Fun_Casual",
+          "HaveBeenRomantic",
+          "relbit_SocialContext_Awkwardness_Casual",
+          "relbit_SocialContext_Casual",
+          "relBit_Attraction_3_Actor_NeutralTo_Target",
+          "sentimentBit_Actor_HurtBy_Target_LT_generic",
+          "sentimentBit_Actor_FuriousAt_Target_ST_generic",
+          "sentimentBit_Actor_HurtBy_Target_ST_saddened",
+          "sentimentBit_Actor_BitterAt_Target_ST_breakup",
+          "sentimentBit_Actor_EnamoredBy_Target_ST_SleepCuddled",
+          "sentimentBit_Actor_CloseTo_Target_ST_generic"
+        ],
+        "reverse_bits": [
+          "sentimentBit_Actor_CloseTo_Target_ST_MoveIn_FromMovingIn",
+          "relBit_Attraction_4_Actor_AttractedTo_Target"
+        ]
+      },
+      {
+        "id": "841353092180935146",
+        "name": "meimei",
+        "same_household": true,
+        "friendship": 0.0,
+        "romance": 0.0,
+        "bits": [
+          "simToPet_RelationshipBit_04_GoodFriend",
+          "has_met",
+          "SpecialBits_Greeted",
+          "relationshipBit_Target_IsDogOwnedBy_Actor"
+        ],
+        "reverse_bits": [
+          "relationshipBit_Target_IsDogOwnerOf_Actor"
+        ]
+      },
+      {
+        "id": "152301827300524057",
+        "name": "gefen berger",
+        "same_household": false,
+        "friendship": 47.8,
+        "romance": 0.0,
+        "bits": [
+          "friendship-friend",
+          "SpecialBits_Greeted",
+          "HasBeenFriends",
+          "has_met",
+          "relbit_SocialContext_Casual",
+          "relbit_SocialContext_Fun_Casual",
+          "neighbor",
+          "multi_unit_neighbor",
+          "relBit_Attraction_3_Actor_NeutralTo_Target"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "794065227896782964",
+        "name": "Kengo Tamura",
+        "same_household": false,
+        "friendship": 4.5,
+        "romance": 0.0,
+        "bits": [
+          "friendship-acquaintances",
+          "RomanticCombo_Acquaintances",
+          "relationshipbit_Compatibility_Good",
+          "HaveBeenRomantic",
+          "lifeMilestoneBit_FellInLove",
+          "relbit_SocialContext_Casual",
+          "SpecialBits_Greeted",
+          "has_met",
+          "relbit_SocialContext_Awkwardness_Casual",
+          "relbit_SocialContext_Fun_Casual",
+          "relbit_SocialContext_Romance_Casual",
+          "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+        ],
+        "reverse_bits": [
+          "relBit_Attraction_3_Actor_NeutralTo_Target"
+        ]
+      },
+      {
+        "id": "152301827958250964",
+        "name": "Zoe Patel",
+        "same_household": false,
+        "friendship": -6.4,
+        "romance": -6.0,
+        "bits": [
+          "RomanticCombo_Acquaintances",
+          "friendship-acquaintances",
+          "relbit_SocialContext_Romance_Casual",
+          "has_met",
+          "relationshipbit_Compatibility_Awful",
+          "SpecialBits_Greeted",
+          "relbit_SocialContext_Fun_Casual",
+          "relbit_SocialContext_Awkwardness_Casual",
+          "relbit_SocialContext_Casual",
+          "relationshipBit_Matchmaking_WentOnBlindDateWith",
+          "relBit_Attraction_3_Actor_NeutralTo_Target"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "312179698725487991",
+        "name": "Panya Li",
+        "same_household": false,
+        "friendship": 3.7,
+        "romance": 7.4,
+        "bits": [
+          "RomanticCombo_Acquaintances",
+          "friendship-acquaintances",
+          "relationshipBit_Matchmaking_WentOnBlindDateWith",
+          "relbit_SocialContext_Awkwardness_Casual",
+          "relbit_SocialContext_Romance_Casual",
+          "relbit_SocialContext_Fun_Casual",
+          "has_met",
+          "relbit_SocialContext_Casual",
+          "relBit_Attraction_3_Actor_NeutralTo_Target",
+          "relBit_MultiUnit_TenantToLandlord"
+        ],
+        "reverse_bits": [
+          "relBit_MultiUnit_LandlordToTenant",
+          "relBit_Attraction_2_Actor_RepelledBy_Target"
+        ]
+      }
+    ]
+  },
+  "target": {
+    "id": "841353092180935146",
+    "name": "meimei",
+    "age": "ADULT",
+    "gender": "FEMALE",
+    "species": "SMALLDOG",
+    "breed": "Shetland Sheepdog",
+    "breed_stbl": 3811963762,
+    "voice_actor": 1836525760,
+    "voice_pitch": 0.0,
+    "traits": [
+      "trait_Pet_Wanderlust_Dog",
+      "trait_Pet_Hairy_Dog",
+      "trait_Pet_Friendly_Dog"
+    ],
+    "trait_stbls": [
+      3906009590,
+      732686388,
+      1463612088
+    ],
+    "extra_traits": [
+      "trait_Misbehavior_Dog_Bark",
+      "trait_Species_Dog",
+      "trait_DisciplinedOut_Pet_PottyTraining",
+      "trait_Misbehavior_Pet_Attack",
+      "trait_DogQuirk_BarkerNeutral",
+      "trait_SpeciesExtended_SmallDogs",
+      "trait_Misbehaviors_Pet_EatPeopleFood",
+      "trait_Occult_NoOccult",
+      "trait_Misbehavior_Pet_PuddlesDrink",
+      "trait_PetQuirk_Obsessed_Computer",
+      "trait_GenderFemale",
+      "trait_Discipline_Pet_PottyTraining",
+      "trait_PetQuirk_Obsessed_Stereo",
+      "trait_PetQuirk_PregnancyVomiting_Yes",
+      "trait_PetQuirk_Fear_DoorBell",
+      "trait_Misbehaviors_Pet_WakeUpSims",
+      "trait_Pet_age_Adult",
+      "trait_Misbehavior_Pet_TrashEat",
+      "trait_PetQuirk_Obsessed_Vacuum",
+      "trait_TailStyle_Up",
+      "trait_PetQuirk_Fear_TV",
+      "trait_PetQuirk_Obsessed_RobotVacuum",
+      "trait_PetQuirk_Fear_Fire",
+      "trait_PetQuirk_Fear_Swiming",
+      "trait_PetQuirk_PetBedSpin",
+      "trait_PregnancyOptions_Pet_CanReproduce",
+      "trait_PetQuirk_Fear_Stove"
+    ],
+    "aspiration": null,
+    "aspiration_stbl": null,
+    "household_funds": 281,
+    "careers": [],
+    "skills": [],
+    "mood": "mood_Sad_Dog",
+    "mood_intensity": 0,
+    "buffs": [
+      {
+        "id": "buff_Motives_Pet_Dog_AffectionDistress",
+        "name_stbl": null,
+        "reason_stbl": null
+      },
+      {
+        "id": "buff_Motives_Pet_Dog_PlayDistress",
+        "name_stbl": 867824482,
+        "reason_stbl": null
+      }
+    ],
+    "activities": [
+      {
+        "id": "dog_Stand",
+        "stbl": null,
+        "target": null,
+        "target_stbl": null,
+        "recipe": null,
+        "recipe_stbl": null
+      }
+    ],
+    "social_connections": [
+      {
+        "id": "949439442525423711",
+        "name": "Kenya Bower",
+        "same_household": true,
+        "friendship": 0.0,
+        "romance": 0.0,
+        "bits": [
+          "simToPet_RelationshipBit_04_GoodFriend",
+          "has_met",
+          "SpecialBits_Greeted",
+          "relationshipBit_Target_IsDogOwnerOf_Actor"
+        ],
+        "reverse_bits": [
+          "relationshipBit_Target_IsDogOwnedBy_Actor"
+        ]
+      },
+      {
+        "id": "152301827798007883",
+        "name": "tal or akiva",
+        "same_household": false,
+        "friendship": 0.0,
+        "romance": 0.0,
+        "bits": [
+          "simToPet_RelationshipBit_02_Acquaintance",
+          "has_met",
+          "SpecialBits_Greeted",
+          "relationshipBit_Target_IsDogOwnerOf_Actor"
+        ],
+        "reverse_bits": [
+          "relationshipBit_Target_IsDogOwnedBy_Actor"
+        ]
+      }
+    ]
+  },
+  "relationship": {
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+      "simToPet_RelationshipBit_04_GoodFriend",
+      "has_met",
+      "SpecialBits_Greeted",
+      "relationshipBit_Target_IsDogOwnedBy_Actor"
+    ],
+    "bit_stbls": [
+      2043186572,
+      1124477217,
+      203443943
+    ],
+    "reverse_bits": [
+      "relationshipBit_Target_IsDogOwnerOf_Actor"
+    ],
+    "reverse_bit_stbls": [
+      1660128545
+    ]
+  },
+  "player_message": "Did you bark at the vacuum while I was at Boiling Point?"
+}

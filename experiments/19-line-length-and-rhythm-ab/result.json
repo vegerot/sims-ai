@@ -1,0 +1,241 @@
+{
+  "experiment": "19-line-length-and-rhythm-ab",
+  "date": "2026-10-23",
+  "verification_scope": "6_real_save_events_with_live_openrouter_chat_and_tts",
+  "variants": {
+    "A_8_to_22_words": {
+      "avg_words_per_line": 15.1,
+      "avg_tts_elapsed_s": 2.11,
+      "avg_audio_duration_s": 10.85,
+      "scenes": [
+        {
+          "event_id": "1792724276127-1",
+          "interaction": "hostStation_Host_HeresYourTable",
+          "chat_elapsed_s": 2.859,
+          "tts_elapsed_s": 2.623,
+          "audio_duration_s": 11.78,
+          "word_counts": [
+            13,
+            12
+          ],
+          "text": "Hitomi Ishii: Your table is ready. Please enjoy the cleanest available corner; strangers are stressful.\nKenya Bower: After that date, even this table feels like a fresh start. Mostly."
+        },
+        {
+          "event_id": "1792724763151-3",
+          "interaction": "social_Funny_PubertyChanges_Joke_Hair_Body",
+          "chat_elapsed_s": 1.587,
+          "tts_elapsed_s": 2.415,
+          "audio_duration_s": 9.93,
+          "word_counts": [
+            11,
+            12
+          ],
+          "text": "Olive Tinker: Puberty’s a tiny barber with no map and unlimited confidence.\nKenya Bower: Finally, a grooming trend that makes this restaurant’s chairs look intentional."
+        },
+        {
+          "event_id": "1792728038351-1",
+          "interaction": "petSocial_PetToSim_Greeting_Friendly_SI",
+          "chat_elapsed_s": 1.614,
+          "tts_elapsed_s": 2.46,
+          "audio_duration_s": 12.38,
+          "word_counts": [
+            16,
+            15
+          ],
+          "text": "meimei: Woof! (Translation: Friendly hello! My Sheltie ears heard the stereo, and my paws need a project.)\nKenya Bower: Hi, sweetie. You’re the only neighbor here who hasn’t made my day worse."
+        },
+        {
+          "event_id": "ask-1792729131503-2",
+          "interaction": "player_ask_active_sim",
+          "chat_elapsed_s": 1.842,
+          "tts_elapsed_s": 1.931,
+          "audio_duration_s": 7.1,
+          "word_counts": [
+            19
+          ],
+          "text": "Kenya Bower: Honestly, lovely. Meimei’s here, the rent’s someone else’s problem, and I’ve discovered I’m thriving."
+        },
+        {
+          "event_id": "chat-1792729922727-3",
+          "interaction": "player_direct_chat",
+          "chat_elapsed_s": 1.863,
+          "tts_elapsed_s": 1.658,
+          "audio_duration_s": 12.08,
+          "word_counts": [
+            12,
+            17
+          ],
+          "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: It rolled suspiciously, so I defended the carpet. Please pet me; I’m emotionally linty.)"
+        },
+        {
+          "event_id": "1792743125426-1",
+          "interaction": "bar_WaitForDrink",
+          "chat_elapsed_s": 1.558,
+          "tts_elapsed_s": 1.586,
+          "audio_duration_s": 11.83,
+          "word_counts": [
+            18,
+            17
+          ],
+          "text": "yuvi ronen: Waiting for a drink at a karaoke bar feels like the opening verse of a very slow song.\nCarlos López: I’m confident the bartender heard us. I’m less confident the song hasn’t already started."
+        }
+      ]
+    },
+    "B_6_to_16_words": {
+      "avg_words_per_line": 10.9,
+      "avg_tts_elapsed_s": 1.72,
+      "avg_audio_duration_s": 8.18,
+      "scenes": [
+        {
+          "event_id": "1792724276127-1",
+          "interaction": "hostStation_Host_HeresYourTable",
+          "chat_elapsed_s": 1.693,
+          "tts_elapsed_s": 1.634,
+          "audio_duration_s": 8.63,
+          "word_counts": [
+            12,
+            10
+          ],
+          "text": "Hitomi Ishii: Your table is ready. I’ve made it pleasantly far from strangers.\nKenya Bower: Great. My date was terrible, but the seating has potential."
+        },
+        {
+          "event_id": "1792724763151-3",
+          "interaction": "social_Funny_PubertyChanges_Joke_Hair_Body",
+          "chat_elapsed_s": 1.698,
+          "tts_elapsed_s": 1.421,
+          "audio_duration_s": 8.58,
+          "word_counts": [
+            13,
+            9
+          ],
+          "text": "Olive Tinker: Body hair is just your skin’s way of knitting a tiny sweater.\nKenya Bower: Adorable. The restaurant’s upholstery has better grooming standards."
+        },
+        {
+          "event_id": "1792728038351-1",
+          "interaction": "petSocial_PetToSim_Greeting_Friendly_SI",
+          "chat_elapsed_s": 2.723,
+          "tts_elapsed_s": 2.161,
+          "audio_duration_s": 11.18,
+          "word_counts": [
+            13,
+            10
+          ],
+          "text": "meimei: Yap! (Translation: Hello, neighbor; I’ve got pent-up zoomies and excellent acoustics.)\nKenya Bower: Hi, meimei. Finally, a friendly greeting without dating-app consequences."
+        },
+        {
+          "event_id": "ask-1792729131503-2",
+          "interaction": "player_ask_active_sim",
+          "chat_elapsed_s": 2.134,
+          "tts_elapsed_s": 1.899,
+          "audio_duration_s": 4.5,
+          "word_counts": [
+            13
+          ],
+          "text": "Kenya Bower: It feels right; Meimei’s the only roommate who never judges my rent."
+        },
+        {
+          "event_id": "chat-1792729922727-3",
+          "interaction": "player_direct_chat",
+          "chat_elapsed_s": 2.209,
+          "tts_elapsed_s": 1.84,
+          "audio_duration_s": 9.03,
+          "word_counts": [
+            12,
+            9
+          ],
+          "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: It rolled first. I defended the carpet.)"
+        },
+        {
+          "event_id": "1792743125426-1",
+          "interaction": "bar_WaitForDrink",
+          "chat_elapsed_s": 1.609,
+          "tts_elapsed_s": 1.352,
+          "audio_duration_s": 7.18,
+          "word_counts": [
+            8,
+            9
+          ],
+          "text": "yuvi ronen: Waiting for this drink is my cardio tonight.\nCarlos López: Impressive. I’ve run laps around a slower bartender."
+        }
+      ]
+    },
+    "C_5_to_11_words": {
+      "avg_words_per_line": 9.1,
+      "avg_tts_elapsed_s": 1.48,
+      "avg_audio_duration_s": 7.27,
+      "scenes": [
+        {
+          "event_id": "1792724276127-1",
+          "interaction": "hostStation_Host_HeresYourTable",
+          "chat_elapsed_s": 2.397,
+          "tts_elapsed_s": 1.302,
+          "audio_duration_s": 8.73,
+          "word_counts": [
+            10,
+            8
+          ],
+          "text": "Hitomi Ishii: Your table’s ready; I’ll avoid eye contact professionally.\nKenya Bower: Perfect. My date already set the bar underground."
+        },
+        {
+          "event_id": "1792724763151-3",
+          "interaction": "social_Funny_PubertyChanges_Joke_Hair_Body",
+          "chat_elapsed_s": 1.499,
+          "tts_elapsed_s": 1.395,
+          "audio_duration_s": 6.03,
+          "word_counts": [
+            7,
+            8
+          ],
+          "text": "Olive Tinker: Body hair: nature’s surprise winter coat.\nKenya Bower: At least mine doesn’t need dry cleaning."
+        },
+        {
+          "event_id": "1792728038351-1",
+          "interaction": "petSocial_PetToSim_Greeting_Friendly_SI",
+          "chat_elapsed_s": 1.767,
+          "tts_elapsed_s": 1.43,
+          "audio_duration_s": 7.98,
+          "word_counts": [
+            9,
+            6
+          ],
+          "text": "meimei: Yip! (Translation: Finally, a neighbor who understands doorbell diplomacy.)\nKenya Bower: Hello, tiny landlord of the hallway."
+        },
+        {
+          "event_id": "ask-1792729131503-2",
+          "interaction": "player_ask_active_sim",
+          "chat_elapsed_s": 2.339,
+          "tts_elapsed_s": 1.508,
+          "audio_duration_s": 4.15,
+          "word_counts": [
+            11
+          ],
+          "text": "Kenya Bower: It feels right. Meimei’s the only roommate who gets me."
+        },
+        {
+          "event_id": "chat-1792729922727-3",
+          "interaction": "player_direct_chat",
+          "chat_elapsed_s": 1.863,
+          "tts_elapsed_s": 1.872,
+          "audio_duration_s": 9.08,
+          "word_counts": [
+            12,
+            9
+          ],
+          "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: It rolled first; I defended the cottage.)"
+        },
+        {
+          "event_id": "1792743125426-1",
+          "interaction": "bar_WaitForDrink",
+          "chat_elapsed_s": 3.768,
+          "tts_elapsed_s": 1.388,
+          "audio_duration_s": 7.63,
+          "word_counts": [
+            9,
+            9
+          ],
+          "text": "Yuvi Ronen: This drink is taking longer than my last chapter.\nCarlos López: Relax, rookie. Even the bartender needs warm-up laps."
+        }
+      ]
+    }
+  }
+}

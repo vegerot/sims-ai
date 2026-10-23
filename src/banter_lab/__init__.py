@@ -52,7 +52,7 @@ _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate')
 _UNLABELLED_WAVES = ('socialMixer_Greetings_Wave', 'nonTouching_Unpaired_Greeting_Wave')
-_IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
+_IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit', 'dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
 _SOLO_VOCAL_STBLS = (4013856058, 961384365, 3515527490, 2952163771)
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 
@@ -375,7 +375,9 @@ def _venue_snapshot():
 def _relationship_snapshot(actor_info, target_info):
     bit_names = [b.__name__ for b in actor_info.relationship_tracker.get_all_bits(target_info.sim_id)]
     r_bits = [b.__name__ for b in target_info.relationship_tracker.get_all_bits(actor_info.sim_id) if b.__name__ not in bit_names]
+    hh_id = getattr(actor_info, 'household_id', None)
     return {
+        'same_household': bool(hh_id and hh_id == getattr(target_info, 'household_id', None)),
         'friendship': round(actor_info.relationship_tracker.get_relationship_score(
             target_info.sim_id, RelationshipTrack.FRIENDSHIP_TRACK), 2),
         'romance': round(actor_info.relationship_tracker.get_relationship_score(

@@ -17,6 +17,7 @@ from pathlib import Path
 import random
 import re
 import struct
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -282,6 +283,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
             'recipe_label': resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe'),
         }.items() if v}
         for act in (sim.get('activities') or [])
+        if act.get('id') not in ('dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
     ]
     connections = []
     for conn in sim.get('social_connections') or []:
@@ -414,7 +416,13 @@ def build_scene(event: dict, language: str = 'English', pair_memory: list[dict] 
     scene = {k: v for k, v in scene.items() if v is not None or k in ('target', 'outcome', 'interaction_label', 'venue_label')}
     if target and isinstance(event.get('relationship'), dict):
         raw_rel = event['relationship']
+        same_hh = bool(
+            raw_rel.get('same_household')
+            or any(str(c.get('id') or '') == str(target.get('id') or '') and c.get('same_household')
+                   for c in (actor.get('social_connections') or []))
+        )
         scene['relationship'] = {
+            'same_household': same_hh,
             'friendship': raw_rel.get('friendship'),
             'romance': raw_rel.get('romance'),
             'bits': _filter_bits(raw_rel.get('bits')),
@@ -694,6 +702,8 @@ def _acquire_single_instance_lock():
 
 
 def main():
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-directory', type=Path, default=DEFAULT_MODS_DIR / 'BanterLab' / 'BanterLabData')
     parser.add_argument('--parent-pid', type=int, help='Exit when this process (the game) exits.')
