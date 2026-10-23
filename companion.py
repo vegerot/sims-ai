@@ -1118,6 +1118,13 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
     }
 
 
+def _strip_outer_quotes(text: str) -> str:
+    s = text.strip(' *')
+    if len(s) >= 2 and s[0] in '"“”' and s[-1] in '"“”':
+        s = s[1:-1].strip()
+    return s
+
+
 def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
     lines = [ln.strip() for ln in raw_text.splitlines() if ln.strip()]
     actor_name = (event.get('actor') or {}).get('name') or 'Sim'
@@ -1128,14 +1135,12 @@ def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
 
     if target is None or event_type in ('solo_vocal', 'player_ask_self'):
         first = lines[0] if lines else ''
-        spoken = first.split(':', 1)[1].strip() if ':' in first else first
-        spoken = spoken.strip(' "“”*')
+        spoken = _strip_outer_quotes(first.split(':', 1)[1] if ':' in first else first)
         return f'{actor_name}: {spoken}'
 
     if event_type == 'player_chat' and player_msg:
         reply_line = lines[-1] if lines else ''
-        spoken_reply = reply_line.split(':', 1)[1].strip() if ':' in reply_line else reply_line
-        spoken_reply = spoken_reply.strip(' "“”*')
+        spoken_reply = _strip_outer_quotes(reply_line.split(':', 1)[1] if ':' in reply_line else reply_line)
         return f'{actor_name}: {player_msg}\n{target_name}: {spoken_reply}'
 
     out_lines = []
@@ -1143,9 +1148,9 @@ def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
         default_speaker = actor_name if idx == 0 else (target_name or 'Sim')
         if ':' in ln:
             spk, body = ln.split(':', 1)
-            out_lines.append(f"{spk.strip('* ')}: {body.strip(' \"“”*')}")
+            out_lines.append(f"{spk.strip('* ')}: {_strip_outer_quotes(body)}")
         else:
-            out_lines.append(f"{default_speaker}: {ln.strip(' \"“”*')}")
+            out_lines.append(f'{default_speaker}: {_strip_outer_quotes(ln)}')
     return '\n'.join(out_lines)
 
 

@@ -24,7 +24,7 @@ Console commands (`Ctrl+Shift+C`):
 | `banter.ai` / `banter.stop` | Turn English banter on / off (same as the pie menu). |
 | `banter.talk <first> <last>` | Open the text box to speak as your active Sim to a Sim on this lot. |
 | `banter.ask [question]` | Ask your active Sim a question (no question opens the text box). |
-| `banter.mute on` / `off` | Silence or restore Simlish `voice_actor` (`0x7FFFFFFF`). |
+| `banter.mute on` / `off` | Toggle selective Simlish muting (`voice_actor = 0x7FFFFFFF` only while a Sim's line is actively replaced by English). |
 | `banter.status` | Print state, skip counts, and cost; log a full snapshot to `events.jsonl`. |
 | `banter.logs [on|off|tail]` | Mirror companion log lines into the console. |
 | `banter.reload` | Hot-reload `BanterLab.ts4script`. |
@@ -72,16 +72,6 @@ python3.15 '.\companion.py' --once '.\.local\scene.json'
 
 13. **[13 — Zero-`.package` Sim Pie-Menu injection](experiments/13-pie-menu-interaction/result.json):** Subclassed a base-game `ImmediateSuperInteraction` (`13142`) at runtime with `pie_menu_priority = 30` and hooked `Zone.on_loading_screen_animation_finished` so clicking your active Sim shows **`Enable English Banter`** / **`Disable English Banter`** on Page 1 of the Pie Menu and clicking any other Sim shows **`Speak to <Name> (English)...`**—with zero `.package` files or console commands required ([Enable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-self.png), [Disable screenshot](experiments/13-pie-menu-interaction/in-game-pie-menu-disable.png)).
 
-## Experiments 14–16: Cost Tracking, OpenRouter Neural TTS (`gpt-audio-mini`), Trilingual Seasoning, Solo Vocalizations (`Shout Forbidden Words`), & `Ask <Sim> a Question`
-
-- **Checked-in project API key & cost ledger ([companion.py](companion.py)):**
-  - Uses `DEFAULT_OPENROUTER_API_KEY` (`$50` cap) by default and maintains `BanterLabData/cost_summary.json` (session + cumulative spend across text and TTS calls, synced with `GET https://openrouter.ai/api/v1/key`).
-- **Realistic trilingual AI voices (`openai/gpt-audio-mini`):**
-  - Default `--tts-engine openrouter` streams 24 kHz neural audio for each Sim using 11 distinct OpenAI voices (`ash`, `echo`, `onyx`, `verse`, `fable` for male Sims; `coral`, `nova`, `shimmer`, `sage`, `ballad`, `alloy` for female Sims) with parallel 2-speaker synthesis, mood-based delivery tone, and a refusal guard that falls back to fixed Desktop SAPI5 (`Microsoft David Desktop` / `Microsoft Zira Desktop`).
-  - `--multilingual-chance 0.12` rolls a deterministic Python probability (88% English, 6% Hebrew `עברית`, 6% Russian `Русский`) and automatically matches Hebrew or Russian when the player types in that language.
-- **Solo vocalizations (`Shout Forbidden Words`, etc.) & higher Simlish replacement rate:**
-  - Filters out unlabelled autonomous wave micro-mixers (`socialMixer_Greetings_Wave`), lowers the social cooldown from `8.0 s` to `3.0 s`, logs every skipped interaction (`type: "skipped"`) and `PlaySound(..., is_vox=True)` call (`type: "vox_attempt"`), and captures 1-Sim vocal actions (`type: "solo_vocal"`).
-- **Two Page-1 Pie Menu controls on your Active Sim:**
-  - Clicking your **Active Sim** shows both **`Enable/Disable English Banter`** and **`Ask <FirstName> a Question (English)...`** (or `banter.ask <question>` in the console).
-  - Clicking **any other Sim** shows **`Speak to <FirstName> (English)...`**.
-  - Added `banter.solo` and `banter.reload` (in-place hot reload of `BanterLab.ts4script`).
+14. **[14 — Mercury 3 vs. GPT-6-Luna & OpenRouter TTS benchmark](experiments/14-mercury-vs-luna-benchmark/result.json):** Measured TTFT vs. TTLT across `none` and `low` effort, compared humor on 5 real playtest scenes, and verified English/Hebrew/Russian speech synthesis on `openai/gpt-audio-mini`.
+15. **[15 — Cost tracking & OpenRouter neural TTS](experiments/15-cost-and-openrouter-tts/result.json):** Verified `openai/gpt-audio-mini` streaming PCM16 TTS in-game (`1.26–1.46 s` parallel 2-speaker synthesis across 11 voices) and OpenRouter cost tracking (note: the Gemini TTS comparison in `result.json` hit the chat model `google/gemini-3.8-flash`, not `google/gemini-3.8-flash-tts`).
+16. **[16 — Ask-Self Pie Menu & solo vocalizations](experiments/16-solo-vocal-and-ask-self/result.json):** Verified **`Ask <Sim> a Question (English)...`** live in-game (4 events in `events.jsonl`); note that `result.json`'s `solo_vocal` and `vox_attempt` metrics came from a local mock harness, not the game.
