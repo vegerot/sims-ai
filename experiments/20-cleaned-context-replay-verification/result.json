@@ -1,0 +1,79 @@
+{
+  "experiment": "20-cleaned-context-replay-verification",
+  "date": "2026-10-23",
+  "verification_scope": "7_scene_replay_set_after_context_and_sentiment_cleanups",
+  "avg_prompt_tokens": 1921.3,
+  "avg_elapsed_seconds": 5.31,
+  "results": [
+    {
+      "file": "01-restaurant-host-hitomi-kenya.json",
+      "event_id": "1792724276127-1",
+      "interaction": "hostStation_Host_HeresYourTable",
+      "prompt_tokens": 1960,
+      "completion_tokens": 41,
+      "elapsed_seconds": 7.274,
+      "language": "English",
+      "text": "Hitomi Ishii: Your table is ready. Please enjoy the low-stranger-contact zone.\nKenya Bower: Lovely. My date was awful, but the seating’s superb."
+    },
+    {
+      "file": "02-restaurant-joke-olive-kenya.json",
+      "event_id": "1792724763151-3",
+      "interaction": "social_Funny_PubertyChanges_Joke_Hair_Body",
+      "prompt_tokens": 2133,
+      "completion_tokens": 37,
+      "elapsed_seconds": 6.173,
+      "language": "English",
+      "text": "Olive Tinker: Puberty’s adding body hair; very committed to the bit.\nKenya Bower: At least it’s free décor in this restaurant."
+    },
+    {
+      "file": "03-pet-greeting-meimei-kenya.json",
+      "event_id": "1792728038351-1",
+      "interaction": "petSocial_PetToSim_Greeting_Friendly_SI",
+      "prompt_tokens": 2068,
+      "completion_tokens": 50,
+      "elapsed_seconds": 6.46,
+      "language": "Hebrew (עברית)",
+      "text": "meimei: הב-הב! (תרגום: סוף סוף מישהי שאפשר לנבוח איתה.)\nKenya Bower: היי, מתוקה. לפחות הדייט שלי לא נבח בחזרה."
+    },
+    {
+      "file": "04-ask-self-kenya.json",
+      "event_id": "ask-1792729131503-2",
+      "interaction": "player_ask_active_sim",
+      "prompt_tokens": 1617,
+      "completion_tokens": 23,
+      "elapsed_seconds": 4.759,
+      "language": "English",
+      "text": "Kenya Bower: It feels peaceful, furry, and blissfully free of rent negotiations."
+    },
+    {
+      "file": "05-player-chat-kenya-meimei.json",
+      "event_id": "chat-1792729922727-3",
+      "interaction": "player_direct_chat",
+      "prompt_tokens": 2088,
+      "completion_tokens": 44,
+      "elapsed_seconds": 4.049,
+      "language": "English",
+      "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: The vacuum started it, and I was defending the sofa.)"
+    },
+    {
+      "file": "06-karaoke-bar-yuvi-carlos.json",
+      "event_id": "1792743125426-1",
+      "interaction": "bar_WaitForDrink",
+      "prompt_tokens": 1856,
+      "completion_tokens": 36,
+      "elapsed_seconds": 3.601,
+      "language": "English",
+      "text": "yuvi ronen: Waiting for this drink is my new cardio.\nCarlos López: Rookie tip: never trust a barstool with romance in its name."
+    },
+    {
+      "file": "07-soulmates-seductive-dance-liatt-yuvi.json",
+      "event_id": "1792747988990-1",
+      "interaction": "mixer_Social_RomanticVenue_AskToSeductiveDance",
+      "prompt_tokens": 1727,
+      "completion_tokens": 36,
+      "elapsed_seconds": 4.862,
+      "language": "English",
+      "text": "liatt chonen: A seductive dance? My terrible singing just set the mood.\nyuvi ronen: Absolutely. The karaoke machine deserves a little competition."
+    }
+  ]
+}
