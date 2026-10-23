@@ -490,7 +490,8 @@ MOOD_TO_DELIVERY_TONE = {
 
 def _word_set(text: str) -> set[str]:
     clean = re.sub(r'[\u0300-\u036f\u0591-\u05c7]', '', text.lower().replace('ё', 'е'))
-    return set(re.findall(r'\w+', clean))
+    words = re.findall(r'\w+', clean)
+    return {w for w in words if len(w) >= 3} or set(words)
 
 
 def _transcript_matches(spoken_text: str, transcript: str) -> bool:
