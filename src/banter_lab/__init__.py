@@ -402,18 +402,13 @@ def _relationship_snapshot(actor_info, target_info):
     }
 
 
-def _record_skip(reason, interaction, actor=None, target=None, extra=None):
+def _record_skip(reason, interaction_name, interaction_stbl, actor, target):
     _skip_counts[reason] = _skip_counts.get(reason, 0) + 1
-    rec = {
+    _record({
         'type': 'skipped', 'skip_reason': reason, 'observed_at': time.time(),
-        'interaction': type(interaction).__name__,
-        'interaction_stbl': _string_hash(getattr(interaction, 'display_name', None), actor, target),
-        'actor_name': _sim_name(actor) if actor is not None else None,
-        'target_name': _sim_name(target) if target is not None else None,
-    }
-    if extra:
-        rec.update(extra)
-    _record(rec)
+        'interaction': interaction_name, 'interaction_stbl': interaction_stbl,
+        'actor_name': _sim_name(actor), 'target_name': _sim_name(target),
+    })
 
 
 def _social_participants(interaction):
@@ -438,19 +433,6 @@ def _social_participants(interaction):
     if actor.sim_info.household_id != hh_id and target.sim_info.household_id != hh_id:
         return None, None
     return actor, target
-
-
-def _busy(interaction, actor, target=None):
-    global _pending
-    if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
-        _pending = None
-    if _pending is not None:
-        _record_skip('pending_in_flight', interaction, actor, target, {'pending_event_id': _pending['event_id']})
-        return True
-    if time.monotonic() < _audio_until:
-        _record_skip('audio_playing', interaction, actor, target)
-        return True
-    return False
 
 
 def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome, player_message=None):
@@ -490,7 +472,7 @@ def _submit(event, *sims):
 
 
 def _observe(interaction, outcome_result):
-    global _last_social
+    global _pending, _last_social
     if not _enabled:
         return
     interaction_name = type(interaction).__name__
@@ -506,9 +488,16 @@ def _observe(interaction, outcome_result):
     now = time.monotonic()
     if _last_social is not None and _last_social[0] == pair and _last_social[1] == interaction_name and now - _last_social[2] < 45.0:
         return
-    if not _busy(interaction, actor, target):
-        _last_social = (pair, interaction_name, now)
-        _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result), actor, target)
+    if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
+        _pending = None
+    if _pending is not None:
+        _record_skip('pending_in_flight', interaction_name, interaction_stbl, actor, target)
+        return
+    if now < _audio_until:
+        _record_skip('audio_playing', interaction_name, interaction_stbl, actor, target)
+        return
+    _last_social = (pair, interaction_name, now)
+    _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result), actor, target)
 
 
 class _ReplyPoller:
