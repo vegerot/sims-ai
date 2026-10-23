@@ -418,16 +418,23 @@ def _record_skip(reason, interaction, actor=None, target=None, extra=None):
 
 def _social_participants(interaction):
     actor = interaction.sim
+    if actor is None:
+        return None, None
     target = interaction.get_participant(ParticipantType.TargetSim)
     is_soc = bool(getattr(interaction, 'is_social', False))
+    hh_id = services.active_household_id()
+    if is_soc and (target is None or not getattr(target, 'is_sim', False)):
+        listeners = [s for s in interaction.get_participants(ParticipantType.Listeners)
+                     if getattr(s, 'is_sim', False) and s.sim_info.sim_id != actor.sim_info.sim_id]
+        if listeners:
+            target = next((s for s in listeners if s.sim_info.household_id == hh_id), listeners[0])
     if not is_soc and target is not None and getattr(target, 'is_sim', False):
         iname = type(interaction).__name__.lower()
         is_soc = any(k in iname for k in ('petsocial', 'simtopet', 'talkto', 'praise', 'scold', 'lecture', 'calm', 'pamper'))
-    if not is_soc or actor is None or target is None or not getattr(target, 'is_sim', False):
+    if not is_soc or target is None or not getattr(target, 'is_sim', False):
         return None, None
     if actor.sim_info.sim_id == target.sim_info.sim_id:
         return None, None
-    hh_id = services.active_household_id()
     if actor.sim_info.household_id != hh_id and target.sim_info.household_id != hh_id:
         return None, None
     return actor, target
