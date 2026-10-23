@@ -235,7 +235,8 @@ _NOISY_REL_BIT_SUBSTRINGS = (
     'relationshipbit_simtosim', 'friendship-acquaintances', 'romanticcombo_acquaintances',
     'relationshipbit_compatibility_', 'relbit_attraction_', 'attractiveness_visual_',
     'attractiveness_noticed_', 'relationship_archetype_hint_', '_tracker',
-    'healednegativesentiment', 'memories_memorytype_',
+    'healednegativesentiment', 'memories_memorytype_', 'hasbeenfriends',
+    'romantic_firstkiss', 'shorttermbits_restuarants_dining',
 )
 
 
@@ -307,8 +308,8 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
                 'same_household': True if conn.get('same_household') else None,
                 'friendship': conn.get('friendship'),
                 'romance': conn.get('romance'),
-                'bits': fb[:8],
-                'reverse_bits': rb[:6],
+                'bits': fb[:14],
+                'reverse_bits': rb[:8],
             }.items() if v})
     raw = {
         'name': sim.get('name'),
