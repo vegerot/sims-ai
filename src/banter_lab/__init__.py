@@ -328,7 +328,6 @@ def _sim_snapshot(sim):
         'species': species_name,
         'breed': str(breed_name) if breed_name else None,
         'breed_stbl': _string_hash(getattr(info, 'breed_name_key', None)),
-        'voice_actor': _true_voice_actor(info),
         'traits': [trait.__name__ for trait in traits],
         'trait_stbls': [s for s in (_string_hash(getattr(t, 'display_name', None), info) for t in traits) if s],
         'extra_traits': [

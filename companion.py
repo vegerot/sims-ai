@@ -36,6 +36,7 @@ OPENROUTER_API_KEY = 'sk-or-v1-9f579abba4bf2aed18ef91bbc01155f678790859f116217dc
 CHAT_MODEL = 'openai/gpt-6-luna'
 REASONING_EFFORT = 'none'
 TTS_MODEL = 'openai/gpt-audio-mini'
+FALLBACK_TTS_MODEL = 'google/gemini-3.8-flash-lite-tts'
 MULTILINGUAL_CHANCE = 0.12
 
 _stbl_cache: dict[int, str] | None = None
@@ -43,19 +44,10 @@ _sim_voice_assignments: dict[str, str] = {}
 
 FEMALE_OPENROUTER_VOICES = ('coral', 'nova', 'shimmer', 'sage', 'ballad', 'alloy')
 MALE_OPENROUTER_VOICES = ('ash', 'echo', 'onyx', 'verse', 'fable')
-
-VOICE_ACTOR_PREFERRED_VOICE = {
-    1685527063: 'ash',      # ma (Male Adult A)
-    1685527060: 'onyx',     # mb (Male Adult B)
-    1685527061: 'verse',    # mc (Male Adult C)
-    1802970394: 'coral',    # fa (Female Adult A)
-    1802970393: 'nova',     # fb (Female Adult B)
-    1802970392: 'shimmer',  # fc (Female Adult C)
-    1802970399: 'sage',     # fd (Female Adult D)
-    1853303385: 'alloy',    # ca (Child A)
-    1853303382: 'ballad',   # cb (Child B)
+GEMINI_VOICE_MAP = {
+    'coral': 'Kore', 'nova': 'Aoede', 'shimmer': 'Leda', 'sage': 'Zephyr', 'ballad': 'Aoede', 'alloy': 'Kore',
+    'ash': 'Puck', 'echo': 'Fenrir', 'onyx': 'Charon', 'verse': 'Orus', 'fable': 'Puck',
 }
-
 
 def _refpack_decompress(data: bytes) -> bytes:
     pos = 0
@@ -441,9 +433,8 @@ def select_openrouter_voice(sim: dict, slot: int = 0, avoid_voice: str | None = 
     if cached and cached != avoid_voice:
         return cached
     pool = FEMALE_OPENROUTER_VOICES if str(sim.get('gender') or '').upper() == 'FEMALE' else MALE_OPENROUTER_VOICES
-    preferred = VOICE_ACTOR_PREFERRED_VOICE.get(int(sim.get('voice_actor') or 0))
     id_num = abs(int(sim['id'])) if str(sim.get('id') or '').lstrip('-').isdigit() else sum(ord(c) for c in sim_id)
-    base_idx = ((pool.index(preferred) + id_num) if preferred in pool else (id_num + slot)) % len(pool)
+    base_idx = (id_num + slot) % len(pool)
     chosen = pool[(base_idx + 1) % len(pool)] if pool[base_idx] == avoid_voice else pool[base_idx]
     _sim_voice_assignments[sim_id] = chosen
     return chosen
@@ -521,7 +512,21 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
     ttlt = round(time.monotonic() - t0, 3)
     transcript = ''.join(transcript_parts).strip()
     if not _transcript_matches(spoken_text, transcript):
-        raise RuntimeError(f'Audio model did not read the line verbatim: {transcript!r}')
+        gem_voice = GEMINI_VOICE_MAP.get(voice, 'Kore')
+        gem_req = urllib.request.Request(
+            'https://openrouter.ai/api/v1/audio/speech',
+            data=json.dumps({'model': FALLBACK_TTS_MODEL, 'input': spoken_text, 'voice': gem_voice, 'response_format': 'pcm'}).encode('utf-8'),
+            headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}', 'Content-Type': 'application/json'},
+            method='POST',
+        )
+        t_gem = time.monotonic()
+        with urllib.request.urlopen(gem_req, timeout=20) as gem_resp:
+            gem_pcm = gem_resp.read()
+        return {
+            'voice': f'{voice}->{gem_voice}', 'tone': tone, 'pcm': gem_pcm,
+            'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t_gem, 3), 'transcript': spoken_text,
+            'cost_usd': float(usage.get('cost') or 0.0), 'usage': usage, 'fallback_model': FALLBACK_TTS_MODEL,
+        }
     return {
         'voice': voice, 'tone': tone, 'pcm': b''.join(pcm_chunks),
         'ttfa_s': ttfa, 'ttlt_s': ttlt, 'transcript': transcript,

@@ -42,7 +42,7 @@ Python 3.15, standard library only. The game starts it; it exits when the game e
 
 - Tails `events.jsonl`, calls `openai/gpt-6-luna` (`reasoning: none`) through OpenRouter, and writes `reply.json`.
 - Resolves interaction, trait, buff, venue, and relationship names from the game's string tables (`.local/stbl_en_us.json` cache).
-- Synthesizes each line with `openai/gpt-audio-mini` in parallel. A line the audio model refuses or doesn't read verbatim stays silent; the text still shows.
+- Synthesizes each line with `openai/gpt-audio-mini` in parallel. If `gpt-audio-mini` refuses a spicy line (`!_transcript_matches`), that line retries on `google/gemini-3.8-flash-lite-tts` via `/api/v1/audio/speech`.
 - Plays the WAV when the game logs `displayed`.
 - Cost: the session cost is the sum of per-call `usage.cost`; the total is the dedicated key's usage on OpenRouter (`cost_summary.json`).
 
@@ -74,3 +74,4 @@ python3.15 '.\companion.py' --once '.\.local\scene.json'
 16. **[16 — Ask-Self Pie Menu & solo vocalizations](experiments/16-solo-vocal-and-ask-self/result.json):** Verified **`Ask <Sim> a Question (English)...`** live in-game (4 events in `events.jsonl`); note that `result.json`'s `solo_vocal` and `vox_attempt` metrics came from a local mock harness, not the game.
 
 17. **[17 — Humanize tables A/B](experiments/17-humanize-tables-ab/result.json):** Compared the 389-line `humanize_*` lookup tables against STBL labels + filtered raw tuning names across 5 real events from her save (`Slot_00000002.save`), confirming `openai/gpt-6-luna` grounds jokes just as well without the lookup tables and enabling a `-55.1%` total codebase reduction (`4,049` → `1,816` lines).
+18. **[18 — OpenRouter TTS endpoint benchmark](experiments/18-openrouter-tts-endpoint-benchmark/result.json):** Verified the Antigravity scratch WAVs via `google/gemini-3.8-flash` audio transcription, benchmarked 5 `/api/v1/audio/speech` models across English/spicy/Hebrew/Russian, and added a 14-line per-line refusal fallback to `google/gemini-3.8-flash-lite-tts`.
