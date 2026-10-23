@@ -369,12 +369,17 @@ class MemoryStore:
 class CostTracker:
     def __init__(self, data_dir: Path):
         self.summary_path = data_dir / 'cost_summary.json'
-        req = urllib.request.Request(
-            'https://openrouter.ai/api/v1/key', headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}'})
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            key = json.loads(resp.read().decode('utf-8'))['data']
-        self.key_usage_at_start = float(key['usage'])
-        self.key_limit_remaining = key.get('limit_remaining')
+        prev = json.loads(self.summary_path.read_text(encoding='utf-8-sig')) if self.summary_path.exists() else {}
+        try:
+            req = urllib.request.Request(
+                'https://openrouter.ai/api/v1/key', headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}'})
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                key = json.loads(resp.read().decode('utf-8'))['data']
+            self.key_usage_at_start = float(key['usage'])
+            self.key_limit_remaining = key.get('limit_remaining')
+        except (OSError, KeyError, ValueError):
+            self.key_usage_at_start = float(prev.get('total_usd') or 0.0)
+            self.key_limit_remaining = prev.get('key_limit_remaining_usd_at_start')
         self.session_usd = 0.0
         self.session_exchanges = 0
         _safe_write_json(self.summary_path, self._summary(), indent=2)
@@ -748,8 +753,10 @@ def main():
     events.touch(exist_ok=True)
     with events.open('r', encoding='utf-8') as incoming:
         incoming.seek(0, os.SEEK_END)
-        raw_tail = events.read_bytes().splitlines()
-        startup_line = (raw_tail[-1].decode('utf-8') + '\n') if raw_tail else None
+        with events.open('rb') as bf:
+            bf.seek(max(0, events.stat().st_size - 32768))
+            raw_tail = bf.read().splitlines()
+        startup_line = (raw_tail[-1].decode('utf-8', errors='replace') + '\n') if raw_tail else None
         load_stbl_dictionary()
         memories = MemoryStore(data)
         tracker = CostTracker(data)
@@ -791,7 +798,7 @@ def main():
                 tracker.session_usd += cost_usd
                 tracker.session_exchanges += 1
                 reply['cost_summary'] = tracker._summary()
-            except (urllib.error.URLError, KeyError, ValueError, json.JSONDecodeError) as exc:
+            except (OSError, KeyError, IndexError, ValueError) as exc:
                 reply = {'event_id': event['event_id'], 'error': str(exc)}
                 scene = None
             _safe_write_json(reply_file, reply)
