@@ -267,6 +267,16 @@ def _sim_skills(info):
     return [item[2] for item in skills_out[:6]]
 
 
+def _friendship_score(tracker, other_id):
+    for attr in ('FRIENDSHIP_TRACK', 'SIM_TO_PET_FRIENDSHIP_TRACK', 'PET_TO_PET_FRIENDSHIP_TRACK'):
+        track = getattr(RelationshipTrack, attr, None)
+        if track is not None:
+            val = float(tracker.get_relationship_score(other_id, track) or 0.0)
+            if val:
+                return round(val, 1)
+    return 0.0
+
+
 def _sim_social_connections(info):
     tracker = getattr(info, 'relationship_tracker', None)
     if tracker is None or not hasattr(tracker, 'get_target_sim_infos'):
@@ -286,7 +296,7 @@ def _sim_social_connections(info):
         other_tracker = getattr(other, 'relationship_tracker', None)
         rev_bits = [b.__name__ for b in other_tracker.get_all_bits(sim_id)
                     if b.__name__ not in bits] if other_tracker is not None else []
-        friendship = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.FRIENDSHIP_TRACK)), 1)
+        friendship = _friendship_score(tracker, other_id)
         romance = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.ROMANCE_TRACK)), 1)
         same_hh = bool(hh_id and getattr(other, 'household_id', None) == hh_id)
         is_partner = other_id in partner_ids
@@ -384,8 +394,7 @@ def _relationship_snapshot(actor_info, target_info):
     hh_id = getattr(actor_info, 'household_id', None)
     return {
         'same_household': bool(hh_id and hh_id == getattr(target_info, 'household_id', None)),
-        'friendship': round(actor_info.relationship_tracker.get_relationship_score(
-            target_info.sim_id, RelationshipTrack.FRIENDSHIP_TRACK), 2),
+        'friendship': _friendship_score(actor_info.relationship_tracker, target_info.sim_id),
         'romance': round(actor_info.relationship_tracker.get_relationship_score(
             target_info.sim_id, RelationshipTrack.ROMANCE_TRACK), 2),
         'bits': bit_names,
