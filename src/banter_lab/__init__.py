@@ -682,17 +682,21 @@ def _install_pie_menu_interaction():
             lambda _actor, _target, fname: 'Ask {} a Question (English)...'.format(fname),
             _on_pie_ask_self)
     count = 0
+    seen_types = set()
     for info in services.sim_info_manager().values():
         sim = info.get_sim_instance()
         if sim is None:
             continue
-        for holder in (type(sim), sim):
-            if hasattr(holder, '_super_affordances'):
-                cleaned = tuple(
-                    sa for sa in holder._super_affordances
-                    if getattr(sa, 'guid64', None) not in (0xBA47E21AB0000001, 0xBA47E21AB0000002)
-                )
-                holder._super_affordances = cleaned + (_pie_interaction_cls, _pie_ask_self_cls)
+        if '_super_affordances' in getattr(sim, '__dict__', ()):
+            del sim._super_affordances
+        cls = type(sim)
+        if cls not in seen_types and hasattr(cls, '_super_affordances'):
+            seen_types.add(cls)
+            cleaned = tuple(
+                sa for sa in cls._super_affordances
+                if getattr(sa, 'guid64', None) not in (0xBA47E21AB0000001, 0xBA47E21AB0000002)
+            )
+            cls._super_affordances = cleaned + (_pie_interaction_cls, _pie_ask_self_cls)
         count += 1
     return count
 
