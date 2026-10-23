@@ -332,11 +332,11 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
 
 
 class MemoryStore:
-    def __init__(self, data_dir: Path | None):
-        self.data_dir = data_dir or (ROOT / '.local')
-        self.path = self.data_dir / 'memories.json'
+    def __init__(self, data_dir: Path | None = None):
+        self.path = (data_dir / 'memories.json') if data_dir is not None else None
         self.pairs: dict[str, list[dict]] = (
-            json.loads(self.path.read_text(encoding='utf-8-sig'))['pairs'] if self.path.exists() else {}
+            json.loads(self.path.read_text(encoding='utf-8-sig'))['pairs']
+            if self.path is not None and self.path.exists() else {}
         )
 
     @staticmethod
@@ -362,7 +362,8 @@ class MemoryStore:
             'text': text.strip(),
         })
         del lst[:-8]
-        _safe_write_json(self.path, {'updated_at': round(time.time(), 1), 'pair_count': len(self.pairs), 'pairs': self.pairs}, indent=2)
+        if self.path is not None:
+            _safe_write_json(self.path, {'updated_at': round(time.time(), 1), 'pair_count': len(self.pairs), 'pairs': self.pairs}, indent=2)
 
 
 class CostTracker:
@@ -376,18 +377,16 @@ class CostTracker:
         self.key_limit_remaining = key.get('limit_remaining')
         self.session_usd = 0.0
         self.session_exchanges = 0
+        _safe_write_json(self.summary_path, self._summary(), indent=2)
 
-    def record_exchange(self, cost_usd: float) -> dict:
-        self.session_usd += cost_usd
-        self.session_exchanges += 1
-        summary = {
+    def _summary(self) -> dict:
+        return {
             'session_usd': round(self.session_usd, 6),
             'session_exchanges': self.session_exchanges,
             'total_usd': round(self.key_usage_at_start + self.session_usd, 6),
             'key_limit_remaining_usd_at_start': self.key_limit_remaining,
         }
-        _safe_write_json(self.summary_path, summary, indent=2)
-        return summary
+
 
 
 def choose_scene_language(event: dict) -> str:
@@ -617,8 +616,8 @@ def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
     player_msg = (event.get('player_message') or '').strip()
 
     if target is None or event_type == 'player_ask_self':
-        first = lines[0] if lines else ''
-        return f"{actor_name}: {_strip_outer_quotes(first.split(':', 1)[1] if ':' in first else first)}"
+        last = lines[-1] if lines else ''
+        return f"{actor_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
     if event_type == 'player_chat' and player_msg:
         last = lines[-1] if lines else ''
         return f"{actor_name}: {player_msg}\n{target_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
@@ -678,9 +677,8 @@ def generate(
     if tts_dir is not None:
         out['tts'] = synthesize_dialogue_openrouter(text, event['actor'], target, tts_dir / f"{event['event_id']}.wav")
         cost_usd += out['tts']['tts_cost_usd']
-    memory_store.record(event, scene, text)
-    if cost_tracker is not None:
-        out['cost_summary'] = cost_tracker.record_exchange(cost_usd)
+    out['_scene'] = scene
+    out['_cost_usd'] = cost_usd
     return out
 
 
@@ -733,7 +731,10 @@ def main():
 
     if args.once:
         event = json.loads(args.once.read_text(encoding='utf-8-sig'))
-        print(json.dumps(generate(event, MemoryStore(ROOT / '.local' / 'once')), ensure_ascii=False, indent=2))
+        res = generate(event, MemoryStore())
+        res.pop('_scene', None)
+        res.pop('_cost_usd', None)
+        print(json.dumps(res, ensure_ascii=False, indent=2))
         return
 
     lock = _acquire_single_instance_lock()
@@ -743,30 +744,36 @@ def main():
     reply_file = data / 'reply.json'
     events = data / 'events.jsonl'
     events.touch(exist_ok=True)
-    load_stbl_dictionary()
-    memories = MemoryStore(data)
-    tracker = CostTracker(data)
-    print(
-        f'Listening (model={CHAT_MODEL}, tts={TTS_MODEL}, total so far=${tracker.key_usage_at_start:.4f}, '
-        f'key remaining=${tracker.key_limit_remaining})',
-        flush=True,
-    )
-
-    last_parent_check = time.monotonic()
     with events.open('r', encoding='utf-8') as incoming:
         incoming.seek(0, os.SEEK_END)
+        raw_tail = events.read_bytes().splitlines()
+        startup_line = (raw_tail[-1].decode('utf-8') + '\n') if raw_tail else None
+        load_stbl_dictionary()
+        memories = MemoryStore(data)
+        tracker = CostTracker(data)
+        print(
+            f'Listening (model={CHAT_MODEL}, tts={TTS_MODEL}, total so far=${tracker.key_usage_at_start:.4f}, '
+            f'key remaining=${tracker.key_limit_remaining})',
+            flush=True,
+        )
+        last_parent_check = time.monotonic()
         while True:
             if args.parent_pid and time.monotonic() - last_parent_check > 2.0:
                 last_parent_check = time.monotonic()
                 if not _is_pid_running(args.parent_pid):
                     print('The game exited; companion exiting.', flush=True)
                     return
-            offset = incoming.tell()
-            line = incoming.readline()
-            if not line or not line.endswith('\n'):
-                incoming.seek(offset)
-                time.sleep(0.15)
-                continue
+            if startup_line is not None:
+                line, startup_line = startup_line, None
+                if time.time() - float(json.loads(line).get('observed_at') or 0) > 15.0:
+                    continue
+            else:
+                offset = incoming.tell()
+                line = incoming.readline()
+                if not line or not line.endswith('\n'):
+                    incoming.seek(offset)
+                    time.sleep(0.15)
+                    continue
             event = json.loads(line)
             if event.get('type') == 'displayed':
                 audio_path = (event.get('tts') or {}).get('audio_file')
@@ -777,9 +784,18 @@ def main():
                 continue
             try:
                 reply = generate(event, memories, tts_dir=TTS_DIR, cost_tracker=tracker)
+                scene = reply.pop('_scene')
+                cost_usd = reply.pop('_cost_usd')
+                tracker.session_usd += cost_usd
+                tracker.session_exchanges += 1
+                reply['cost_summary'] = tracker._summary()
             except (urllib.error.URLError, KeyError, ValueError, json.JSONDecodeError) as exc:
                 reply = {'event_id': event['event_id'], 'error': str(exc)}
+                scene = None
             _safe_write_json(reply_file, reply)
+            if scene is not None:
+                memories.record(event, scene, reply['text'])
+                _safe_write_json(tracker.summary_path, reply['cost_summary'], indent=2)
             if 'error' in reply:
                 print(json.dumps(reply, ensure_ascii=False), flush=True)
                 continue
