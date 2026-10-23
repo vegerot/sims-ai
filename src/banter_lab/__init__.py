@@ -779,6 +779,7 @@ def reload_command(_connection=None):
     try:
         _cancel_polling()
         zipimport._zip_directory_cache.clear()
+        sys.path_importer_cache.clear()
         mod = importlib.reload(sys.modules[__name__])
         count = mod._install_pie_menu_interaction()
         if _connection is not None:
