@@ -286,16 +286,20 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         for b in (sim.get('buffs') or [])
         if not str(b.get('id') or '').lower().startswith(('buff_environment_', 'buff_lotmods_'))
     ]
-    activities = [
-        {k: v for k, v in {
-            'id': act.get('id'),
-            'label': resolve_stbl(act.get('stbl'), sim, partner),
-            'target_label': resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target'),
-            'recipe_label': resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe'),
-        }.items() if v}
-        for act in (sim.get('activities') or [])
-        if act.get('id') not in ('carrying', 'dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
-    ]
+    raw_acts = []
+    for act in (sim.get('activities') or []):
+        if act.get('id') == 'carrying':
+            continue
+        lbl = resolve_stbl(act.get('stbl'), sim, partner)
+        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target')
+        rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
+        if lbl or tlbl:
+            raw_acts.append({k: v for k, v in {
+                'id': act.get('id'), 'label': lbl, 'target_label': tlbl,
+                'recipe_label': rlbl if rlbl != tlbl else None,
+            }.items() if v})
+    labelled_targets = {a.get('target_label') for a in raw_acts if a.get('label') and a.get('target_label')}
+    activities = [a for a in raw_acts if a.get('label') or a.get('target_label') not in labelled_targets]
     connections = []
     for conn in sim.get('social_connections') or []:
         if not isinstance(conn, dict) or str(conn.get('id') or '') == partner_id:

@@ -52,7 +52,7 @@ _skip_counts = {}
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'simToPet_Socials_Converse', 'petSocial_DogToDog_SocialGroup', 'petSocial_PetToPet_SocialGroup')
-_IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit', 'dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
+_IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 
 _mod_directory = os.path.dirname(__file__.split('.ts4script', 1)[0])
@@ -217,14 +217,15 @@ def _sim_activities(sim):
         if getattr(si, 'is_social', False) or type(si).__name__ in _IDLE_POSTURES:
             continue
         target_obj = getattr(si, 'target', None)
+        stbl = _string_hash(getattr(si, 'display_name', None), sim, target_obj)
+        if not stbl and target_obj is None:
+            continue
         recipe_name, recipe_stbl = _crafted_recipe(target_obj) if target_obj is not None else (None, None)
         activities.append({
-            'id': type(si).__name__,
-            'stbl': _string_hash(getattr(si, 'display_name', None), sim, target_obj),
+            'id': type(si).__name__, 'stbl': stbl,
             'target': type(target_obj).__name__ if target_obj is not None else None,
             'target_stbl': _string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None,
-            'recipe': recipe_name,
-            'recipe_stbl': recipe_stbl,
+            'recipe': recipe_name, 'recipe_stbl': recipe_stbl,
         })
     return activities[:4]
 
