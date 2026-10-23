@@ -249,7 +249,7 @@ _NOISY_TRAIT_SUBSTRINGS = (
     'trait_elder', 'trait_youngadult', 'genderfemale', 'gendermale', 'tailstyle',
     'pet_age_', 'discipline_', 'disciplinedout_', 'trait_hidden_', '_hidden',
     'relexpectations_', 'practicemakesperfect', 'noopinion_', 'civicpolicy_',
-    'attraction_haircolor', 'attraction_outfitcolor',
+    'trait_attraction_', 'iscustomgender',
 )
 
 
@@ -278,6 +278,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
             'reason': resolve_stbl(b.get('reason_stbl'), sim, partner),
         }.items() if v}
         for b in (sim.get('buffs') or [])
+        if not str(b.get('id') or '').lower().startswith(('buff_environment_', 'buff_lotmods_'))
     ]
     activities = [
         {k: v for k, v in {
@@ -313,7 +314,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         'mood': mood[5:] if mood.startswith('Mood_') else (mood or None),
         'household_funds': sim.get('household_funds'),
         'trait_labels': [l for l in (resolve_stbl(s, sim, partner) for s in sim.get('trait_stbls', [])) if l] or sim.get('traits'),
-        'notable_traits': [t for t in (sim.get('extra_traits') or []) if not any(k in t.lower() for k in _NOISY_TRAIT_SUBSTRINGS)][:15],
+        'notable_traits': [t for t in (sim.get('extra_traits') or []) if not any(k in t.lower() for k in _NOISY_TRAIT_SUBSTRINGS)][:18],
         'aspiration': sim.get('aspiration'),
         'careers': careers,
         'top_skills': skills,

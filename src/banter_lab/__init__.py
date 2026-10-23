@@ -345,7 +345,7 @@ def _sim_snapshot(sim):
         'careers': _sim_careers(info),
         'skills': _sim_skills(info),
         'mood': mood.__name__ if mood else None,
-        'buffs': buffs[:5],
+        'buffs': buffs[:8],
         'activities': _sim_activities(sim),
         'social_connections': _sim_social_connections(info),
     }
