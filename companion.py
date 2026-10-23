@@ -217,10 +217,9 @@ def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict 
             lambda m, fem=is_female: m.group(1 if fem else 2),
             text,
         )
-    text = re.sub(r'<[^>]+>', '', text)
-    text = re.sub(r'\{[^{}]*\}', '', text)
+    text = re.sub(r'<[^>]+>|\{[^{}]*\}|["“”]\s*["“”]', '', text)
     text = ' '.join(text.split()).strip()
-    if not text or '(should not be seen)' in text.lower():
+    if not text or any(p in text.lower() for p in ('(should not be seen)', '**debug**', 'set 01')):
         return None
     return text
 
