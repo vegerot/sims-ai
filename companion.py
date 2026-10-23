@@ -496,6 +496,7 @@ def _transcript_matches(spoken_text: str, transcript: str) -> bool:
 
 def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) -> dict:
     tone = MOOD_TO_DELIVERY_TONE.get(_clean_mood(mood) or 'Fine', 'natural, expressive, playful')
+    spoken_words = set(re.findall(r'\w+', spoken_text.lower()))
     payload = {
         'model': TTS_MODEL,
         'modalities': ['text', 'audio'],
@@ -544,9 +545,12 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
                     pcm_chunks.append(base64.b64decode(audio['data']))
                 if audio.get('transcript'):
                     transcript_parts.append(audio['transcript'])
+                    tr_words = set(re.findall(r'\w+', ''.join(transcript_parts).lower()))
+                    if spoken_words and len(tr_words) >= 4 and not (tr_words & spoken_words):
+                        break
     ttlt = round(time.monotonic() - t0, 3)
     transcript = ''.join(transcript_parts).strip()
-    if not _transcript_matches(spoken_text, transcript):
+    if not pcm_chunks or not _transcript_matches(spoken_text, transcript):
         gem_voice = GEMINI_VOICE_MAP.get(voice, 'Kore')
         gem_req = urllib.request.Request(
             'https://openrouter.ai/api/v1/audio/speech',
