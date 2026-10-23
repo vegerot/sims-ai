@@ -1,5 +1,7 @@
 # 🚀 Next Features & Architecture Plan (Pre-Implementation)
 
+> **Historical note (2026-10-23):** This was an Oct 21 pre-implementation design note. See [plan.md](plan.md), [progress.md](progress.md), and [ethos-and-five-step-audit.md](ethos-and-five-step-audit.md) for the current architecture and live-verified decisions (`vox_attempt`, `solo_vocal`, `settings.json`, and `humanize_*` tables were deleted during the Five-Step simplification pass).
+
 This document captures findings from your first live playtest at the Karaoke Bar and Residential lot (`events.jsonl` events `1`–`31`), diagnoses the two issues you spotted (`Shout Forbidden Words` and identical TTS voices), records our live latency/humor/multilingual-TTS benchmarks ([14-mercury-vs-luna-benchmark/result.json](experiments/14-mercury-vs-luna-benchmark/result.json)), and lays out the design for the next batch of experiments before we implement them.
 
 ---
@@ -198,7 +200,7 @@ We decoded `SaveGameData` (`0x0000000D` protobufs via `generated.zip` descriptor
      - **`Cordova` (`Tray` `2026-07-12`):** **`Hayes Cordova`** (`Practice Makes Perfect`, `Child of the Village`, `Nosy`, `Mansion Baron`) & **`Genevieve Pollak`** (`Recycle Disciple`, `Music Lover`, `Mean`, `Party Animal`).
 
 2. **`Slot_00000003.save` (`"My Saved Game 2"`, 6.65 MB, July–October 16, 2026, active household `'ronen'` at `'The Old Salt House'`, `$66,454`):**
-   - **`yuvi ronen`:** Young Adult Male (`Good`, `Geek`, Basemental **`ADHD`**, `Quick Learner`, Aspiration `Computer Whiz`; **Critic** career L2; Video Gaming `6,910`, Charisma `4,006`, Entrepreneur `3,700`, Romance `1,849`, Writing `1,540`, Singing `1,321`; WickedWhims `Sage` & `Caregiver` archetypes).
+   - **`yuvi ronen`:** Young Adult Male (`Good`, `Geek`, `Quick Learner`, Aspiration `Computer Whiz`; **Critic** career L2; Video Gaming `6,910`, Charisma `4,006`, Entrepreneur `3,700`, Romance `1,849`, Writing `1,540`, Singing `1,321`; WickedWhims `Sage` & `Caregiver` archetypes).
    - **`liatt chonen`:** Young Adult Female (`Loner`, `Loves Outdoors`, `Good`, `Cheerful`, Aspiration `Freelance Botanist`; **`SexWorkerCareer`** L1 from `Mortalib_Careers_SexWorkerCareer`; Gardening `4,982`, Photography `3,700`, Fitness `2,095`, Romance `1,262`, Homestyle Cooking `1,065`; WickedWhims `Innocent` archetype).
    - **Relationship & Hangouts:** `yuvi` and `liatt` are **Soulmates & Partners in Crime** (`LTR_Friendship = 100.0`, `LTR_Romance = 89.8`, `RomanticCombo_Soulmates`, `romanceTrope_wholesome`, `relationshipBits_Mischief_PartnersInCrime`, `Fear_BeingCheatedOn_Tracker`, `WickedWhims_RelBit_HadSex_7Days`), while `liatt` also has `100.0` attraction tracks with `Mortimer Goth`, `Carlos López`, `Ian Robles`, `Osamu Okamoto` (`HadLewdDreamAbout`), and `Charlie Morton` (and dislikes `Tina Peeping`). Their visited venues are **`'zareebs'` (Restaurant)**, **`'Planet Honey Pop!'` (Karaoke Bar)**, **`'Ramen Shop & Karaoke Bar'` (Restaurant)**, **`'Cloud Tea'` (Café)**, **`'Jungle bar Rooftop Lounge'`**, and **`'Casbah Gallery'`**.
 
