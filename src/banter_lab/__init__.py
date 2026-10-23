@@ -35,7 +35,7 @@ from zone import Zone
 
 
 _enabled = True
-_original_voice_actors = {}
+_original_voice_actors = globals().get('_original_voice_actors', {})
 _muted_until = {}
 _audio_until = 0.0
 _event_count = 0
@@ -688,9 +688,11 @@ def _install_pie_menu_interaction():
             continue
         for holder in (type(sim), sim):
             if hasattr(holder, '_super_affordances'):
-                for cls_to_add in (_pie_interaction_cls, _pie_ask_self_cls):
-                    if cls_to_add not in holder._super_affordances:
-                        holder._super_affordances = holder._super_affordances + (cls_to_add,)
+                cleaned = tuple(
+                    sa for sa in holder._super_affordances
+                    if getattr(sa, 'guid64', None) not in (0xBA47E21AB0000001, 0xBA47E21AB0000002)
+                )
+                holder._super_affordances = cleaned + (_pie_interaction_cls, _pie_ask_self_cls)
         count += 1
     return count
 
