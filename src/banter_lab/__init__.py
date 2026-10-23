@@ -54,10 +54,10 @@ _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'si
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 
-_mod_directory = os.path.dirname(__file__.split('.ts4script', 1)[0])
-_data_directory = os.path.join(_mod_directory, 'BanterLabData')
+_PROJECT_ROOT = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai'
+_data_directory = os.path.join(_PROJECT_ROOT, '.local', 'data')
 _reply_path = os.path.join(_data_directory, 'reply.json')
-_COMPANION_PATH = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai\companion.py'
+_COMPANION_PATH = os.path.join(_PROJECT_ROOT, 'companion.py')
 _PYTHON = r'C:\Users\Max\AppData\Roaming\uv\python\cpython-3.15-windows-x86_64-none\python.exe'
 
 

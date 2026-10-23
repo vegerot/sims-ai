@@ -257,3 +257,5 @@ In `relationships/relationship_track.pyc`, `RelationshipTrack.FRIENDSHIP_TRACK` 
 ## Group social mixers (`TargetType.GROUP` & `ParticipantType.Listeners`)
 
 In `interactions/base/interaction.pyc` (`Interaction.get_participants`, lines 3198–3209) and `interactions/social/social_mixer_interaction.pyc` (`SocialMixerInteraction.get_participants`, lines 423–430), `interaction.get_participant(ParticipantType.TargetSim)` only returns a Sim when `interaction.target` is a `Sim` (`TargetType.TARGET`). For untargeted group social mixers (`target_type & TargetType.GROUP`, where `interaction.target` is `None` or a group/object), `ParticipantType.TargetSim` returns `None`, while `interaction.get_participants(ParticipantType.Listeners)` iterates `interaction.social_group` (`pipeline_progress >= RUNNING`) and returns the active listening Sims in the conversation.
+
+- **Computer Use harness rule:** Always use Codex's built-in Computer Use tool; never use the open-source `~\code\github.com\trycua\cua\` (`cua-driver`).

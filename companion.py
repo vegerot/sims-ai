@@ -15,6 +15,7 @@ import os
 import random
 import re
 import struct
+import subprocess
 import sys
 import time
 import urllib.error
@@ -578,6 +579,35 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
     }
 
 
+def _synthesize_pet_windows_tts(spoken_text: str, sim: dict) -> dict:
+    voice = 'Microsoft Zira Desktop' if str(sim.get('gender') or '').upper() == 'FEMALE' else 'Microsoft David Desktop'
+    ps_cmd = (
+        '[Console]::InputEncoding = [System.Text.Encoding]::UTF8; '
+        'Add-Type -AssemblyName System.Speech; '
+        '$s = [System.Speech.Synthesis.SpeechSynthesizer]::new(); '
+        f'$s.SelectVoice({json.dumps(voice)}); '
+        '$ms = [System.IO.MemoryStream]::new(); '
+        '$fmt = [System.Speech.AudioFormat.SpeechAudioFormatInfo]::new('
+        '24000, [System.Speech.AudioFormat.AudioBitsPerSample]::Sixteen, [System.Speech.AudioFormat.AudioChannel]::Mono); '
+        '$s.SetOutputToAudioStream($ms, $fmt); '
+        '$s.Speak([Console]::In.ReadToEnd()); '
+        '[Console]::OpenStandardOutput().Write($ms.ToArray(), 0, [int]$ms.Length)'
+    )
+    t0 = time.monotonic()
+    res = subprocess.run(
+        ['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', ps_cmd],
+        input=spoken_text.encode('utf-8'),
+        capture_output=True,
+        timeout=15,
+        creationflags=subprocess.CREATE_NO_WINDOW,
+    )
+    return {
+        'voice': voice, 'tone': 'windows_sapi5_pet', 'pcm': res.stdout,
+        'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t0, 3),
+        'transcript': spoken_text, 'cost_usd': 0.0,
+    }
+
+
 def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, wav_path: Path) -> dict:
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
     actor_voice = select_openrouter_voice(actor, 0)
@@ -588,13 +618,19 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
         sim = actor if idx == 0 or target is None else target
         voice = actor_voice if idx == 0 or target_voice is None else target_voice
         if spoken:
-            tasks.append((spoken, voice, str(sim.get('mood') or 'Fine')))
+            tasks.append((spoken, voice, sim))
 
     started = time.monotonic()
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
-        futures = [pool.submit(_synthesize_single_line_openrouter, *task) for task in tasks]
+        futures = []
+        for spoken, voice, sim in tasks:
+            is_pet = _SPECIES_NAMES.get(str(sim.get('species')), str(sim.get('species') or 'HUMAN')).upper() != 'HUMAN'
+            if is_pet:
+                futures.append((voice, pool.submit(_synthesize_pet_windows_tts, spoken, sim)))
+            else:
+                futures.append((voice, pool.submit(_synthesize_single_line_openrouter, spoken, voice, str(sim.get('mood') or 'Fine'))))
         line_results = []
-        for (_, voice, _), future in zip(tasks, futures):
+        for voice, future in futures:
             try:
                 line_results.append(future.result())
             except Exception as exc:
@@ -742,7 +778,7 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--data-directory', type=Path, default=DEFAULT_MODS_DIR / 'BanterLab' / 'BanterLabData')
+    parser.add_argument('--data-directory', type=Path, default=ROOT / '.local' / 'data')
     parser.add_argument('--parent-pid', type=int, help='Exit when this process (the game) exits.')
     parser.add_argument('--once', type=Path, help='Generate text once from a captured event JSON file.')
     args = parser.parse_args()

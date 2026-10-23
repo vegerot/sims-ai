@@ -34,7 +34,7 @@ Build using Python 3.7, matching the installed game:
 & '.\.local\python37\python.exe' '.\build.py'
 ```
 
-The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Logs and `reply.json` live in its `BanterLabData` child directory. Rebuild after any game update: `BanterLabUI.package` ships a patched copy of `Notifications.gfx` (`ShowNextMessage` honors `notification.timeout_duration`).
+The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Runtime logs (`events.jsonl`, `companion.stdout.log`), `memories.json`, `cost_summary.json`, and `reply.json` live in `.local/data` outside OneDrive so OneDrive is never polled or written at runtime. Rebuild after any game update: `BanterLabUI.package` ships a patched copy of `Notifications.gfx` (`ShowNextMessage` honors `notification.timeout_duration`).
 
 ## Generation companion (`companion.py`)
 
@@ -42,7 +42,7 @@ Python 3.15, standard library only. The game starts it; it exits when the game e
 
 - Tails `events.jsonl`, calls `openai/gpt-6-luna` (`reasoning: none`) through OpenRouter, and writes `reply.json`.
 - Resolves interaction, trait, buff, venue, and relationship names from the game's string tables (`.local/stbl_en_us.json` cache).
-- Synthesizes each line with `openai/gpt-audio-mini` in parallel. If `gpt-audio-mini` refuses a spicy line (`!_transcript_matches`), that line retries on `google/gemini-3.8-flash-lite-tts` via `/api/v1/audio/speech`.
+- Synthesizes human lines with `openai/gpt-audio-mini` and pet lines (`species != "HUMAN"`) with the deadpan built-in Windows SAPI5 robot voice (`Microsoft Zira Desktop` / `Microsoft David Desktop` at 24 kHz PCM) in parallel. If `gpt-audio-mini` refuses a spicy line (`!_transcript_matches`), that line retries on `google/gemini-3.8-flash-lite-tts` via `/api/v1/audio/speech`.
 - Plays the WAV when the game logs `displayed`.
 - Cost: the session cost is the sum of per-call `usage.cost`; the total is the dedicated key's usage on OpenRouter (`cost_summary.json`).
 
