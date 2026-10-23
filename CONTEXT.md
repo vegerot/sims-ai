@@ -58,10 +58,6 @@ A directional short-term or long-term emotional impression one Sim holds toward 
 An in-game social action between an Actor and a Target chosen by the simulation or queued by the player, such as Friendly Introduction, Flirt, or Joke.
 _Avoid_: Affordance, mixer, social event
 
-**Solo vocalization**:
-An in-game vocal outburst performed by a single Sim with no Target, such as Shout Forbidden Words.
-_Avoid_: Monologue, self-social
-
 **Player conversation**:
 A two-Sim exchange initiated when the player types what the active Sim says to a Target Sim on the lot.
 _Avoid_: Direct chat, manual social

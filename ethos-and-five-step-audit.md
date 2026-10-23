@@ -13,7 +13,7 @@ Evidence labels used below: **🟢 observed** (measured or read directly), **�
 3. **Two records overstated evidence.** Experiment 16's [result.json](experiments/16-solo-vocal-and-ask-self/result.json) listed a "captured" `solo_vocal` event and `vox_attempt` stats that **did not exist in the game log**, and reported the local compiler's Python 3.7.9, not the game's 3.7.0. 🟢 That was harness output recorded as live evidence.
 4. **One instrument measured nothing.** The Simlish-replacement meter (`vox_attempt`) logged **0** events in the game, and `banter.status` printed **100%** coverage when the total was 0. 🟢
 5. **Experiment 15 tested the wrong model.** It concluded that Gemini TTS wasn't on OpenRouter by calling the *chat* model `google/gemini-3.8-flash` ([result.json](experiments/15-cost-and-openrouter-tts/result.json)). The catalog lists `google/gemini-3.8-flash-tts` plus ~35 dedicated speech models. 🟢 A live probe got HTTP 200 for the exact line `gpt-audio-mini` refused ([Experiment 18](experiments/18-openrouter-tts-endpoint-benchmark/result.json) verified all 4 scratch clips via `google/gemini-3.8-flash` audio transcription and added a 14-line per-line refusal fallback to `google/gemini-3.8-flash-lite-tts`).
-6. **Outcome:** Corrected the records (`6081c3de6550`), ran two deletion/simplification passes (`3a4539bd342f` and today's follow-up), implemented selective Simlish muting + `_audio_until` overlap protection (`b6780621ec27`), verified the save-aware stack + pet banter (`meimei`) + multi-exchange `pair_memory` + notification `timeout_duration` live on her save (`Slot_00000002.save`), ran the [5-scene A/B experiment](experiments/17-humanize-tables-ab/result.json) that deleted the 389-line `humanize_*` tables, and shelved the `Dialog.gfx` `Enter`-to-send bytecode patch. Total code dropped from **4,049 total lines (`1cb08ab`) → 1,820 total lines (`-55.1%`)**.
+6. **Outcome:** Corrected the records (`6081c3de6550`), ran two deletion/simplification passes (`3a4539bd342f` and today's follow-up), implemented selective Simlish muting + `_audio_until` overlap protection (`b6780621ec27`), verified the save-aware stack + pet banter (`meimei`) + multi-exchange `pair_memory` + notification `timeout_duration` live on her save (`Slot_00000002.save`), ran the [5-scene A/B experiment](experiments/17-humanize-tables-ab/result.json) that deleted the 389-line `humanize_*` tables, and shelved the `Dialog.gfx` `Enter`-to-send bytecode patch. Total code dropped from **4,049 total lines (`1cb08ab`) → 1,802 total lines (`-55.5%`)**.
 
 ---
 
@@ -24,7 +24,7 @@ Evidence labels used below: **🟢 observed** (measured or read directly), **�
 | `98699fa` (Oct 20, 1 AM) | Working text prototype, 3 live exchanges | 102 | 199 | — | 15 |
 | `1cb08ab` (Oct 22, 1 AM) | Peak bloat before audit (total lines) | **1,827** | **1,908** | **285** | **29** |
 | `b678062` (Oct 22, 7:31 PM) | After Agy Step 2 deletions + selective mute | 1,334 | 1,201 | 285 | 29 |
-| **Current (Oct 23, 2:00 AM)** | **After Step 2/3/4/5 + Exp 18 & 19 + replay set** | **778** | **800** | **226** | **27** |
+| **Current (Oct 23, 2:10 AM)** | **After Step 2/3/4/5 + Exp 18 & 19 + `_on_interaction_start` removal** | **778** | **771** | **226** | **27** |
 
 ---
 
@@ -47,7 +47,7 @@ Evidence labels used below: **🟢 observed** (measured or read directly), **�
 |---|---:|---|
 | 13 redundant console commands (`start`, `trace`, `test`, `audio`, `summon`, `say`, `solo`, `menu`, `companion`, `ai`, `talk`, `ask`, `mute`) | ~350 | ✅ **Deleted.** Kept only `banter.status`, `banter.logs`, `banter.reload`, and `banter.stop`; all player controls live on Page 1 of the Sim Pie Menu. |
 | SAPI5 fallback engine + PowerShell worker | ~100 | ✅ **Deleted.** Each line synthesizes independently via `openai/gpt-audio-mini`; a refused line automatically retries on `google/gemini-3.8-flash-lite-tts` via `/api/v1/audio/speech` (`GEMINI_VOICE_MAP`). |
-| `vox_attempt` hook + `_vox_stats` + 3 s cooldown | ~60 | ✅ **Deleted.** |
+| `vox_attempt` hook + `_vox_stats` + 3 s cooldown + `_SOLO_VOCAL_STBLS` + `_on_interaction_start` hook | ~90 | ✅ **Deleted.** Both `vox_attempt` and `solo_vocal` had `0` events in `events.jsonl`, and removing `_solo_vocal_actor` eliminated the global `Interaction._trigger_interaction_start_event` hook completely. |
 | Local `CostTracker` ledger seeding + per-exchange `/api/v1/key` poll | ~105 | ✅ **Deleted.** `GET /api/v1/key` runs once at startup; session cost sums `usage.cost`. |
 | Heartbeat file churn (`companion_heartbeat.json`) + PID kill supervision + duplicate `Mods/` copies | ~180 | ✅ **Deleted.** Replaced with `msvcrt.locking` on `.local/companion.lock` and `--parent-pid` auto-exit (verified live twice). |
 | `MemoryStore` seeding migration + `recent_dialogue` second memory | ~70 | ✅ **Deleted.** `pair_memory` (`BanterLabData/memories.json`) is the single memory store. |

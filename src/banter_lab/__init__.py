@@ -1,4 +1,4 @@
-"""Observe socials and solo vocalizations, support player-to-Sim and Ask-Self chat, and display spoken banter.
+"""Observe socials, support player-to-Sim and Ask-Self chat, and display spoken banter.
 
 Controlled from Page 1 of the Sim Pie Menu (or `banter.stop` / `banter.status` / `banter.logs` / `banter.reload`).
 Model calls and OpenRouter gpt-audio-mini speech synthesis run in the external Python 3.15 companion,
@@ -53,7 +53,6 @@ _PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate')
 _UNLABELLED_WAVES = ('socialMixer_Greetings_Wave', 'nonTouching_Unpaired_Greeting_Wave')
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit', 'dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
-_SOLO_VOCAL_STBLS = (4013856058, 961384365, 3515527490, 2952163771)
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 
 _mod_directory = os.path.dirname(__file__.split('.ts4script', 1)[0])
@@ -418,16 +417,6 @@ def _social_participants(interaction):
     return actor, target
 
 
-def _solo_vocal_actor(interaction):
-    actor = getattr(interaction, 'sim', None)
-    if actor is None or getattr(actor, 'sim_info', None) is None or actor.sim_info.household_id != services.active_household_id():
-        return None
-    target = interaction.get_participant(ParticipantType.TargetSim)
-    if target is not None and getattr(target, 'is_sim', False) and target.sim_info.sim_id != actor.sim_info.sim_id:
-        return None
-    return actor if _string_hash(getattr(interaction, 'display_name', None), actor) in _SOLO_VOCAL_STBLS else None
-
-
 def _busy(interaction, actor, target=None):
     global _pending
     if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
@@ -472,18 +461,11 @@ def _submit(event, *sims):
     return event
 
 
-def _observe(interaction, hook_stage, outcome_result=None):
+def _observe(interaction, outcome_result):
     if not _enabled:
         return
     actor, target = _social_participants(interaction)
     if actor is None:
-        solo_actor = _solo_vocal_actor(interaction)
-        if solo_actor is not None and hook_stage == 'start' and not _busy(interaction, solo_actor):
-            _submit(_make_event(
-                'solo_vocal', 'solo-', solo_actor, None, type(interaction).__name__,
-                _string_hash(getattr(interaction, 'display_name', None), solo_actor), 'SUCCESS'), solo_actor)
-        return
-    if hook_stage != 'outcome':
         return
     interaction_name = type(interaction).__name__
     if interaction_name in _PASSIVE_CONTAINERS:
@@ -689,30 +671,18 @@ def _install_pie_menu_interaction():
     return count
 
 
-_original_start = getattr(Interaction, '_banter_orig_start', Interaction._trigger_interaction_start_event)
 _original_store_outcome = getattr(Interaction, '_banter_orig_outcome', Interaction.store_result_for_outcome)
 _original_zone_loaded = getattr(Zone, '_banter_orig_zone_loaded', Zone.on_loading_screen_animation_finished)
 
-Interaction._banter_orig_start = _original_start
 Interaction._banter_orig_outcome = _original_store_outcome
 Zone._banter_orig_zone_loaded = _original_zone_loaded
-
-
-@functools.wraps(_original_start)
-def _on_interaction_start(self, *args, **kwargs):
-    result = _original_start(self, *args, **kwargs)
-    try:
-        _observe(self, 'start')
-    except Exception:
-        _record_error()
-    return result
 
 
 @functools.wraps(_original_store_outcome)
 def _on_store_outcome(self, outcome, result, *args, **kwargs):
     ret = _original_store_outcome(self, outcome, result, *args, **kwargs)
     try:
-        _observe(self, 'outcome', outcome_result=getattr(result, 'name', str(result)))
+        _observe(self, getattr(result, 'name', str(result)))
     except Exception:
         _record_error()
     return ret
@@ -735,7 +705,6 @@ def _on_zone_loaded(self, *args, **kwargs):
     return ret
 
 
-Interaction._trigger_interaction_start_event = _on_interaction_start
 Interaction.store_result_for_outcome = _on_store_outcome
 Zone.on_loading_screen_animation_finished = _on_zone_loaded
 

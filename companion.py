@@ -394,7 +394,7 @@ def build_scene(event: dict, language: str = 'English', pair_memory: list[dict] 
     actor = event['actor']
     target = event.get('target') if isinstance(event.get('target'), dict) else None
     event_type = event.get('type', 'social')
-    speaker_count = 1 if target is None or event_type in ('solo_vocal', 'player_ask_self') else 2
+    speaker_count = 1 if target is None or event_type == 'player_ask_self' else 2
     interaction_label = resolve_stbl(event.get('interaction_stbl'), actor, target)
     venue_label = resolve_stbl(event.get('venue_stbl'), actor, target)
     lot_traits = [z for z in (event.get('lot_traits') or []) if 'hidden' not in z.lower()]
@@ -596,7 +596,7 @@ def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
     event_type = event.get('type', 'social')
     player_msg = (event.get('player_message') or '').strip()
 
-    if target is None or event_type in ('solo_vocal', 'player_ask_self'):
+    if target is None or event_type == 'player_ask_self':
         first = lines[0] if lines else ''
         return f"{actor_name}: {_strip_outer_quotes(first.split(':', 1)[1] if ':' in first else first)}"
     if event_type == 'player_chat' and player_msg:
@@ -753,7 +753,7 @@ def main():
                 if audio_path:
                     winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 continue
-            if event.get('type') not in ('social', 'player_chat', 'solo_vocal', 'player_ask_self'):
+            if event.get('type') not in ('social', 'player_chat', 'player_ask_self'):
                 continue
             try:
                 reply = generate(event, memories, tts_dir=TTS_DIR, cost_tracker=tracker)
