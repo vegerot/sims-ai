@@ -47,6 +47,10 @@ _pie_ask_self_cls = None
 _companion_proc = globals().get('_companion_proc')
 _last_companion_spawn = 0.0
 _seen_errors = set()
+# sim_id -> monotonic time when that Sim's Simlish comes back (only Sims whose lines are being replaced).
+_muted_until = {}
+# One exchange at a time: no new autonomous exchange until the current English audio has finished.
+_audio_until = 0.0
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate')
@@ -199,8 +203,6 @@ def _distribute_voice_actor(info, actor_hash):
 
 
 def _apply_mute_to_info(info):
-    if info is None:
-        return
     sim_id = int(info.sim_id)
     current = int(getattr(info, 'voice_actor', 0))
     if sim_id not in _original_voice_actors and current != _MUTE_VOICE_ACTOR and current != 0:
@@ -210,23 +212,42 @@ def _apply_mute_to_info(info):
         _distribute_voice_actor(info, _MUTE_VOICE_ACTOR)
 
 
-def _sync_zone_mute():
+def _restore_voice(info):
+    original = _true_voice_actor(info)
+    if int(getattr(info, 'voice_actor', 0)) != original:
+        _distribute_voice_actor(info, original)
+
+
+def _mute_replaced(infos, seconds):
+    """Silence Simlish only for Sims whose lines are being replaced by English, until `seconds` from now."""
+    if not _mute_simlish:
+        return
+    deadline = time.monotonic() + seconds
+    for info in infos:
+        if info is not None:
+            _apply_mute_to_info(info)
+            _muted_until[int(info.sim_id)] = deadline
+
+
+def _restore_expired_mutes(force=False):
+    now = time.monotonic()
     manager = services.sim_info_manager()
-    if manager is None:
-        return 0
+    for sim_id, deadline in list(_muted_until.items()):
+        if force or now >= deadline:
+            del _muted_until[sim_id]
+            info = manager.get(sim_id) if manager is not None else None
+            if info is not None:
+                _restore_voice(info)
+
+
+def _restore_all_muted_in_zone():
+    """Restore any instanced Sim left muted (e.g. saved mid-exchange, or by the older mute-everyone mode)."""
+    _muted_until.clear()
     count = 0
-    if _mute_simlish:
-        for info in manager.values():
-            if info.get_sim_instance() is not None:
-                _apply_mute_to_info(info)
-                count += 1
-    else:
-        for info in manager.values():
-            if info.get_sim_instance() is not None or int(getattr(info, 'voice_actor', 0)) == _MUTE_VOICE_ACTOR:
-                orig_actor = _true_voice_actor(info)
-                if orig_actor and orig_actor != _MUTE_VOICE_ACTOR:
-                    _distribute_voice_actor(info, orig_actor)
-                    count += 1
+    for info in services.sim_info_manager().values():
+        if info.get_sim_instance() is not None and int(getattr(info, 'voice_actor', 0)) == _MUTE_VOICE_ACTOR:
+            _restore_voice(info)
+            count += 1
     return count
 
 
@@ -661,14 +682,17 @@ def _solo_vocal_actor(interaction):
 
 
 def _busy(interaction, actor, target=None):
-    """One exchange at a time: skip while a reply is still generating."""
+    """One exchange at a time: skip while a reply is generating or its English audio is still playing."""
     global _pending
     if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
         _pending = None
-    if _pending is None:
-        return False
-    _record_skip('pending_in_flight', interaction, actor, target, {'pending_event_id': _pending['event_id']})
-    return True
+    if _pending is not None:
+        _record_skip('pending_in_flight', interaction, actor, target, {'pending_event_id': _pending['event_id']})
+        return True
+    if time.monotonic() < _audio_until:
+        _record_skip('audio_playing', interaction, actor, target)
+        return True
+    return False
 
 
 def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome,
@@ -698,30 +722,28 @@ def _make_event(event_type, id_prefix, actor, target, interaction_name, interact
     return event
 
 
-def _submit(event):
+def _submit(event, *sims):
+    """Send the event to the companion and mute only these Sims' Simlish while their English is generated."""
     global _pending
     _ensure_poller_alarm()
     _pending = dict(event, zone_id=services.current_zone_id())
+    _mute_replaced([sim.sim_info for sim in sims], _PENDING_TIMEOUT_SECONDS)
     _record(event)
     return event
 
 
 def _observe(interaction, hook_stage, outcome_result=None):
+    if not _enabled:
+        return
     actor, target = _social_participants(interaction)
     if actor is None:
         solo_actor = _solo_vocal_actor(interaction)
-        if solo_actor is not None and _enabled and hook_stage == 'start':
-            if _mute_simlish:
-                _apply_mute_to_info(solo_actor.sim_info)
-            if not _busy(interaction, solo_actor):
-                _submit(_make_event(
-                    'solo_vocal', 'solo-', solo_actor, None, type(interaction).__name__,
-                    _string_hash(getattr(interaction, 'display_name', None), solo_actor), 'SUCCESS'))
+        if solo_actor is not None and hook_stage == 'start' and not _busy(interaction, solo_actor):
+            _submit(_make_event(
+                'solo_vocal', 'solo-', solo_actor, None, type(interaction).__name__,
+                _string_hash(getattr(interaction, 'display_name', None), solo_actor), 'SUCCESS'), solo_actor)
         return
-    if _mute_simlish:
-        _apply_mute_to_info(actor.sim_info)
-        _apply_mute_to_info(target.sim_info)
-    if not _enabled or hook_stage != 'outcome':
+    if hook_stage != 'outcome':
         return
     interaction_name = type(interaction).__name__
     if interaction_name in _PASSIVE_CONTAINERS:
@@ -733,13 +755,14 @@ def _observe(interaction, hook_stage, outcome_result=None):
         return
     if _busy(interaction, actor, target):
         return
-    _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result))
+    _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result), actor, target)
 
 
 class _ReplyPoller:
     def poll(self, _timeline_handle):
-        global _enabled, _pending
+        global _enabled, _pending, _audio_until
         try:
+            _restore_expired_mutes()
             _drain_companion_console()
             if _enabled or _pending is not None:
                 _ensure_companion_running()
@@ -751,6 +774,11 @@ class _ReplyPoller:
                 return
             event = _pending
             _pending = None
+            sim_ids = [int(event['actor']['id'])] + ([int(event['target']['id'])] if event.get('target') else [])
+            if services.current_zone_id() != event['zone_id'] or 'error' in reply:
+                for sim_id in sim_ids:
+                    _muted_until[sim_id] = 0.0
+                _restore_expired_mutes()
             if services.current_zone_id() != event['zone_id']:
                 return
             if 'error' in reply:
@@ -759,14 +787,20 @@ class _ReplyPoller:
                         services.active_sim_info())
                 return
             manager = services.sim_info_manager()
-            actor_info = manager.get(int(event['actor']['id']))
+            actor_info = manager.get(sim_ids[0])
             target_data = event.get('target')
-            target_info = manager.get(int(target_data['id'])) if target_data else None
+            target_info = manager.get(sim_ids[1]) if target_data else None
             title = '{} ↔ {}'.format(event['actor']['name'], target_data['name']) if target_data else event['actor']['name']
             audio_dur = float((reply.get('tts') or {}).get('duration_seconds') or 0.0)
-            if audio_dur <= 0.0:
-                audio_dur = max(2.0, len(reply.get('text', '')) / 18.0)
-            timeout_ms = int(round((audio_dur + 2.0) * 1000))
+            # Keep Simlish muted for exactly as long as the English plays; a silent (refused) reply restores it now.
+            now = time.monotonic()
+            _audio_until = now + audio_dur
+            for sim_id in sim_ids:
+                if sim_id in _muted_until:
+                    _muted_until[sim_id] = now + audio_dur + 0.5 if audio_dur > 0.0 else 0.0
+            _restore_expired_mutes()
+            shown_dur = audio_dur if audio_dur > 0.0 else max(2.0, len(reply.get('text', '')) / 18.0)
+            timeout_ms = int(round((shown_dur + 2.0) * 1000))
             _notify(title, reply['text'], actor_info, target_info, timeout_ms=timeout_ms)
             _record(dict(reply, type='displayed', displayed_at=time.time(), timeout_duration_ms=timeout_ms))
         except Exception:
@@ -837,18 +871,15 @@ def _open_ask_self_dialog(actor_sim):
 
 
 def _submit_player_chat(actor_sim, target_sim, message_text):
-    if _mute_simlish:
-        _apply_mute_to_info(actor_sim.sim_info)
-        _apply_mute_to_info(target_sim.sim_info)
-    return _submit(_make_event('player_chat', 'chat-', actor_sim, target_sim, 'player_direct_chat', None,
-                               'PLAYER_INITIATED', player_message=message_text))
+    event = _make_event('player_chat', 'chat-', actor_sim, target_sim, 'player_direct_chat', None,
+                        'PLAYER_INITIATED', player_message=message_text)
+    return _submit(event, actor_sim, target_sim)
 
 
 def _submit_player_ask_self(actor_sim, question_text):
-    if _mute_simlish:
-        _apply_mute_to_info(actor_sim.sim_info)
-    return _submit(_make_event('player_ask_self', 'ask-', actor_sim, None, 'player_ask_active_sim', None,
-                               'PLAYER_INITIATED', player_message=question_text))
+    event = _make_event('player_ask_self', 'ask-', actor_sim, None, 'player_ask_active_sim', None,
+                        'PLAYER_INITIATED', player_message=question_text)
+    return _submit(event, actor_sim)
 
 
 def _install_pie_menu_interaction():
@@ -1016,14 +1047,14 @@ def _on_zone_loaded(self, *args, **kwargs):
         count = _install_pie_menu_interaction()
         if _enabled:
             _ensure_companion_running()
-        if _mute_simlish:
-            _sync_zone_mute()
+        restored = _restore_all_muted_in_zone()
         _cancel_polling()
         _ensure_poller_alarm()
         _drain_companion_console()
         _record({
             'type': 'pie_menu_installed',
             'sims': count,
+            'restored_voices': restored,
             'enabled': _enabled,
             'mute_simlish': _mute_simlish,
             'observed_at': time.time(),
@@ -1079,23 +1110,23 @@ def ask_self_command(*words, _connection=None):
 
 @sims4.commands.Command('banter.mute', command_type=sims4.commands.CommandType.Live)
 def mute_command(state: str = 'on', _connection=None):
-    """Silence or restore Simlish voice_actor on instanced Sims in the zone."""
+    """Toggle selective Simlish muting for Sims whose speech is actively replaced with English."""
     global _mute_simlish
     _mute_simlish = state.lower() not in ('off', '0', 'false', 'stop')
     _save_settings()
-    count = _sync_zone_mute()
-    _record({'type': 'mute_state', 'mute_simlish': _mute_simlish, 'affected_sims': count, 'observed_at': time.time()})
-    _console_print('Banter Lab Simlish mute={} (updated {} Sims).'.format(_mute_simlish, count), _connection=_connection)
+    restored = _restore_all_muted_in_zone() if not _mute_simlish else 0
+    _record({'type': 'mute_state', 'mute_simlish': _mute_simlish, 'restored_sims': restored, 'observed_at': time.time()})
+    _console_print('Banter Lab selective Simlish mute={} (restored {} Sims).'.format(_mute_simlish, restored),
+                   _connection=_connection)
 
 
 @sims4.commands.Command('banter.stop', command_type=sims4.commands.CommandType.Live)
 def stop(_connection=None):
-    global _enabled, _mute_simlish, _pending
+    global _enabled, _pending, _audio_until
     _enabled = False
     _pending = None
-    if _mute_simlish:
-        _mute_simlish = False
-        _sync_zone_mute()
+    _audio_until = 0.0
+    _restore_all_muted_in_zone()
     _save_settings()
     _console_print('Banter Lab stopped and Simlish voices restored.', _connection=_connection)
 
@@ -1164,8 +1195,7 @@ if services.current_zone() is not None:
     _install_pie_menu_interaction()
     if _enabled:
         _ensure_companion_running()
-    if _mute_simlish:
-        _sync_zone_mute()
+    _restore_all_muted_in_zone()
     _ensure_poller_alarm()
 
 _record({'type': 'loaded', 'observed_at': time.time(), 'enabled': _enabled})
