@@ -253,6 +253,11 @@ _NOISY_TRAIT_SUBSTRINGS = (
 )
 
 
+def _clean_mood(mood: str | None) -> str | None:
+    m = re.sub(r'^(?i:mood_)|_(?i:dog|cat|horse)$', '', str(mood or '')).replace('Horse_', '')
+    return m or None
+
+
 def _filter_bits(bits: list[str] | None, friendship: float = 0.0) -> list[str]:
     out = [b for b in (bits or []) if not any(x in b.lower() for x in _NOISY_REL_BIT_SUBSTRINGS)]
     return [b for b in out if b != 'bit_NoLongerFriends'] if friendship >= 35.0 else out
@@ -311,7 +316,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         'gender': sim.get('gender'),
         'species': _SPECIES_NAMES.get(str(sim.get('species')), sim.get('species') or 'HUMAN'),
         'breed': resolve_stbl(sim.get('breed_stbl'), sim, partner) or sim.get('breed'),
-        'mood': mood[5:] if mood.startswith('Mood_') else (mood or None),
+        'mood': _clean_mood(mood),
         'household_funds': sim.get('household_funds'),
         'trait_labels': [l for l in (resolve_stbl(s, sim, partner) for s in sim.get('trait_stbls', [])) if l] or sim.get('traits'),
         'notable_traits': [t for t in (sim.get('extra_traits') or []) if not any(k in t.lower() for k in _NOISY_TRAIT_SUBSTRINGS)][:18],
@@ -458,9 +463,17 @@ MOOD_TO_DELIVERY_TONE = {
     'Angry': 'exasperated, dramatic, annoyed',
     'Flirty': 'warm, playful, flirty',
     'Uncomfortable': 'tense, dry, slightly frazzled',
+    'Stressed': 'stressed, tense, exasperated',
     'Confident': 'confident, lively, self-assured',
+    'Energized': 'energetic, upbeat, lively',
+    'Excited': 'excited, eager, animated',
     'Bored': 'deadpan, unimpressed, dry',
     'Sad': 'sighing, dramatic, melancholic',
+    'Mopey': 'sighing, dramatic, melancholic',
+    'Ashamed': 'flustered, sheepish, defensive',
+    'Scared': 'nervous, jumpy, dramatic',
+    'Anxious': 'nervous, jumpy, dramatic',
+    'Dazed': 'dazed, spacey, bewildered',
     'Playful': 'amused, upbeat, cheeky',
     'Embarrassed': 'flustered, awkward, defensive',
     'Inspired': 'animated, expressive, enthusiastic',
@@ -474,7 +487,7 @@ def _transcript_matches(spoken_text: str, transcript: str) -> bool:
 
 
 def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) -> dict:
-    tone = MOOD_TO_DELIVERY_TONE.get((mood or 'Fine').replace('Mood_', ''), 'natural, expressive, playful')
+    tone = MOOD_TO_DELIVERY_TONE.get(_clean_mood(mood) or 'Fine', 'natural, expressive, playful')
     payload = {
         'model': TTS_MODEL,
         'modalities': ['text', 'audio'],
@@ -554,7 +567,7 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
     target_voice = select_openrouter_voice(target, 1, avoid_voice=actor_voice) if target else None
     tasks = []
     for idx, line in enumerate(lines[:1 if target is None else 2]):
-        spoken = (line.split(':', 1)[1] if ':' in line else line).strip(' "“”')
+        spoken = re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', (line.split(':', 1)[1] if ':' in line else line), flags=re.IGNORECASE).strip(' "“”')
         sim = actor if idx == 0 or target is None else target
         voice = actor_voice if idx == 0 or target_voice is None else target_voice
         if spoken:
