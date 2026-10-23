@@ -290,8 +290,15 @@ def _sim_social_connections(info):
         romance = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.ROMANCE_TRACK)), 1)
         same_hh = bool(hh_id and getattr(other, 'household_id', None) == hh_id)
         is_partner = other_id in partner_ids
-        if is_partner or same_hh or abs(romance) >= 20.0 or abs(friendship) >= 35.0 or bits or rev_bits:
-            scored.append((-int(is_partner), -int(same_hh), -(abs(romance) + abs(friendship)), -len(bits), {
+        all_lower = ' '.join(bits + rev_bits).lower()
+        has_story = any(k in all_lower for k in (
+            'married', 'engaged', 'significant_other', 'soulmates', 'lovers', 'exes', 'broken_up', 'divorced',
+            'unfaithful', 'fellinlove', 'havebeenromantic', 'sentimentbit_', 'family_', 'isdog', 'iscat',
+            'neighbor', 'landlord', 'tenant', 'coworkers', 'partnersincrime', 'blinddate', 'hadlewddream',
+            'hadsex', 'bff', 'good_friends', 'nemesis', 'despised', 'nolongerfriends',
+        ))
+        if is_partner or same_hh or has_story or abs(romance) >= 15.0 or abs(friendship) >= 25.0:
+            scored.append((-int(is_partner), -int(same_hh), -int(has_story), -(abs(romance) + abs(friendship)), {
                 'id': str(other_id), 'name': other_name, 'same_household': same_hh,
                 'friendship': friendship, 'romance': romance, 'bits': bits, 'reverse_bits': rev_bits,
             }))

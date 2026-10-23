@@ -233,6 +233,9 @@ _NOISY_REL_BIT_SUBSTRINGS = (
     'relbit_socialcontext_', 'shortterm_recentnegativesocial',
     'pettopet_relationshipbit_neutral', 'simtopet_relationshipbit_02_acquaintance',
     'relationshipbit_simtosim', 'friendship-acquaintances', 'romanticcombo_acquaintances',
+    'relationshipbit_compatibility_', 'relbit_attraction_', 'attractiveness_visual_',
+    'attractiveness_noticed_', 'relationship_archetype_hint_', '_tracker',
+    'healednegativesentiment', 'memories_memorytype_',
 )
 
 
@@ -244,14 +247,15 @@ _NOISY_TRAIT_SUBSTRINGS = (
     'attractedto', 'woohoointerests', 'hasdefaults', 'hasgeneratedtraits',
     'nudity_core', 'no_getfamous', 'not_predisposed', 'trait_adult', 'trait_teen',
     'trait_elder', 'trait_youngadult', 'genderfemale', 'gendermale', 'tailstyle',
-    'pet_age_', 'discipline_', 'disciplinedout_', 'trait_hidden_',
+    'pet_age_', 'discipline_', 'disciplinedout_', 'trait_hidden_', '_hidden',
     'relexpectations_', 'practicemakesperfect', 'noopinion_', 'civicpolicy_',
     'attraction_haircolor', 'attraction_outfitcolor',
 )
 
 
-def _filter_bits(bits: list[str] | None) -> list[str]:
-    return [b for b in (bits or []) if not any(x in b.lower() for x in _NOISY_REL_BIT_SUBSTRINGS)]
+def _filter_bits(bits: list[str] | None, friendship: float = 0.0) -> list[str]:
+    out = [b for b in (bits or []) if not any(x in b.lower() for x in _NOISY_REL_BIT_SUBSTRINGS)]
+    return [b for b in out if b != 'bit_NoLongerFriends'] if friendship >= 35.0 else out
 
 
 def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
@@ -289,7 +293,8 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     for conn in sim.get('social_connections') or []:
         if not isinstance(conn, dict) or str(conn.get('id') or '') == partner_id:
             continue
-        fb, rb = _filter_bits(conn.get('bits')), _filter_bits(conn.get('reverse_bits'))
+        f_score = float(conn.get('friendship') or 0.0)
+        fb, rb = _filter_bits(conn.get('bits'), f_score), _filter_bits(conn.get('reverse_bits'), f_score)
         if fb or rb or abs(float(conn.get('romance') or 0.0)) >= 20.0 or abs(float(conn.get('friendship') or 0.0)) >= 35.0:
             connections.append({k: v for k, v in {
                 'name': conn.get('name'),
@@ -425,8 +430,8 @@ def build_scene(event: dict, language: str = 'English', pair_memory: list[dict] 
             'same_household': same_hh,
             'friendship': raw_rel.get('friendship'),
             'romance': raw_rel.get('romance'),
-            'bits': _filter_bits(raw_rel.get('bits')),
-            'reverse_bits': _filter_bits(raw_rel.get('reverse_bits')),
+            'bits': _filter_bits(raw_rel.get('bits'), float(raw_rel.get('friendship') or 0.0)),
+            'reverse_bits': _filter_bits(raw_rel.get('reverse_bits'), float(raw_rel.get('friendship') or 0.0)),
         }
     if event.get('player_message'):
         scene['player_message'] = event['player_message']
