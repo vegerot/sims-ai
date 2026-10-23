@@ -293,7 +293,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
             'recipe_label': resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe'),
         }.items() if v}
         for act in (sim.get('activities') or [])
-        if act.get('id') not in ('dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
+        if act.get('id') not in ('carrying', 'dog_Stand', 'cat_Stand', 'dog_Sit', 'cat_Sit')
     ]
     connections = []
     for conn in sim.get('social_connections') or []:
