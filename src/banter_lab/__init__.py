@@ -38,6 +38,7 @@ _enabled = True
 _original_voice_actors = globals().get('_original_voice_actors', {})
 _muted_until = {}
 _audio_until = 0.0
+_last_social = None
 _event_count = 0
 _pending = None
 _alarm = None
@@ -489,6 +490,7 @@ def _submit(event, *sims):
 
 
 def _observe(interaction, outcome_result):
+    global _last_social
     if not _enabled:
         return
     interaction_name = type(interaction).__name__
@@ -500,7 +502,12 @@ def _observe(interaction, outcome_result):
     interaction_stbl = _string_hash(getattr(interaction, 'display_name', None), actor, target)
     if not interaction_stbl:
         return
+    pair = frozenset((int(actor.sim_info.sim_id), int(target.sim_info.sim_id)))
+    now = time.monotonic()
+    if _last_social is not None and _last_social[0] == pair and _last_social[1] == interaction_name and now - _last_social[2] < 45.0:
+        return
     if not _busy(interaction, actor, target):
+        _last_social = (pair, interaction_name, now)
         _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result), actor, target)
 
 
@@ -751,6 +758,7 @@ def stop(_connection=None):
     _enabled = False
     _pending = None
     _audio_until = 0.0
+_last_social = None
     _restore_mutes(force=True)
     if _connection is not None:
         sims4.commands.CheatOutput(_connection)('Banter Lab stopped and Simlish voices restored.')
