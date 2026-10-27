@@ -1,0 +1,45 @@
+{
+  "experiment": "22-loudness-normalization-and-outdoor-carry-context",
+  "harness": "offline_companion_with_real_openrouter_sapi5_and_waveform_analysis",
+  "mixed_human_pet_loudness": {
+    "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: It moved first. I defended the carpet.)",
+    "voices": [
+      "sage",
+      "Microsoft Zira Desktop"
+    ],
+    "speaker1_human_neural": {
+      "dur_s": 3.14,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -19.3
+    },
+    "speaker2_pet_sapi5": {
+      "dur_s": 4.44,
+      "peak_dbfs": -3.3,
+      "rms_dbfs": -21.2
+    },
+    "rms_delta_db": 1.9,
+    "before_fix_rms_delta_db": 9.3
+  },
+  "pet_inner_thought": {
+    "text": "meimei: Whine! (Translation: I need cuddles, play, and fewer terrifying doorbells.)",
+    "voice": "Microsoft Zira Desktop",
+    "sapi5_ttlt_s": 0.032,
+    "audio_stats": {
+      "dur_s": 4.62,
+      "peak_dbfs": -2.3,
+      "rms_dbfs": -19.7
+    }
+  },
+  "outdoor_weather_carry_pregnancy": {
+    "weather": "WINTER, Snow Heavy Freezing",
+    "actor_outdoors": true,
+    "actor_pregnant": "with yuvi ronen",
+    "actor_activities": [
+      {
+        "id": "carrying",
+        "target_label": "Hot Cocoa Mug"
+      }
+    ],
+    "text": "liatt chonen: Seductive dance? I brought cocoa and questionable karaoke confidence.\nyuvi ronen: Absolutely. My gaming reflexes cannot prepare me for hips."
+  }
+}

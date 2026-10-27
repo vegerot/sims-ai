@@ -55,6 +55,7 @@ _PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'simToPet_Socials_Converse', 'petSocial_DogToDog_SocialGroup', 'petSocial_PetToPet_SocialGroup')
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
+_SEASON_NAMES = {0: 'SUMMER', 1: 'FALL', 2: 'WINTER', 3: 'SPRING'}
 _OUTFIT_NAMES = {
     1: 'FORMAL', 2: 'ATHLETIC', 3: 'SLEEP', 4: 'PARTY', 5: 'BATHING',
     6: 'CAREER', 7: 'SITUATION', 8: 'SPECIAL', 9: 'SWIMWEAR', 10: 'HOTWEATHER', 11: 'COLDWEATHER',
@@ -247,8 +248,21 @@ def _crafted_details(obj):
     return {k: v for k, v in out.items() if v}
 
 
+def _activity_entry(act_id, stbl, target_obj):
+    is_sim_target = target_obj is not None and getattr(target_obj, 'is_sim', False)
+    entry = {
+        'id': act_id, 'stbl': stbl,
+        'target': _sim_name(target_obj) if is_sim_target else (type(target_obj).__name__ if target_obj is not None else None),
+        'target_stbl': None if is_sim_target else (_string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None),
+    }
+    if target_obj is not None:
+        entry.update(_crafted_details(target_obj))
+    return entry
+
+
 def _sim_activities(sim):
     activities = []
+    seen_targets = set()
     for si in (getattr(sim, 'si_state', None) or ()):
         if getattr(si, 'is_social', False) or type(si).__name__ in _IDLE_POSTURES:
             continue
@@ -256,16 +270,15 @@ def _sim_activities(sim):
         stbl = _string_hash(getattr(si, 'display_name', None), sim, target_obj)
         if not stbl and target_obj is None:
             continue
-        is_sim_target = target_obj is not None and getattr(target_obj, 'is_sim', False)
-        entry = {
-            'id': type(si).__name__, 'stbl': stbl,
-            'target': _sim_name(target_obj) if is_sim_target else (type(target_obj).__name__ if target_obj is not None else None),
-            'target_stbl': None if is_sim_target else (_string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None),
-        }
         if target_obj is not None:
-            entry.update(_crafted_details(target_obj))
-        activities.append(entry)
-    return activities[:4]
+            seen_targets.add(id(target_obj))
+        activities.append(_activity_entry(type(si).__name__, stbl, target_obj))
+    for aspect in (getattr(getattr(sim, 'posture_state', None), 'carry_aspects', None) or ()):
+        carried = getattr(aspect, 'target', None) if aspect is not None else None
+        if carried is not None and id(carried) not in seen_targets:
+            seen_targets.add(id(carried))
+            activities.append(_activity_entry('carrying', None, carried))
+    return activities[:5]
 
 
 def _sim_situations(sim, info):
@@ -403,6 +416,11 @@ def _sim_snapshot(sim):
     outfit_name = getattr(outfit_cat, 'name', None) or _OUTFIT_NAMES.get(outfit_cat)
     if outfit_name == 'EVERYDAY' or species_name != 'HUMAN':
         outfit_name = None
+    pt = getattr(info, 'pregnancy_tracker', None)
+    pregnant = None
+    if pt is not None and getattr(pt, 'is_pregnant', False):
+        p_partner = pt.get_partner() if hasattr(pt, 'get_partner') else None
+        pregnant = f'with {_sim_name(p_partner)}' if p_partner is not None else True
     return {
         'id': str(info.sim_id),
         'name': _sim_name(info),
@@ -412,6 +430,8 @@ def _sim_snapshot(sim):
         'breed': str(breed_name) if breed_name else None,
         'breed_stbl': _string_hash(getattr(info, 'breed_name_key', None)),
         'outfit': outfit_name,
+        'pregnant': pregnant,
+        'is_outside': bool(getattr(sim, 'is_outside', False)),
         'traits': [trait.__name__ for trait in traits],
         'trait_stbls': [s for s in (_string_hash(getattr(t, 'display_name', None), info) for t in traits) if s],
         'extra_traits': [
@@ -430,8 +450,18 @@ def _sim_snapshot(sim):
     }
 
 
-def _venue_snapshot():
+def _venue_snapshot(include_weather=False):
     zone = services.current_zone()
+    weather = None
+    if include_weather:
+        ss = services.season_service() if hasattr(services, 'season_service') else None
+        ws = services.weather_service() if hasattr(services, 'weather_service') else None
+        s_raw = getattr(ss, 'season', None) if ss is not None else None
+        s_name = getattr(s_raw, 'name', None) or _SEASON_NAMES.get(s_raw)
+        w_ev = getattr(ws, '_current_event', None) if ws is not None else None
+        w_name = getattr(w_ev, '__name__', None) if w_ev is not None else None
+        if s_name or w_name:
+            weather = f'{s_name}, {w_name}' if (s_name and w_name) else (s_name or w_name)
     venue_service = getattr(zone, 'venue_service', None) if zone is not None else None
     active_venue = getattr(venue_service, 'active_venue', None) if venue_service is not None else None
     lot = getattr(zone, 'lot', None) if zone is not None else None
@@ -448,6 +478,7 @@ def _venue_snapshot():
         'id': getattr(active_venue, '__name__', type(active_venue).__name__) if active_venue is not None else None,
         'stbl': _string_hash(getattr(active_venue, 'display_name', None)) if active_venue is not None else None,
         'lot_name': (lot.get_lot_name() or None) if lot is not None and hasattr(lot, 'get_lot_name') else None,
+        'weather': weather,
         'lot_traits': lot_traits[:6],
         'business': {
             'type': getattr(b_type, 'name', str(b_type)),
@@ -518,14 +549,15 @@ def _social_participants(interaction):
 def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome, player_message=None, bystander=None):
     global _event_count
     _event_count += 1
-    venue = _venue_snapshot()
+    any_out = any(getattr(s, 'is_outside', False) for s in (actor, target, bystander) if s is not None)
+    venue = _venue_snapshot(include_weather=any_out)
     event = {
         'type': event_type, 'outcome': outcome,
         'event_id': f'{id_prefix}{int(time.time() * 1000)}-{_event_count}',
         'observed_at': time.time(),
         'interaction': interaction_name, 'interaction_stbl': interaction_stbl,
         'venue': venue['id'], 'venue_stbl': venue['stbl'],
-        'lot_name': venue['lot_name'], 'lot_traits': venue['lot_traits'], 'business': venue['business'],
+        'lot_name': venue['lot_name'], 'weather': venue['weather'], 'lot_traits': venue['lot_traits'], 'business': venue['business'],
         'actor': _sim_snapshot(actor),
         'target': _sim_snapshot(target) if target is not None else None,
     }
@@ -593,6 +625,10 @@ class _ReplyPoller:
             with open(_reply_path, encoding='utf-8-sig') as stream:
                 reply = json.load(stream)
             if reply.get('event_id') != _pending['event_id']:
+                try:
+                    os.remove(_reply_path)
+                except OSError:
+                    pass
                 return
             try:
                 os.remove(_reply_path)
@@ -787,7 +823,7 @@ def _install_pie_menu_interaction():
     if _pie_thoughts_cls is None:
         _pie_thoughts_cls = _make_pie_cls(
             base_cls, affordance_mgr, 0xBA47E21AB0000003, 28, False,
-            lambda _actor, _target, fname: f"Hear {fname}'s Thoughts (English)",
+            lambda _actor, target, fname: f"{'Hear' if _is_human(getattr(target, 'sim_info', target)) else 'Translate'} {fname}'s Thoughts (English)",
             _on_pie_thoughts)
     count = 0
     seen_types = set()

@@ -7,10 +7,12 @@ speech with openai/gpt-audio-mini, and plays it when the game logs `displayed`.
 """
 
 import argparse
+import array
 import base64
 import ctypes
 import http.client
 import json
+import math
 import msvcrt
 import os
 import random
@@ -347,8 +349,6 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     ]
     raw_acts = []
     for act in (sim.get('activities') or []):
-        if act.get('id') == 'carrying':
-            continue
         lbl = resolve_stbl(act.get('stbl'), sim, partner)
         tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or (None if act.get('target') == 'object_sim' else act.get('target'))
         rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
@@ -362,7 +362,14 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
                 'masterwork': True if act.get('masterwork') else None,
             }.items() if v})
     labelled_targets = {a.get('target_label') for a in raw_acts if a.get('label') and a.get('target_label')}
-    activities = [a for a in raw_acts if a.get('label') or a.get('target_label') not in labelled_targets]
+    activities = []
+    seen_unlabelled = set()
+    for a in raw_acts:
+        if a.get('label'):
+            activities.append(a)
+        elif a.get('target_label') not in labelled_targets and a.get('target_label') not in seen_unlabelled:
+            seen_unlabelled.add(a.get('target_label'))
+            activities.append(a)
     connections = []
     for conn in sim.get('social_connections') or []:
         if not isinstance(conn, dict) or str(conn.get('id') or '') == partner_id:
@@ -399,6 +406,8 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         'species': species,
         'breed': resolve_stbl(sim.get('breed_stbl'), sim, partner) or sim.get('breed'),
         'outfit': sim.get('outfit') if species == 'HUMAN' else None,
+        'pregnant': sim.get('pregnant'),
+        'outdoors': True if sim.get('is_outside') else None,
         'mood': _clean_mood(mood),
         'household_funds': sim.get('household_funds'),
         'trait_labels': [l for l in (resolve_stbl(s, sim, partner) for s in sim.get('trait_stbls', [])) if l] or sim.get('traits'),
@@ -530,6 +539,7 @@ def build_scene(
         'venue': event.get('venue'),
         'venue_label': venue_label,
         'lot_name': event.get('lot_name'),
+        'weather': re.sub(r'(?i)\bweather_', '', str(event.get('weather') or '')).replace('_', ' ') or None,
         'lot_traits': lot_traits or None,
         'business': event.get('business'),
         'actor': _clean_sim_for_prompt(actor, target),
@@ -727,6 +737,37 @@ def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str
     }
 
 
+def _normalize_and_trim_pcm(pcm: bytes, sr: int = 24000) -> bytes:
+    if len(pcm) < 4:
+        return pcm
+    samples = array.array('h')
+    samples.frombytes(pcm[:len(pcm) - (len(pcm) % 2)])
+    n = len(samples)
+    win = sr // 50
+    active_wins = []
+    speech_sq = 0.0
+    speech_n = 0
+    for i in range(0, n, win):
+        seg = samples[i:i + win]
+        if seg and max(abs(x) for x in seg) >= 180:
+            active_wins.append(i)
+            speech_sq += sum(x * x for x in seg)
+            speech_n += len(seg)
+    if not active_wins:
+        return pcm
+    trimmed = samples[max(0, active_wins[0] - int(sr * 0.025)):min(n, active_wins[-1] + win + int(sr * 0.055))]
+    target_rms = 32768.0 * (10.0 ** (-18.5 / 20.0))
+    gain = min(max(target_rms / max(1.0, math.sqrt(speech_sq / max(1, speech_n))), 0.35), 5.6)
+    peak = max(abs(x) for x in trimmed)
+    ceiling = 29200.0
+    if peak * gain > ceiling:
+        gain = min(gain, (ceiling * 1.35) / peak)
+        out = array.array('h', (int(ceiling * math.tanh((x * gain) / ceiling)) for x in trimmed))
+    else:
+        out = array.array('h', (int(x * gain) for x in trimmed))
+    return out.tobytes()
+
+
 def synthesize_dialogue_openrouter(
     text: str, actor: dict, target: dict | None, wav_path: Path, bystander: dict | None = None, single_speaker: bool = False
 ) -> dict:
@@ -758,7 +799,9 @@ def synthesize_dialogue_openrouter(
                 line_results.append({'voice': voice, 'pcm': b'', 'cost_usd': 0.0, 'error': str(exc)})
 
     sample_rate = 24000
-    combined_pcm = (b'\x00\x00' * int(sample_rate * 0.18)).join(r['pcm'] for r in line_results if r['pcm'])
+    combined_pcm = (b'\x00\x00' * int(sample_rate * 0.15)).join(
+        _normalize_and_trim_pcm(r['pcm'], sample_rate) for r in line_results if r['pcm']
+    )
     if combined_pcm:
         wav_path.parent.mkdir(parents=True, exist_ok=True)
         with wave.open(str(wav_path), 'wb') as wf:
@@ -960,21 +1003,32 @@ def main():
                 if not _is_pid_running(args.parent_pid):
                     print('The game exited; companion exiting.', flush=True)
                     return
-            offset = incoming.tell()
-            line = incoming.readline()
-            if not line or not line.endswith(b'\n'):
-                incoming.seek(offset)
+            batch = []
+            while True:
+                offset = incoming.tell()
+                line = incoming.readline()
+                if not line or not line.endswith(b'\n'):
+                    incoming.seek(offset)
+                    break
+                batch.append(json.loads(line))
+            if not batch:
                 time.sleep(0.15)
                 continue
-            event = json.loads(line)
-            if event.get('type') == 'displayed':
-                audio_path = (event.get('tts') or {}).get('audio_file')
-                if audio_path and float(event.get('displayed_at') or 0) >= started_at - 5.0:
-                    winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+            for ev_item in batch:
+                if ev_item.get('type') == 'displayed':
+                    audio_path = (ev_item.get('tts') or {}).get('audio_file')
+                    if audio_path and float(ev_item.get('displayed_at') or 0) >= started_at - 5.0:
+                        winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+            candidates = [
+                ev_item for ev_item in batch
+                if ev_item.get('type') in ('social', 'player_chat', 'player_ask_self', 'inner_thought')
+                and float(ev_item.get('observed_at') or 0) >= started_at - 15.0
+            ]
+            if not candidates:
                 continue
-            if (event.get('type') not in ('social', 'player_chat', 'player_ask_self', 'inner_thought')
-                    or float(event.get('observed_at') or 0) < started_at - 15.0):
-                continue
+            # Prefer the latest player-initiated event over queued autonomous background socials.
+            player_cands = [c for c in candidates if c.get('type') != 'social']
+            event = player_cands[-1] if player_cands else candidates[-1]
             try:
                 reply = generate(event, memories, tts_dir=TTS_DIR, cost_tracker=tracker)
                 scene = reply.pop('_scene')

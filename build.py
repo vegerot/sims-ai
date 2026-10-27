@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import py_compile
+import re
 import shutil
 import stat
 import struct
@@ -249,6 +250,12 @@ def main():
         raise SystemExit('The installed game requires Python 3.7 bytecode (.local/python37/python.exe).')
 
     source = root / 'src'
+    init_text = (source / 'banter_lab' / '__init__.py').read_text(encoding='utf-8')
+    proj_m = re.search(r"^_PROJECT_ROOT = r'([^']+)'", init_text, flags=re.M)
+    py_m = re.search(r"^_PYTHON = r'([^']+)'", init_text, flags=re.M)
+    # Invariant: embedded paths must resolve to this checkout and a real Python 3.15 binary.
+    assert proj_m and Path(proj_m.group(1)).resolve() == root.resolve(), f'_PROJECT_ROOT mismatch: {proj_m}'
+    assert py_m and Path(py_m.group(1)).is_file(), f'_PYTHON missing on disk: {py_m}'
     output = root / 'dist' / 'BanterLab.ts4script'
     ui_pkg_output = root / 'dist' / 'BanterLabUI.package'
     output.parent.mkdir(exist_ok=True)
