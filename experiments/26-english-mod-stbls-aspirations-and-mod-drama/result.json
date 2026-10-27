@@ -1,0 +1,25 @@
+{
+  "experiment": "26-english-mod-stbls-aspirations-and-mod-drama",
+  "stbl_foreign_overwrites_prevented": 68,
+  "bmd_stoned_drama_reaction": {
+    "drama_trigger": {
+      "id": "Basemental:Cannabis_Smoked_BlueDream_High_Buff"
+    },
+    "chat_s": 3.354,
+    "tts_s": 2.208,
+    "voice": "sage",
+    "duration_s": 4.12,
+    "text": "Kenya Bower: One puff, and my landlord’s footsteps have surround sound."
+  },
+  "ww_post_hookup_sim_text": {
+    "drama_trigger": {
+      "id": "TURBODRIVER:WickedWhims_Buff_SexSatisfaction_GenericSexPositive1",
+      "name": "Satisfying Encounter"
+    },
+    "chat_s": 1.654,
+    "tts_s": 1.86,
+    "voice": "fable",
+    "duration_s": 3.98,
+    "text": "yuvi ronen: That was satisfying; now let’s dance like nobody’s reviewing us."
+  }
+}

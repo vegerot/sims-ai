@@ -161,12 +161,12 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
     pos = index_offset
     flags = struct.unpack_from('<I', data, pos)[0]
     pos += 4
-    const_type = None
+    const_type = struct.unpack_from('<I', data, pos)[0] if (flags & 1) else None
     if flags & 1:
-        const_type = struct.unpack_from('<I', data, pos)[0]
         pos += 4
     if flags & 2:
         pos += 4
+    const_inst_hi = struct.unpack_from('<I', data, pos)[0] if (flags & 4) else None
     if flags & 4:
         pos += 4
     if flags & 8:
@@ -178,6 +178,7 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
             pos += 4
         if not (flags & 2):
             pos += 4
+        inst_hi = const_inst_hi if (flags & 4) else struct.unpack_from('<I', data, pos)[0]
         if not (flags & 4):
             pos += 4
         if not (flags & 8):
@@ -185,7 +186,8 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
         offset, size_raw, mem_size, comp_type = struct.unpack_from('<IIIH', data, pos)
         pos += 16
         size = size_raw & 0x7FFFFFFF
-        if rtype != 0x220557DA:
+        # Resource 0x220557DA is STBL; high byte of Instance64 is locale (0x00 = ENG_US).
+        if rtype != 0x220557DA or (inst_hi >> 24) != 0:
             continue
         chunk = data[offset:offset + size]
         if comp_type and size != mem_size:
@@ -225,16 +227,10 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
         return _stbl_cache
     meta_path = STBL_CACHE_PATH.with_suffix('.meta.json')
     cur_mtime = _stbl_source_mtime(game_dir)
-    if STBL_CACHE_PATH.exists():
-        cached_mtime = json.loads(meta_path.read_text(encoding='utf-8')).get('max_mtime') if meta_path.exists() else cur_mtime
-        if cached_mtime == cur_mtime:
-            if not meta_path.exists():
-                meta_path.write_text(json.dumps({'max_mtime': cur_mtime}), encoding='utf-8')
-            _stbl_cache = {
-                int(k): v
-                for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()
-            }
-            return _stbl_cache
+    meta = json.loads(meta_path.read_text(encoding='utf-8')) if meta_path.exists() else {}
+    if STBL_CACHE_PATH.exists() and meta.get('v') == 2 and meta.get('max_mtime') == cur_mtime:
+        _stbl_cache = {int(k): v for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()}
+        return _stbl_cache
     strings: dict[int, str] = {}
     if game_dir.exists():
         for pkg in sorted(game_dir.rglob('Strings_ENG_US.package')):
@@ -248,7 +244,7 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     if strings:
         STBL_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
         STBL_CACHE_PATH.write_text(json.dumps(strings, ensure_ascii=False), encoding='utf-8')
-        meta_path.write_text(json.dumps({'max_mtime': cur_mtime}), encoding='utf-8')
+        meta_path.write_text(json.dumps({'v': 2, 'max_mtime': cur_mtime}), encoding='utf-8')
     _stbl_cache = strings
     return _stbl_cache
 
@@ -411,7 +407,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         'household_funds': sim.get('household_funds'),
         'trait_labels': [l for l in (resolve_stbl(s, sim, partner) for s in sim.get('trait_stbls', [])) if l] or sim.get('traits'),
         'notable_traits': [t for t in (sim.get('extra_traits') or []) if not any(k in t.lower() for k in _NOISY_TRAIT_SUBSTRINGS)][:18],
-        'aspiration': sim.get('aspiration'),
+        'aspiration': resolve_stbl(sim.get('aspiration_stbl'), sim, partner) or sim.get('aspiration'),
         'careers': careers,
         'top_skills': skills,
         'active_buffs': buffs,

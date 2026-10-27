@@ -46,9 +46,7 @@ _last_partner_id = globals().get('_last_partner_id')
 _event_count = globals().get('_event_count', 0)
 _pending = None
 _alarm = None
-_pie_interaction_cls = None
-_pie_ask_self_cls = None
-_pie_thoughts_cls = None
+_pie_classes = ()
 _companion_proc = globals().get('_companion_proc')
 _last_companion_spawn = 0.0
 _seen_errors = set()
@@ -66,14 +64,15 @@ _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 _SEASON_NAMES = {0: 'SUMMER', 1: 'FALL', 2: 'WINTER', 3: 'SPRING'}
 _INTERPERSONAL_DRAMA_KEYWORDS = (
-    'datedebrief', 'woohoo', 'hadsex', 'afterglow', 'breakup', 'broken_up',
-    'divorc', 'cheated', 'unfaithful', 'engaged', 'married', 'firstkiss',
+    'datedebrief', 'woohoo', 'hadsex', 'afterglow', 'sexsatisfaction_', 'hadsatisfyingsex',
+    'hadunsatisfyingsex', 'caughtsexcheating', 'breakup', 'broken_up', 'divorc',
+    'cheated', 'unfaithful', 'engaged', 'married', 'firstkiss',
 )
-_DRAMA_BUFF_KEYWORDS = (
-    'datedebrief', 'woohoo', 'hadsex', 'afterglow', 'fire', 'bladderfailure', 'electrocut',
-    'pregnancy_trimester', 'breakup', 'broken_up', 'divorc', 'cheated', 'unfaithful',
-    'engaged', 'married', 'firstkiss', 'promotion', 'demot', 'fired', 'mortified',
-    'hysterical', 'enraged', 'karaokemachine_endbuff', 'food_cooking_0', 'food_experimental_3', 'burnout',
+_DRAMA_BUFF_KEYWORDS = _INTERPERSONAL_DRAMA_KEYWORDS + (
+    'fire', 'bladderfailure', 'electrocut', 'pregnancy_trimester', 'pregnancy_incoming',
+    'promotion', 'demot', 'fired', 'mortified', 'hysterical', 'enraged',
+    'karaokemachine_endbuff', 'food_cooking_0', 'food_experimental_3', 'burnout',
+    'cannabis_smoked_', 'highon_weed_', 'alcohol_wasted_', 'hangoverbuff',
 )
 _OUTFIT_NAMES = {
     1: 'FORMAL', 2: 'ATHLETIC', 3: 'SLEEP', 4: 'PARTY', 5: 'BATHING',
@@ -479,6 +478,7 @@ def _sim_snapshot(sim_or_info):
             if getattr(eq, '__name__', None) and eq.__name__ not in personality_names
         ],
         'aspiration': getattr(asp, '__name__', None) if asp is not None else None,
+        'aspiration_stbl': _string_hash(getattr(asp, 'display_text', None), info) if asp is not None else None,
         'household_funds': int(household.funds.money) if household is not None and getattr(household, 'funds', None) is not None else None,
         'careers': _sim_careers(info),
         'skills': _sim_skills(info),
@@ -654,8 +654,6 @@ def _observe(interaction, outcome_result):
     now = time.monotonic()
     if _last_social is not None and _last_social[0] == pair and _last_social[1] == interaction_name and now - _last_social[2] < 45.0:
         return
-    if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
-        _pending = None
     if _pending is not None:
         _skip_counts['pending_in_flight'] = _skip_counts.get('pending_in_flight', 0) + 1
         return
@@ -665,7 +663,7 @@ def _observe(interaction, outcome_result):
     _last_social = (pair, interaction_name, now)
     hh_id = services.active_household_id()
     partner_sim = target if actor.sim_info.household_id == hh_id else actor
-    if _is_human(partner_sim.sim_info) and partner_sim.sim_info.household_id != hh_id:
+    if _is_human(partner_sim.sim_info):
         _last_partner_id = (int(partner_sim.sim_info.sim_id), now)
     _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result, bystander=bystander),
             actor, target, bystander)
@@ -717,10 +715,11 @@ def _check_drama_moment(now):
             if not seeding and now - _last_drama_at >= 90.0 and any(k in bid.lower() for k in _DRAMA_BUFF_KEYWORDS):
                 _last_drama_at = now
                 sender_info = None
-                if _last_partner_id is not None and now - _last_partner_id[1] < 900.0 and any(k in bid.lower() for k in _INTERPERSONAL_DRAMA_KEYWORDS):
+                low_bid = bid.lower()
+                if _last_partner_id is not None and now - _last_partner_id[1] < 900.0 and 'sexsolo' not in low_bid and any(k in low_bid for k in _INTERPERSONAL_DRAMA_KEYWORDS):
                     mgr = services.sim_info_manager()
                     cand = mgr.get(_last_partner_id[0]) if mgr is not None else None
-                    if cand is not None and _is_human(cand) and int(cand.sim_id) != int(info.sim_id):
+                    if cand is not None and _is_human(cand) and int(cand.sim_id) != int(info.sim_id) and (cand.household_id != hh.id or cand.get_sim_instance() is None):
                         sender_info = cand
                 if sender_info is not None:
                     ev = _make_event('sim_text', 'text-', sender_info, sim, 'sim_text_message', None, 'SIM_TEXT')
@@ -740,6 +739,9 @@ class _ReplyPoller:
         global _pending, _audio_until
         try:
             _restore_mutes()
+            if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
+                _pending = None
+                _restore_mutes(force=True)
             _check_drama_moment(time.monotonic())
             if _pending is None or not os.path.exists(_reply_path):
                 return
@@ -854,7 +856,7 @@ def _on_pie_main(actor_sim, target_sim):
                     actor_sim.sim_info)
     elif getattr(target_sim, 'is_sim', False):
         a_info, t_info = actor_sim.sim_info, target_sim.sim_info
-        if _is_human(t_info) and t_info.household_id != a_info.household_id:
+        if _is_human(t_info):
             _last_partner_id = (int(t_info.sim_id), time.monotonic())
         _open_text_dialog(
             a_info, f'{_sim_name(a_info)} → {_sim_name(t_info)}',
@@ -927,27 +929,22 @@ def _make_pie_cls(base_cls, affordance_mgr, guid, priority, self_only, label_fn,
 
 
 def _install_pie_menu_interaction():
-    global _pie_interaction_cls, _pie_ask_self_cls, _pie_thoughts_cls
+    global _pie_classes
     affordance_mgr = services.affordance_manager()
     base_cls = affordance_mgr.get(13142) if affordance_mgr is not None else None
     if base_cls is None:
         return 0
-    if _pie_interaction_cls is None:
-        _pie_interaction_cls = _make_pie_cls(
-            base_cls, affordance_mgr, 0xBA47E21AB0000001, 30, False,
-            lambda actor, target, fname: ('Disable English Banter' if _enabled else 'Enable English Banter')
-            if target is actor else f'Speak to {fname} (English)...',
-            _on_pie_main)
-    if _pie_ask_self_cls is None:
-        _pie_ask_self_cls = _make_pie_cls(
-            base_cls, affordance_mgr, 0xBA47E21AB0000002, 29, True,
-            lambda _actor, _target, fname: f'Ask {fname} a Question (English)...',
-            _on_pie_ask_self)
-    if _pie_thoughts_cls is None:
-        _pie_thoughts_cls = _make_pie_cls(
-            base_cls, affordance_mgr, 0xBA47E21AB0000003, 28, False,
-            lambda _actor, target, fname: f"{'Hear' if _is_human(getattr(target, 'sim_info', target)) else 'Translate'} {fname}'s Thoughts (English)",
-            _on_pie_thoughts)
+    if not _pie_classes:
+        _pie_classes = (
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000001, 30, False,
+                          lambda actor, target, fname: ('Disable English Banter' if _enabled else 'Enable English Banter')
+                          if target is actor else f'Speak to {fname} (English)...', _on_pie_main),
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000002, 29, True,
+                          lambda _actor, _target, fname: f'Ask {fname} a Question (English)...', _on_pie_ask_self),
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000003, 28, False,
+                          lambda _actor, target, fname: f"{'Hear' if _is_human(getattr(target, 'sim_info', target)) else 'Translate'} {fname}'s Thoughts (English)", _on_pie_thoughts),
+        )
+    guids = {c.guid64 for c in _pie_classes}
     count = 0
     seen_types = set()
     for info in services.sim_info_manager().values():
@@ -959,11 +956,7 @@ def _install_pie_menu_interaction():
         cls = type(sim)
         if cls not in seen_types and hasattr(cls, '_super_affordances'):
             seen_types.add(cls)
-            cleaned = tuple(
-                sa for sa in cls._super_affordances
-                if getattr(sa, 'guid64', None) not in (0xBA47E21AB0000001, 0xBA47E21AB0000002, 0xBA47E21AB0000003)
-            )
-            cls._super_affordances = cleaned + (_pie_interaction_cls, _pie_ask_self_cls, _pie_thoughts_cls)
+            cls._super_affordances = tuple(sa for sa in cls._super_affordances if getattr(sa, 'guid64', None) not in guids) + _pie_classes
         count += 1
     return count
 
