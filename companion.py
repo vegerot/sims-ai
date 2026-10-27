@@ -9,6 +9,7 @@ speech with openai/gpt-audio-mini, and plays it when the game logs `displayed`.
 import argparse
 import array
 import base64
+import contextlib
 import ctypes
 import http.client
 import json
@@ -54,10 +55,8 @@ BYSTANDER_PET_CHANCE = 0.75
 def _openrouter_conn(reset: bool = False) -> http.client.HTTPSConnection:
     conn = getattr(_tls_local, 'conn', None)
     if reset and conn is not None:
-        try:
+        with contextlib.suppress(OSError):
             conn.close()
-        except OSError:
-            pass
         conn = None
     if conn is None:
         conn = http.client.HTTPSConnection('openrouter.ai', timeout=25)

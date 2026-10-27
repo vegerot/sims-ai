@@ -5,6 +5,7 @@ Model calls and OpenRouter gpt-audio-mini speech synthesis run in the external P
 which this module starts automatically with `--parent-pid`.
 """
 
+import contextlib
 import functools
 import importlib
 import json
@@ -574,11 +575,8 @@ def _submit(event, *sims):
     global _pending
     _ensure_companion_running()
     _ensure_poller_alarm()
-    if os.path.exists(_reply_path):
-        try:
-            os.remove(_reply_path)
-        except OSError:
-            pass
+    with contextlib.suppress(OSError):
+        os.remove(_reply_path)
     _pending = dict(event, zone_id=services.current_zone_id())
     _mute_replaced([sim.sim_info for sim in sims if sim is not None], _PENDING_TIMEOUT_SECONDS)
     _record(event)
@@ -625,15 +623,11 @@ class _ReplyPoller:
             with open(_reply_path, encoding='utf-8-sig') as stream:
                 reply = json.load(stream)
             if reply.get('event_id') != _pending['event_id']:
-                try:
+                with contextlib.suppress(OSError):
                     os.remove(_reply_path)
-                except OSError:
-                    pass
                 return
-            try:
+            with contextlib.suppress(OSError):
                 os.remove(_reply_path)
-            except OSError:
-                pass
             event = _pending
             _pending = None
             sim_ids = [int(event['actor']['id'])] + ([int(event['target']['id'])] if event.get('target') else [])
