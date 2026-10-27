@@ -82,6 +82,14 @@ _Avoid_: Mind read, debug inspect, narration
 An unprompted one-Sim spoken reaction triggered when a major romance, career, cooking, or disaster moodlet lands on an active-household Sim, such as a terrible date, breakup, promotion, or burned meal.
 _Avoid_: Ambient chatter, buff alert, system toast
 
+**Sim text**:
+An unprompted one-line spoken text message sent by a recent social partner right after a major romantic or social milestone moodlet (such as a terrible date, breakup, or WooHoo) lands on an active-household Sim.
+_Avoid_: Phone call, NPC spam
+
+**Renovation reaction**:
+An unprompted one-Sim spoken reaction triggered when the player returns from Build/Buy Mode after materially changing the lot's value, commenting on the new decor, layout, or remaining budget.
+_Avoid_: Build log, purchase receipt, ambient chatter
+
 **Contextual dialogue**:
 Spoken dialogue attributed to Sims that reflects their traits, moodlets, activities, relationship, and current interaction.
 _Avoid_: Narration, world action, commentary

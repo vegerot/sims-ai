@@ -287,14 +287,14 @@ def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict 
 
 _NOISY_REL_BIT_SUBSTRINGS = (
     'has_met', 'specialbits_greeted', 'suppresschangebehavior',
-    'neutralto_target', 'neutralwith_target', 'nudity_reactioncooldown',
+    'neutralto_target', 'neutralwith_target', 'reactioncooldown',
     'recentlyhadsocialinteraction', 'persistent_boredom_reset',
     'infant_checkon', 'socialcontext_retail_uninterested',
     'relbit_socialcontext_', 'shortterm_recentnegativesocial',
     'pettopet_relationshipbit_neutral', 'simtopet_relationshipbit_02_acquaintance',
     'relationshipbit_simtosim', 'friendship-acquaintances', 'romanticcombo_acquaintances',
-    'relationshipbit_compatibility_', 'relbit_attraction_', 'attractiveness_visual_',
-    'attractiveness_noticed_', 'relationship_archetype_hint_', '_tracker',
+    'compatibility_good', 'compatibility_bad', 'relbit_attraction_4_', 'attractiveness_visual_',
+    'attractiveness_noticed_', 'relationship_archetype_hint_',
     'healednegativesentiment', 'memories_memorytype_', 'hasbeenfriends',
     'romantic_firstkiss', 'shorttermbits_restuarants_dining',
 )
@@ -308,7 +308,8 @@ _NOISY_TRAIT_SUBSTRINGS = (
     'trait_elder', 'trait_youngadult', 'genderfemale', 'gendermale', 'tailstyle',
     'pet_age_', 'discipline_', 'disciplinedout_', 'trait_hidden_', '_hidden',
     'relexpectations_', 'practicemakesperfect', 'noopinion_', 'civicpolicy_',
-    'trait_attraction_', 'iscustomgender',
+    'attraction_haircolor_', 'attraction_outfitcolor_', 'likes_color_', 'dislikes_color_',
+    'iscustomgender',
 )
 
 
@@ -346,17 +347,18 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     ]
     raw_acts = []
     for act in (sim.get('activities') or []):
-        lbl = resolve_stbl(act.get('stbl'), sim, partner)
+        lbl = 'Ordered at restaurant' if act.get('id') == 'restaurant_order' else resolve_stbl(act.get('stbl'), sim, partner)
         tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target')
         rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
         qlbl = resolve_stbl(act.get('quality_stbl'), sim, partner) or re.sub(r'^Quality_', '', str(act.get('quality') or '')) or None
-        if lbl or tlbl:
+        if lbl or tlbl or rlbl:
             raw_acts.append({k: v for k, v in {
                 'id': act.get('id'), 'label': lbl, 'target_label': tlbl,
                 'recipe_label': rlbl if rlbl != tlbl else None,
                 'cooked_by': act.get('cooked_by'),
                 'quality': 'Spoiled' if act.get('spoiled') else qlbl,
                 'masterwork': True if act.get('masterwork') else None,
+                'comped': True if act.get('comped') else None,
             }.items() if v})
     labelled_targets = {a.get('target_label') for a in raw_acts if a.get('label') and a.get('target_label')}
     activities = []
@@ -456,11 +458,13 @@ class MemoryStore:
 
     def record(self, event: dict, scene: dict, text: str) -> None:
         actor = event.get('actor') or {}
-        target = event.get('target') if isinstance(event.get('target'), dict) else None
+        target = None if event.get('type') == 'inner_thought' else (event.get('target') if isinstance(event.get('target'), dict) else None)
         aname, tname = str(actor.get('name') or '').strip(), (str(target.get('name') or '').strip() if target else '')
         if not aname or not text:
             return
-        lst = self.pairs.setdefault(self.make_key(aname, tname), [])
+        key = self.make_key(aname, tname)
+        lst = self.pairs.pop(key, [])
+        self.pairs[key] = lst
         lst.append({
             'ts': round(time.time(), 1),
             'lot': scene.get('lot_name') or scene.get('venue_label') or scene.get('venue'),
@@ -469,6 +473,8 @@ class MemoryStore:
             'text': text.strip(),
         })
         del lst[:-8]
+        while len(self.pairs) > 120:
+            del self.pairs[next(iter(self.pairs))]
         if self.path is not None:
             _safe_write_json(self.path, {'updated_at': round(time.time(), 1), 'pair_count': len(self.pairs), 'pairs': self.pairs}, indent=2)
 
@@ -522,10 +528,19 @@ def build_scene(
     target = event.get('target') if isinstance(event.get('target'), dict) else None
     bystander = event.get('bystander') if (include_bystander and isinstance(event.get('bystander'), dict)) else None
     event_type = event.get('type', 'social')
-    speaker_count = 1 if target is None or event_type in ('player_ask_self', 'inner_thought') else (3 if bystander is not None else 2)
+    speaker_count = 1 if target is None or event_type in ('player_ask_self', 'inner_thought', 'drama_reaction', 'sim_text') else (3 if bystander is not None else 2)
     interaction_label = resolve_stbl(event.get('interaction_stbl'), actor, target)
     venue_label = resolve_stbl(event.get('venue_stbl'), actor, target)
     lot_traits = [z for z in (event.get('lot_traits') or []) if 'hidden' not in z.lower()]
+    drama_trigger = None
+    if isinstance(event.get('drama_buff'), dict):
+        db = event['drama_buff']
+        drama_trigger = {k: v for k, v in {
+            'id': db.get('id'),
+            'name': resolve_stbl(db.get('name_stbl'), actor, target),
+            'reason': resolve_stbl(db.get('reason_stbl'), actor, target),
+        }.items() if v} or None
+    renov = event.get('renovation_delta')
     scene: dict = {
         'event_type': event_type,
         'speaker_count': speaker_count,
@@ -533,9 +548,14 @@ def build_scene(
         'interaction': event.get('interaction'),
         'interaction_label': interaction_label,
         'outcome': event.get('outcome'),
+        'player_message': event.get('player_message') or None,
+        'drama_trigger': drama_trigger,
+        'renovation_delta': f'{renov:+d}' if isinstance(renov, int) and renov else None,
         'venue': event.get('venue'),
         'venue_label': venue_label,
         'lot_name': event.get('lot_name'),
+        'lot_value': event.get('lot_value'),
+        'lot_rooms': event.get('lot_rooms'),
         'weather': re.sub(r'(?i)\bweather_', '', str(event.get('weather') or '')).replace('_', ' ') or None,
         'lot_traits': lot_traits or None,
         'business': event.get('business'),
@@ -558,15 +578,6 @@ def build_scene(
             'bits': _filter_bits(raw_rel.get('bits'), float(raw_rel.get('friendship') or 0.0)),
             'reverse_bits': _filter_bits(raw_rel.get('reverse_bits'), float(raw_rel.get('friendship') or 0.0)),
         }
-    if event.get('player_message'):
-        scene['player_message'] = event['player_message']
-    if isinstance(event.get('drama_buff'), dict):
-        db = event['drama_buff']
-        scene['drama_trigger'] = {k: v for k, v in {
-            'id': db.get('id'),
-            'name': resolve_stbl(db.get('name_stbl'), actor, target),
-            'reason': resolve_stbl(db.get('reason_stbl'), actor, target),
-        }.items() if v}
     if pair_memory:
         scene['pair_memory'] = pair_memory[-4:]
     if recent_gossip:
@@ -720,18 +731,22 @@ def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str
         '}'
     )
     t0 = time.monotonic()
+    pcm = b''
     with _sapi_lock:
-        if _sapi_proc is None or _sapi_proc.poll() is not None:
-            _sapi_proc = subprocess.Popen(
-                ['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', ps_loop],
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                creationflags=subprocess.CREATE_NO_WINDOW,
-            )
-        assert _sapi_proc.stdin is not None and _sapi_proc.stdout is not None
-        _sapi_proc.stdin.write((json.dumps({'voice': voice, 'text': spoken_text}, ensure_ascii=False) + '\n').encode('utf-8'))
-        _sapi_proc.stdin.flush()
-        nbytes = int(_sapi_proc.stdout.readline().decode('ascii').strip() or '0')
-        pcm = _sapi_proc.stdout.read(nbytes) if nbytes > 0 else b''
+        try:
+            if _sapi_proc is None or _sapi_proc.poll() is not None:
+                _sapi_proc = subprocess.Popen(
+                    ['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', ps_loop],
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                    creationflags=subprocess.CREATE_NO_WINDOW,
+                )
+            assert _sapi_proc.stdin is not None and _sapi_proc.stdout is not None
+            _sapi_proc.stdin.write((json.dumps({'voice': voice, 'text': spoken_text}, ensure_ascii=False) + '\n').encode('utf-8'))
+            _sapi_proc.stdin.flush()
+            nbytes = int(_sapi_proc.stdout.readline().decode('ascii').strip() or '0')
+            pcm = _sapi_proc.stdout.read(nbytes) if nbytes > 0 else b''
+        except (OSError, ValueError):
+            _sapi_proc = None
     if not pcm:
         return _synthesize_single_line_openrouter(spoken_text, fallback_voice, str(sim.get('mood') or 'Fine'))
     return {
@@ -772,8 +787,19 @@ def _normalize_and_trim_pcm(pcm: bytes, sr: int = 24000) -> bytes:
     return out.tobytes()
 
 
+def _clean_spoken_line(line: str) -> str:
+    return re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', (line.split(':', 1)[1] if ':' in line else line), flags=re.IGNORECASE).strip(' "“”')
+
+
+def _synthesize_sim_line(spoken: str, voice: str, sim: dict) -> dict:
+    if str(sim.get('species') or 'HUMAN').upper() != 'HUMAN':
+        return _synthesize_pet_windows_tts(spoken, sim, voice)
+    return _synthesize_single_line_openrouter(spoken, voice, str(sim.get('mood') or 'Fine'), str(sim.get('age') or ''))
+
+
 def synthesize_dialogue_openrouter(
-    text: str, actor: dict, target: dict | None, wav_path: Path, bystander: dict | None = None, single_speaker: bool = False
+    text: str, actor: dict, target: dict | None, wav_path: Path, bystander: dict | None = None,
+    single_speaker: bool = False, pre_first_future=None,
 ) -> dict:
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
     speakers = [actor] if (single_speaker or target is None) else ([actor, target, bystander] if bystander else [actor, target])
@@ -782,19 +808,16 @@ def synthesize_dialogue_openrouter(
         voices.append(select_openrouter_voice(sim, tuple(voices)))
     tasks = []
     for idx, line in enumerate(lines[:len(speakers)]):
-        spoken = re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', (line.split(':', 1)[1] if ':' in line else line), flags=re.IGNORECASE).strip(' "“”')
+        spoken = _clean_spoken_line(line)
         if spoken:
-            tasks.append((spoken, voices[idx], speakers[idx]))
+            tasks.append((idx, spoken, voices[idx], speakers[idx]))
 
     started = time.monotonic()
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
-        futures = []
-        for spoken, voice, sim in tasks:
-            is_pet = str(sim.get('species') or 'HUMAN').upper() != 'HUMAN'
-            if is_pet:
-                futures.append((voice, pool.submit(_synthesize_pet_windows_tts, spoken, sim, voice)))
-            else:
-                futures.append((voice, pool.submit(_synthesize_single_line_openrouter, spoken, voice, str(sim.get('mood') or 'Fine'), str(sim.get('age') or ''))))
+        futures = [
+            (voice, pre_first_future if (idx == 0 and pre_first_future is not None) else pool.submit(_synthesize_sim_line, spoken, voice, sim))
+            for idx, spoken, voice, sim in tasks
+        ]
         line_results = []
         for voice, future in futures:
             try:
@@ -840,7 +863,7 @@ def _normalize_dialogue_lines(raw_text: str, event: dict, speaker_count: int = 2
     event_type = event.get('type', 'social')
     player_msg = (event.get('player_message') or '').strip()
 
-    if target is None or event_type in ('player_ask_self', 'inner_thought'):
+    if target is None or event_type in ('player_ask_self', 'inner_thought', 'drama_reaction', 'sim_text'):
         last = lines[-1] if lines else ''
         return f"{actor_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
     if event_type == 'player_chat' and player_msg:
@@ -864,12 +887,7 @@ def _should_include_bystander(event: dict) -> bool:
     return random.random() < (BYSTANDER_PET_CHANCE if is_pet else BYSTANDER_HUMAN_CHANCE)
 
 
-def generate(
-    event: dict,
-    memory_store: MemoryStore,
-    tts_dir: Path | None = None,
-    cost_tracker: CostTracker | None = None,
-) -> dict:
+def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None) -> dict:
     language = choose_scene_language(event)
     actor_name = str(event['actor'].get('name') or '')
     target = event.get('target')
@@ -888,31 +906,37 @@ def generate(
         'max_tokens': 320,
         'reasoning': {'effort': REASONING_EFFORT},
     }
-    started = time.monotonic()
-    resp = _openrouter_request('POST', '/api/v1/chat/completions', json.dumps(payload).encode('utf-8'), timeout=20)
-    result = json.loads(resp.read().decode('utf-8'))
-    raw_text = result['choices'][0]['message']['content'].strip()
-    if not raw_text:
-        raise ValueError('The model returned no dialogue.')
-    text = _normalize_dialogue_lines(raw_text, event, speaker_count=scene['speaker_count'])
-    usage = result.get('usage', {})
-    out = {
-        'event_id': event['event_id'],
-        'event_type': event.get('type', 'social'),
-        'speaker_count': scene['speaker_count'],
-        'language': language,
-        'text': text,
-        'model': result.get('model', CHAT_MODEL),
-        'finish_reason': result['choices'][0].get('finish_reason'),
-        'elapsed_seconds': round(time.monotonic() - started, 3),
-        'usage': usage,
-    }
-    cost_usd = float(usage.get('cost') or 0.0)
-    if tts_dir is not None:
-        out['tts'] = synthesize_dialogue_openrouter(
-            text, event['actor'], target, tts_dir / f"{event['event_id']}.wav", bystander=bystander,
-            single_speaker=(scene['speaker_count'] == 1))
-        cost_usd += out['tts']['tts_cost_usd']
+    player_spoken = _clean_spoken_line(event.get('player_message') or '') if (tts_dir is not None and event.get('type') == 'player_chat' and target) else ''
+    with contextlib.ExitStack() as stack:
+        pre_fut = None
+        if player_spoken:
+            pre_pool = stack.enter_context(ThreadPoolExecutor(max_workers=1))
+            pre_fut = pre_pool.submit(_synthesize_sim_line, player_spoken, select_openrouter_voice(event['actor']), event['actor'])
+        started = time.monotonic()
+        resp = _openrouter_request('POST', '/api/v1/chat/completions', json.dumps(payload).encode('utf-8'), timeout=20)
+        result = json.loads(resp.read().decode('utf-8'))
+        raw_text = result['choices'][0]['message']['content'].strip()
+        if not raw_text:
+            raise ValueError('The model returned no dialogue.')
+        text = _normalize_dialogue_lines(raw_text, event, speaker_count=scene['speaker_count'])
+        usage = result.get('usage', {})
+        out = {
+            'event_id': event['event_id'],
+            'event_type': event.get('type', 'social'),
+            'speaker_count': scene['speaker_count'],
+            'language': language,
+            'text': text,
+            'model': result.get('model', CHAT_MODEL),
+            'finish_reason': result['choices'][0].get('finish_reason'),
+            'elapsed_seconds': round(time.monotonic() - started, 3),
+            'usage': usage,
+        }
+        cost_usd = float(usage.get('cost') or 0.0)
+        if tts_dir is not None:
+            out['tts'] = synthesize_dialogue_openrouter(
+                text, event['actor'], target, tts_dir / f"{event['event_id']}.wav", bystander=bystander,
+                single_speaker=(scene['speaker_count'] == 1), pre_first_future=pre_fut)
+            cost_usd += out['tts']['tts_cost_usd']
     out['_scene'] = scene
     out['_cost_usd'] = cost_usd
     return out
@@ -934,14 +958,11 @@ def _safe_write_json(target_path: Path, payload: dict, indent: int | None = None
     target_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = target_path.with_name(f'{target_path.stem}.{os.getpid()}.tmp')
     tmp_path.write_text(json.dumps(payload, ensure_ascii=False, indent=indent), encoding='utf-8')
-    for attempt in range(10):
-        try:
-            os.replace(tmp_path, target_path)
-            return
-        except PermissionError:
-            if attempt == 9:
-                raise
-            time.sleep(0.05)
+    try:
+        os.replace(tmp_path, target_path)
+    except PermissionError:
+        time.sleep(0.05)
+        os.replace(tmp_path, target_path)
 
 
 def _acquire_single_instance_lock():
@@ -1025,16 +1046,16 @@ def main():
                         winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
             candidates = [
                 ev_item for ev_item in batch
-                if ev_item.get('type') in ('social', 'player_chat', 'player_ask_self', 'inner_thought')
+                if ev_item.get('type') in ('social', 'player_chat', 'player_ask_self', 'inner_thought', 'drama_reaction', 'sim_text')
                 and float(ev_item.get('observed_at') or 0) >= started_at - 15.0
             ]
             if not candidates:
                 continue
-            # Prefer the latest player-initiated event over queued autonomous background socials.
-            player_cands = [c for c in candidates if c.get('type') != 'social']
+            # Prefer explicit player clicks over autonomous socials or background drama reactions.
+            player_cands = [c for c in candidates if c.get('type') in ('player_chat', 'player_ask_self', 'inner_thought')]
             event = player_cands[-1] if player_cands else candidates[-1]
             try:
-                reply = generate(event, memories, tts_dir=TTS_DIR, cost_tracker=tracker)
+                reply = generate(event, memories, tts_dir=TTS_DIR)
                 scene = reply.pop('_scene')
                 cost_usd = reply.pop('_cost_usd')
                 tracker.session_usd += cost_usd

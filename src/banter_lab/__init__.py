@@ -17,9 +17,11 @@ import traceback
 import zipimport
 
 import alarms
+import build_buy
 import clock
 import services
 import sims4.commands
+import sims4.resources
 from crafting.crafting_tunable import CraftingTuning
 from distributor.ops import SetVoiceActor
 from distributor.shared_messages import IconInfoData
@@ -40,6 +42,7 @@ _original_voice_actors = globals().get('_original_voice_actors', {})
 _muted_until = globals().get('_muted_until', {})
 _audio_until = globals().get('_audio_until', 0.0)
 _last_social = globals().get('_last_social')
+_last_partner_id = globals().get('_last_partner_id')
 _event_count = globals().get('_event_count', 0)
 _pending = None
 _alarm = None
@@ -53,7 +56,8 @@ _skip_counts = globals().get('_skip_counts', {})
 _drama_zone_id = globals().get('_drama_zone_id')
 _seen_drama_buffs = globals().get('_seen_drama_buffs', set())
 _last_drama_check = 0.0
-_last_drama_at = globals().get('_last_drama_at', 0.0)
+_last_drama_at = 0.0
+_bb_prev_value = None
 
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
@@ -61,6 +65,10 @@ _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'si
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 _SEASON_NAMES = {0: 'SUMMER', 1: 'FALL', 2: 'WINTER', 3: 'SPRING'}
+_INTERPERSONAL_DRAMA_KEYWORDS = (
+    'datedebrief', 'woohoo', 'hadsex', 'afterglow', 'breakup', 'broken_up',
+    'divorc', 'cheated', 'unfaithful', 'engaged', 'married', 'firstkiss',
+)
 _DRAMA_BUFF_KEYWORDS = (
     'datedebrief', 'woohoo', 'hadsex', 'afterglow', 'fire', 'bladderfailure', 'electrocut',
     'pregnancy_trimester', 'breakup', 'broken_up', 'divorc', 'cheated', 'unfaithful',
@@ -162,8 +170,8 @@ def _set_voice_actor(info, actor_hash):
 def _mute_replaced(infos, seconds):
     deadline = time.monotonic() + seconds
     for info in infos:
-        # Only mute human Simlish; pets keep their real in-game barks/meows alongside collar TTS.
-        if info is not None and _is_human(info):
+        # Only mute instantiated human Simlish; pets keep barks/meows and off-lot Sims make no audio.
+        if info is not None and _is_human(info) and info.get_sim_instance() is not None:
             _true_voice_actor(info)
             _set_voice_actor(info, _MUTE_VOICE_ACTOR)
             _muted_until[int(info.sim_id)] = deadline
@@ -271,7 +279,7 @@ def _activity_entry(act_id, stbl, target_obj):
     return entry
 
 
-def _sim_activities(sim):
+def _sim_activities(sim, info=None):
     activities = []
     seen_targets = set()
     for si in (getattr(sim, 'si_state', None) or ()):
@@ -289,10 +297,30 @@ def _sim_activities(sim):
         if carried is not None and id(carried) not in seen_targets:
             seen_targets.add(id(carried))
             activities.append(_activity_entry('carrying', None, carried))
-    return activities[:5]
+    if sim is not None and info is not None:
+        vs = services.venue_service()
+        zd = vs.get_zone_director() if (vs is not None and hasattr(vs, 'get_zone_director')) else None
+        if zd is not None and hasattr(zd, 'get_active_group_order_for_sim'):
+            grp = zd.get_active_group_order_for_sim(int(info.sim_id))
+            so = grp.get_sim_order(int(info.sim_id)) if grp is not None else None
+            rmgr = services.get_instance_manager(sims4.resources.Types.RECIPE) if so is not None else None
+            if so is not None and rmgr is not None:
+                comped = bool(getattr(grp, 'is_complimentary', False))
+                for rid in (getattr(so, 'food_recipe_id', None), getattr(so, 'drink_recipe_id', None)):
+                    rec = rmgr.get(rid) if rid else None
+                    if rec is not None:
+                        entry = {'id': 'restaurant_order', 'stbl': None, 'target': None, 'target_stbl': None,
+                                 'recipe': getattr(rec, '__name__', None),
+                                 'recipe_stbl': _string_hash(getattr(rec, 'get_recipe_name', None))}
+                        if comped:
+                            entry['comped'] = True
+                        activities.append(entry)
+    return activities[:6]
 
 
 def _sim_situations(sim, info):
+    if sim is None:
+        return []
     sit_mgr = services.get_zone_situation_manager()
     if sit_mgr is None or not hasattr(sit_mgr, 'get_situations_sim_is_in'):
         return []
@@ -402,8 +430,9 @@ def _sim_social_connections(info):
     return [item[4] for item in scored[:8]]
 
 
-def _sim_snapshot(sim):
-    info = sim.sim_info
+def _sim_snapshot(sim_or_info):
+    info = getattr(sim_or_info, 'sim_info', sim_or_info)
+    sim = sim_or_info if hasattr(sim_or_info, 'sim_info') else info.get_sim_instance()
     mood = info.get_mood()
     traits = list(info.trait_tracker.personality_traits)
     personality_names = {trait.__name__ for trait in traits}
@@ -455,10 +484,15 @@ def _sim_snapshot(sim):
         'skills': _sim_skills(info),
         'mood': mood.__name__ if mood else None,
         'buffs': buffs[:8],
-        'activities': _sim_activities(sim),
+        'activities': _sim_activities(sim, info),
         'situations': _sim_situations(sim, info),
         'social_connections': _sim_social_connections(info),
     }
+
+
+def _lot_value(zone_id):
+    lv = build_buy.get_lot_value(zone_id, True) if zone_id else 0
+    return int(lv[0] if isinstance(lv, tuple) and lv else (lv or 0))
 
 
 def _venue_snapshot(include_weather=False):
@@ -482,20 +516,39 @@ def _venue_snapshot(include_weather=False):
         for zm in (zm_service.get_zone_modifiers(zone.id) if zm_service is not None and zone is not None else ())
         if 'mueventapm_test' not in getattr(zm, '__name__', type(zm).__name__).lower()
     ]
+    persistence = services.get_persistence_service()
+    z_proto = persistence.get_zone_proto_buff(zone.id) if (persistence is not None and zone is not None) else None
+    lot_val = _lot_value(zone.id) if zone is not None else 0
+    beds = int(getattr(z_proto, 'bedroom_count', 0) or 0) if z_proto is not None else 0
+    baths = int(getattr(z_proto, 'bathroom_count', 0) or 0) if z_proto is not None else 0
     b_service = services.business_service()
     b_mgr = b_service.get_business_manager_for_zone(zone.id) if b_service is not None and zone is not None else None
-    b_type = getattr(b_mgr, 'business_type', None) if b_mgr is not None else None
+    biz = None
+    if b_mgr is not None:
+        b_type = getattr(b_mgr, 'business_type', None)
+        biz = {
+            'type': getattr(b_type, 'name', str(b_type)),
+            'is_open': bool(getattr(b_mgr, 'is_open', False)),
+            'is_owned_by_active': bool(getattr(b_mgr, 'owner_household_id', None) == services.active_household_id()),
+        }
+        if getattr(getattr(b_mgr, 'tuning_data', None), 'min_and_max_star_rating', None) is not None and hasattr(b_mgr, 'get_star_rating'):
+            stars = round(float(b_mgr.get_star_rating()), 1)
+            if stars > 0.0:
+                biz['star_rating'] = stars
+        if getattr(b_mgr, 'rent', 0):
+            biz['daily_rent'] = int(b_mgr.rent)
+        owed = int(b_mgr.get_currently_owed_rent()) if hasattr(b_mgr, 'get_currently_owed_rent') else 0
+        if owed > 0:
+            biz['owed_rent'] = owed
     return {
         'id': getattr(active_venue, '__name__', type(active_venue).__name__) if active_venue is not None else None,
         'stbl': _string_hash(getattr(active_venue, 'display_name', None)) if active_venue is not None else None,
         'lot_name': (lot.get_lot_name() or None) if lot is not None and hasattr(lot, 'get_lot_name') else None,
+        'lot_value': lot_val or None,
+        'lot_rooms': f'{beds} bed / {baths} bath' if (beds or baths) else None,
         'weather': weather,
         'lot_traits': lot_traits[:6],
-        'business': {
-            'type': getattr(b_type, 'name', str(b_type)),
-            'is_open': bool(getattr(b_mgr, 'is_open', False)),
-            'is_owned_by_active': bool(getattr(b_mgr, 'owner_household_id', None) == services.active_household_id()),
-        } if b_mgr is not None else None,
+        'business': biz,
     }
 
 
@@ -559,14 +612,14 @@ def _make_event(event_type, id_prefix, actor, target, interaction_name, interact
         'observed_at': time.time(),
         'interaction': interaction_name, 'interaction_stbl': interaction_stbl,
         'venue': venue['id'], 'venue_stbl': venue['stbl'],
-        'lot_name': venue['lot_name'], 'weather': venue['weather'], 'lot_traits': venue['lot_traits'], 'business': venue['business'],
+        'lot_name': venue['lot_name'], 'lot_value': venue['lot_value'], 'lot_rooms': venue['lot_rooms'], 'weather': venue['weather'], 'lot_traits': venue['lot_traits'], 'business': venue['business'],
         'actor': _sim_snapshot(actor),
         'target': _sim_snapshot(target) if target is not None else None,
     }
     if bystander is not None:
         event['bystander'] = _sim_snapshot(bystander)
     if target is not None:
-        event['relationship'] = _relationship_snapshot(actor.sim_info, target.sim_info)
+        event['relationship'] = _relationship_snapshot(getattr(actor, 'sim_info', actor), getattr(target, 'sim_info', target))
     if player_message is not None:
         event['player_message'] = player_message
     return event
@@ -579,13 +632,13 @@ def _submit(event, *sims):
     with contextlib.suppress(OSError):
         os.remove(_reply_path)
     _pending = dict(event, zone_id=services.current_zone_id())
-    _mute_replaced([sim.sim_info for sim in sims if sim is not None], _PENDING_TIMEOUT_SECONDS)
+    _mute_replaced([getattr(sim, 'sim_info', sim) for sim in sims if sim is not None], _PENDING_TIMEOUT_SECONDS)
     _record(event)
     return event
 
 
 def _observe(interaction, outcome_result):
-    global _pending, _last_social
+    global _pending, _last_social, _last_partner_id
     if not _enabled:
         return
     interaction_name = type(interaction).__name__
@@ -610,21 +663,42 @@ def _observe(interaction, outcome_result):
         _skip_counts['audio_playing'] = _skip_counts.get('audio_playing', 0) + 1
         return
     _last_social = (pair, interaction_name, now)
+    hh_id = services.active_household_id()
+    partner_sim = target if actor.sim_info.household_id == hh_id else actor
+    if _is_human(partner_sim.sim_info) and partner_sim.sim_info.household_id != hh_id:
+        _last_partner_id = (int(partner_sim.sim_info.sim_id), now)
     _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result, bystander=bystander),
             actor, target, bystander)
 
 
 def _check_drama_moment(now):
-    global _drama_zone_id, _last_drama_check, _last_drama_at
+    global _drama_zone_id, _last_drama_check, _last_drama_at, _bb_prev_value
+    zone = services.current_zone()
+    if zone is not None and hasattr(build_buy, 'get_user_in_build_buy') and build_buy.get_user_in_build_buy(zone.id) is not None:
+        if _bb_prev_value is None:
+            _bb_prev_value = _lot_value(zone.id)
+        return
     if not _enabled or _pending is not None or now < _audio_until or now - _last_drama_check < 4.0:
         return
     _last_drama_check = now
-    zone = services.current_zone()
     if zone is None or not getattr(zone, 'is_zone_running', False):
         return
     hh = services.active_household()
     if hh is None:
         return
+    if _bb_prev_value is not None:
+        delta = _lot_value(zone.id) - _bb_prev_value
+        _bb_prev_value = None
+        if abs(delta) >= 500 and now - _last_drama_at >= 60.0:
+            act = services.get_active_sim()
+            if act is None or not _is_human(act.sim_info) or act.sim_info.household_id != hh.id:
+                act = next((i.get_sim_instance() for i in hh if _is_human(i) and i.get_sim_instance() is not None), None)
+            if act is not None:
+                _last_drama_at = now
+                ev = _make_event('drama_reaction', 'renov-', act, None, 'renovation_reaction', None, 'RENOVATION')
+                ev['renovation_delta'] = delta
+                _submit(ev, act)
+                return
     seeding = _drama_zone_id != zone.id
     if seeding:
         _drama_zone_id = zone.id
@@ -642,7 +716,16 @@ def _check_drama_moment(now):
             _seen_drama_buffs.add(key)
             if not seeding and now - _last_drama_at >= 90.0 and any(k in bid.lower() for k in _DRAMA_BUFF_KEYWORDS):
                 _last_drama_at = now
-                ev = _make_event('inner_thought', 'drama-', sim, None, 'drama_reaction', None, 'DRAMA_MOMENT')
+                sender_info = None
+                if _last_partner_id is not None and now - _last_partner_id[1] < 900.0 and any(k in bid.lower() for k in _INTERPERSONAL_DRAMA_KEYWORDS):
+                    mgr = services.sim_info_manager()
+                    cand = mgr.get(_last_partner_id[0]) if mgr is not None else None
+                    if cand is not None and _is_human(cand) and int(cand.sim_id) != int(info.sim_id):
+                        sender_info = cand
+                if sender_info is not None:
+                    ev = _make_event('sim_text', 'text-', sender_info, sim, 'sim_text_message', None, 'SIM_TEXT')
+                else:
+                    ev = _make_event('drama_reaction', 'drama-', sim, None, 'drama_reaction', None, 'DRAMA_MOMENT')
                 ev['drama_buff'] = {
                     'id': bid,
                     'name_stbl': _string_hash(getattr(buff, 'buff_name', None), info),
@@ -687,8 +770,11 @@ class _ReplyPoller:
             target_info = manager.get(sim_ids[1]) if target_data else None
             bystander_data = event.get('bystander')
             used_bystander = bool(bystander_data and int(reply.get('speaker_count') or 0) >= 3)
-            if event.get('type') == 'inner_thought':
-                suffix = 'Big Moment!' if event.get('drama_buff') else 'Inner Thoughts'
+            etype = event.get('type')
+            if etype == 'sim_text' and target_data:
+                title = 'Text from {} → {}'.format(event['actor']['name'], target_data['name'])
+            elif etype in ('inner_thought', 'drama_reaction'):
+                suffix = 'Inner Thoughts' if etype == 'inner_thought' else ('New Decor!' if event.get('renovation_delta') else 'Big Moment!')
                 title = '{} ({})'.format(event['actor']['name'], suffix)
                 target_info = None
             else:
@@ -751,7 +837,7 @@ def _open_text_dialog(owner_info, title, prompt, secondary_info, on_text):
 
 
 def _on_pie_main(actor_sim, target_sim):
-    global _enabled
+    global _enabled, _last_partner_id
     if actor_sim is None or target_sim is None:
         return
     if target_sim is actor_sim:
@@ -768,6 +854,8 @@ def _on_pie_main(actor_sim, target_sim):
                     actor_sim.sim_info)
     elif getattr(target_sim, 'is_sim', False):
         a_info, t_info = actor_sim.sim_info, target_sim.sim_info
+        if _is_human(t_info) and t_info.household_id != a_info.household_id:
+            _last_partner_id = (int(t_info.sim_id), time.monotonic())
         _open_text_dialog(
             a_info, f'{_sim_name(a_info)} → {_sim_name(t_info)}',
             f'What does {a_info.first_name} say to {t_info.first_name}?', t_info,

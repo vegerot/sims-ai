@@ -206,6 +206,13 @@ def uninstall_mod():
     if thumb_cache.exists():
         thumb_cache.unlink()
         print(f'Removed {thumb_cache}')
+    bmd_log = DEFAULT_TS4_USER_DIR / 'Mods' / 'Basemental Drugs' / 'Basemental Drugs Log.log'
+    if bmd_log.exists():
+        txt = bmd_log.read_text(encoding='utf-8', errors='replace')
+        if 'BanterLab' in txt:
+            kept = [ln for ln in txt.splitlines() if 'BanterLab' not in ln]
+            bmd_log.write_text('\n'.join(kept) + '\n', encoding='utf-8')
+            print(f'Scrubbed BanterLab entry from {bmd_log}')
 
 
 def reset_runtime_data(root):

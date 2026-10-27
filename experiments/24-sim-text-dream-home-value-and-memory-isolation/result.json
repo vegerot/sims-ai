@@ -1,0 +1,28 @@
+{
+  "experiment": "24-sim-text-dream-home-value-and-memory-isolation",
+  "harness": "offline_companion_with_real_openrouter",
+  "private_thought_isolation": {
+    "stored_keys_after_private_thought": [
+      "solo::Olive Tinker"
+    ],
+    "leaked_to_pair_memory": false,
+    "text": "Olive Tinker: This chair costs more than my grade average. Kenya looks like she’s judging the chair too."
+  },
+  "post_drama_sim_text": {
+    "drama_trigger": {
+      "id": "buff_DateDebrief_Terrible_Regular",
+      "name": "Horrible Date"
+    },
+    "text": "Olive Tinker: That date was a book with no plot. Let’s never reread it.",
+    "voice": "alloy",
+    "chat_s": 2.388,
+    "tts_s": 2.189
+  },
+  "dream_home_mansion_thought": {
+    "lot_value": 385000,
+    "lot_rooms": "5 bed / 4 bath",
+    "text": "Kenya Bower: I discovered myself, and she’s exhausted, sad, and overdressed for rent.",
+    "chat_s": 1.606,
+    "tts_s": 1.964
+  }
+}

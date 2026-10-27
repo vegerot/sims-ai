@@ -1,0 +1,53 @@
+{
+  "experiment": "25-renovation-restaurant-and-pipelined-chat",
+  "pipelined_player_chat": {
+    "wall_s": 4.34,
+    "chat_s": 2.29,
+    "tts_post_chat_s": 2.007,
+    "completion_tokens": 21,
+    "text": "aurora Hussain: Is the landlord really charging rent for a haunted apartment?\nLiên Sadya: Absolutely. Even the ghosts have better tenant protections than you."
+  },
+  "first_class_sim_text": {
+    "chat_s": 1.979,
+    "drama_trigger": {
+      "id": "buff_Woohoo_PleasantlySatisfied_Teen",
+      "name": "Pleasant Fumblings"
+    },
+    "text": "Liên Sadya: Этот «приятный беспорядок» теперь аренду делит на до и после."
+  },
+  "renovation_reaction": {
+    "chat_s": 2.636,
+    "renovation_delta": "+3400",
+    "business": {
+      "type": "RENTAL_UNIT",
+      "is_open": false,
+      "is_owned_by_active": false,
+      "star_rating": 2.5,
+      "daily_rent": 120
+    },
+    "text": "aurora Hussain: Spent §3,400; now my haunted rental costs more than my dating prospects."
+  },
+  "restaurant_order_social": {
+    "chat_s": 2.128,
+    "actor_activities": [
+      {
+        "id": "seating_Sit",
+        "label": "Sit",
+        "target_label": "Chair for Squares – by GeoWerx"
+      },
+      {
+        "id": "restaurant_order",
+        "label": "Ordered at restaurant",
+        "recipe_label": "Spicy Volcano Ramen",
+        "comped": true
+      }
+    ],
+    "business": {
+      "type": "RESTAURANT",
+      "is_open": true,
+      "is_owned_by_active": false,
+      "star_rating": 4.5
+    },
+    "text": "Olive Tinker: Body hair’s puberty’s way of adding dramatic eyebrows.\nKenya Bower: Cute. My ramen has better grooming than that joke."
+  }
+}
