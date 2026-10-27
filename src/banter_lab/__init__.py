@@ -50,6 +50,10 @@ _companion_proc = globals().get('_companion_proc')
 _last_companion_spawn = 0.0
 _seen_errors = set()
 _skip_counts = globals().get('_skip_counts', {})
+_drama_zone_id = globals().get('_drama_zone_id')
+_seen_drama_buffs = globals().get('_seen_drama_buffs', set())
+_last_drama_check = 0.0
+_last_drama_at = globals().get('_last_drama_at', 0.0)
 
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
@@ -57,6 +61,12 @@ _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'si
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
 _SEASON_NAMES = {0: 'SUMMER', 1: 'FALL', 2: 'WINTER', 3: 'SPRING'}
+_DRAMA_BUFF_KEYWORDS = (
+    'datedebrief', 'woohoo', 'hadsex', 'afterglow', 'fire', 'bladderfailure', 'electrocut',
+    'pregnancy_trimester', 'breakup', 'broken_up', 'divorc', 'cheated', 'unfaithful',
+    'engaged', 'married', 'firstkiss', 'promotion', 'demot', 'fired', 'mortified',
+    'hysterical', 'enraged', 'karaokemachine_endbuff', 'food_cooking_0', 'food_experimental_3', 'burnout',
+)
 _OUTFIT_NAMES = {
     1: 'FORMAL', 2: 'ATHLETIC', 3: 'SLEEP', 4: 'PARTY', 5: 'BATHING',
     6: 'CAREER', 7: 'SITUATION', 8: 'SPECIAL', 9: 'SWIMWEAR', 10: 'HOTWEATHER', 11: 'COLDWEATHER',
@@ -401,7 +411,7 @@ def _sim_snapshot(sim):
     asp = getattr(info, 'primary_aspiration', None)
     buffs = [
         {
-            'id': getattr(getattr(buff, 'buff_type', buff), '__name__', type(buff).__name__),
+            'id': getattr(getattr(buff, 'buff_type', None), '__name__', None) or type(buff).__name__,
             'name_stbl': _string_hash(getattr(buff, 'buff_name', None), info),
             'reason_stbl': _string_hash(getattr(buff, 'buff_reason', None) or getattr(buff, 'default_buff_reason', None)),
         }
@@ -503,15 +513,6 @@ def _relationship_snapshot(actor_info, target_info):
     }
 
 
-def _record_skip(reason, interaction_name, interaction_stbl, actor, target):
-    _skip_counts[reason] = _skip_counts.get(reason, 0) + 1
-    _record({
-        'type': 'skipped', 'skip_reason': reason, 'observed_at': time.time(),
-        'interaction': interaction_name, 'interaction_stbl': interaction_stbl,
-        'actor_name': _sim_name(actor), 'target_name': _sim_name(target),
-    })
-
-
 def _social_participants(interaction):
     actor = interaction.sim
     if actor is None:
@@ -603,14 +604,52 @@ def _observe(interaction, outcome_result):
     if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
         _pending = None
     if _pending is not None:
-        _record_skip('pending_in_flight', interaction_name, interaction_stbl, actor, target)
+        _skip_counts['pending_in_flight'] = _skip_counts.get('pending_in_flight', 0) + 1
         return
     if now < _audio_until:
-        _record_skip('audio_playing', interaction_name, interaction_stbl, actor, target)
+        _skip_counts['audio_playing'] = _skip_counts.get('audio_playing', 0) + 1
         return
     _last_social = (pair, interaction_name, now)
     _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result, bystander=bystander),
             actor, target, bystander)
+
+
+def _check_drama_moment(now):
+    global _drama_zone_id, _last_drama_check, _last_drama_at
+    if not _enabled or _pending is not None or now < _audio_until or now - _last_drama_check < 4.0:
+        return
+    _last_drama_check = now
+    zone = services.current_zone()
+    if zone is None or not getattr(zone, 'is_zone_running', False):
+        return
+    hh = services.active_household()
+    if hh is None:
+        return
+    seeding = _drama_zone_id != zone.id
+    if seeding:
+        _drama_zone_id = zone.id
+    for info in hh:
+        sim = info.get_sim_instance()
+        if sim is None or not _is_human(info):
+            continue
+        for buff in (getattr(info, 'Buffs', None) or ()):
+            if not getattr(buff, 'visible', True):
+                continue
+            bid = getattr(getattr(buff, 'buff_type', None), '__name__', None) or type(buff).__name__
+            key = (int(info.sim_id), bid)
+            if key in _seen_drama_buffs:
+                continue
+            _seen_drama_buffs.add(key)
+            if not seeding and now - _last_drama_at >= 90.0 and any(k in bid.lower() for k in _DRAMA_BUFF_KEYWORDS):
+                _last_drama_at = now
+                ev = _make_event('inner_thought', 'drama-', sim, None, 'drama_reaction', None, 'DRAMA_MOMENT')
+                ev['drama_buff'] = {
+                    'id': bid,
+                    'name_stbl': _string_hash(getattr(buff, 'buff_name', None), info),
+                    'reason_stbl': _string_hash(getattr(buff, 'buff_reason', None) or getattr(buff, 'default_buff_reason', None)),
+                }
+                _submit(ev)
+                return
 
 
 class _ReplyPoller:
@@ -618,6 +657,7 @@ class _ReplyPoller:
         global _pending, _audio_until
         try:
             _restore_mutes()
+            _check_drama_moment(time.monotonic())
             if _pending is None or not os.path.exists(_reply_path):
                 return
             with open(_reply_path, encoding='utf-8-sig') as stream:
@@ -648,7 +688,8 @@ class _ReplyPoller:
             bystander_data = event.get('bystander')
             used_bystander = bool(bystander_data and int(reply.get('speaker_count') or 0) >= 3)
             if event.get('type') == 'inner_thought':
-                title = '{} (Inner Thoughts)'.format(event['actor']['name'])
+                suffix = 'Big Moment!' if event.get('drama_buff') else 'Inner Thoughts'
+                title = '{} ({})'.format(event['actor']['name'], suffix)
                 target_info = None
             else:
                 title = '{} ↔ {}'.format(event['actor']['name'], target_data['name']) if target_data else event['actor']['name']
@@ -939,5 +980,14 @@ if services.current_zone() is not None:
         _ensure_companion_running()
     _restore_mutes(force=True)
     _ensure_poller_alarm()
+
+_ev_file = os.path.join(_data_directory, 'events.jsonl')
+if os.path.exists(_ev_file) and os.path.getsize(_ev_file) > 2097152:
+    with open(_ev_file, 'rb') as _ef:
+        _ef.seek(-262144, os.SEEK_END)
+        _tail = _ef.read()
+    _nl = _tail.find(b'\n')
+    with open(_ev_file, 'wb') as _ef:
+        _ef.write(_tail[_nl + 1:] if _nl >= 0 else _tail)
 
 _record({'type': 'loaded', 'observed_at': time.time(), 'enabled': _enabled})

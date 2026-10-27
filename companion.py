@@ -300,8 +300,6 @@ _NOISY_REL_BIT_SUBSTRINGS = (
 )
 
 
-_SPECIES_NAMES = {'1': 'HUMAN', '2': 'DOG', '3': 'CAT', '4': 'SMALLDOG', '5': 'FOX', '6': 'HORSE'}
-
 _NOISY_TRAIT_SUBSTRINGS = (
     'genderoptions', 'walkstyle', 'handedness', 'occult_nooccult', 'species_',
     'speciesextended_', 'umbrella', 'pregnan', 'lactat', 'toilet', 'clothing', 'frame_',
@@ -344,12 +342,12 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
             'reason': resolve_stbl(b.get('reason_stbl'), sim, partner),
         }.items() if v}
         for b in (sim.get('buffs') or [])
-        if not str(b.get('id') or '').lower().startswith(('buff_environment_', 'buff_lotmods_'))
+        if not str(b.get('id') or '').lower().startswith(('buff_environment_', 'buff_lotmods_')) and not any(x in str(b.get('id') or '').lower() for x in ('period_effect_none', 'attractiveness_noticed_', 'relsat_relbit_')) and b.get('id') != 'Buff'
     ]
     raw_acts = []
     for act in (sim.get('activities') or []):
         lbl = resolve_stbl(act.get('stbl'), sim, partner)
-        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or (None if act.get('target') == 'object_sim' else act.get('target'))
+        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target')
         rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
         qlbl = resolve_stbl(act.get('quality_stbl'), sim, partner) or re.sub(r'^Quality_', '', str(act.get('quality') or '')) or None
         if lbl or tlbl:
@@ -397,7 +395,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
             lbl = f'{raw_s} ({raw_r})' if (raw_s and raw_r) else (raw_s or raw_r)
         if lbl and lbl not in events:
             events.append(lbl)
-    species = _SPECIES_NAMES.get(str(sim.get('species')), sim.get('species') or 'HUMAN')
+    species = str(sim.get('species') or 'HUMAN')
     raw = {
         'name': sim.get('name'),
         'age': sim.get('age'),
@@ -562,6 +560,13 @@ def build_scene(
         }
     if event.get('player_message'):
         scene['player_message'] = event['player_message']
+    if isinstance(event.get('drama_buff'), dict):
+        db = event['drama_buff']
+        scene['drama_trigger'] = {k: v for k, v in {
+            'id': db.get('id'),
+            'name': resolve_stbl(db.get('name_stbl'), actor, target),
+            'reason': resolve_stbl(db.get('reason_stbl'), actor, target),
+        }.items() if v}
     if pair_memory:
         scene['pair_memory'] = pair_memory[-4:]
     if recent_gossip:
@@ -785,7 +790,7 @@ def synthesize_dialogue_openrouter(
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
         futures = []
         for spoken, voice, sim in tasks:
-            is_pet = _SPECIES_NAMES.get(str(sim.get('species')), str(sim.get('species') or 'HUMAN')).upper() != 'HUMAN'
+            is_pet = str(sim.get('species') or 'HUMAN').upper() != 'HUMAN'
             if is_pet:
                 futures.append((voice, pool.submit(_synthesize_pet_windows_tts, spoken, sim, voice)))
             else:
@@ -855,7 +860,7 @@ def _should_include_bystander(event: dict) -> bool:
         return False
     if event.get('force_bystander'):
         return True
-    is_pet = _SPECIES_NAMES.get(str(bys.get('species')), str(bys.get('species') or 'HUMAN')).upper() != 'HUMAN'
+    is_pet = str(bys.get('species') or 'HUMAN').upper() != 'HUMAN'
     return random.random() < (BYSTANDER_PET_CHANCE if is_pet else BYSTANDER_HUMAN_CHANCE)
 
 

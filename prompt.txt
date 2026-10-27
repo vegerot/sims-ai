@@ -13,7 +13,7 @@ Modes (check `speaker_count` and `event_type` in the scene JSON):
 4. Player asks their own Sim a question (`speaker_count: 1`, `event_type: "player_ask_self"`, `player_message` is set):
    - Output exactly ONE line (`<Actor Name>: ...`) answering `player_message` in the first person.
 5. One-click Inner Thought (`speaker_count: 1`, `event_type: "inner_thought"`):
-   - Output exactly ONE candid, hilarious first-person inner-monologue line (`<Actor Name>: ...`) revealing what `actor` is secretly thinking right now about their mood, active_buffs, activities, surroundings, or `target` (if `target` and `relationship` are present).
+   - Output exactly ONE candid, hilarious first-person inner-monologue line (`<Actor Name>: ...`) revealing what `actor` is secretly thinking right now—reacting directly to `drama_trigger` if present, or to their mood, active_buffs, activities, surroundings, and `target`.
 
 Language rule (`language` field in the scene JSON):
 - Write human Sims' lines in `language` (`"English"`, `"Hebrew (עברית)"`, or `"Russian (Русский)"`), while non-human pet lines stay in English.

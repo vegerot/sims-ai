@@ -78,6 +78,10 @@ _Avoid_: Ask-self, solo chat
 A one-Sim spoken inner monologue triggered with a single click on any Sim, revealing what they are secretly thinking right now about their mood, surroundings, or the active Sim.
 _Avoid_: Mind read, debug inspect, narration
 
+**Drama reaction**:
+An unprompted one-Sim spoken reaction triggered when a major romance, career, cooking, or disaster moodlet lands on an active-household Sim, such as a terrible date, breakup, promotion, or burned meal.
+_Avoid_: Ambient chatter, buff alert, system toast
+
 **Contextual dialogue**:
 Spoken dialogue attributed to Sims that reflects their traits, moodlets, activities, relationship, and current interaction.
 _Avoid_: Narration, world action, commentary

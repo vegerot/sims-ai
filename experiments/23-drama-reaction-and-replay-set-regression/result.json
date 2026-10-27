@@ -1,0 +1,68 @@
+{
+  "experiment": "23-drama-reaction-and-replay-set-regression",
+  "harness": "offline_companion_with_real_openrouter",
+  "drama_terrible_date": {
+    "drama_trigger": {
+      "id": "buff_DateDebrief_Terrible_Regular",
+      "name": "Discovered Thy Self",
+      "reason": "(From Discovering Personality Trait)"
+    },
+    "text": "Kenya Bower: I discovered myself; apparently, I’m my own worst roommate.",
+    "chat_s": 3.047,
+    "tts_s": 1.839,
+    "audio_s": 4.21
+  },
+  "drama_woohoo": {
+    "drama_trigger": {
+      "id": "Buff_WooHoo_PleasantlySatisfied"
+    },
+    "text": "liatt chonen: That dream was satisfying; my karaoke was still criminal.",
+    "chat_s": 1.799,
+    "tts_s": 1.913,
+    "audio_s": 4.46
+  },
+  "replay_set_clean_check": [
+    {
+      "file": "01-restaurant-host-hitomi-kenya.json",
+      "actor_species": "HUMAN",
+      "target_species": "HUMAN",
+      "prompt_chars": 4075
+    },
+    {
+      "file": "02-restaurant-joke-olive-kenya.json",
+      "actor_species": "HUMAN",
+      "target_species": "HUMAN",
+      "prompt_chars": 4628
+    },
+    {
+      "file": "03-pet-greeting-meimei-kenya.json",
+      "actor_species": "SMALLDOG",
+      "target_species": "HUMAN",
+      "prompt_chars": 4337
+    },
+    {
+      "file": "04-ask-self-kenya.json",
+      "actor_species": "HUMAN",
+      "target_species": null,
+      "prompt_chars": 3065
+    },
+    {
+      "file": "05-player-chat-kenya-meimei.json",
+      "actor_species": "HUMAN",
+      "target_species": "SMALLDOG",
+      "prompt_chars": 4179
+    },
+    {
+      "file": "06-karaoke-bar-yuvi-carlos.json",
+      "actor_species": "HUMAN",
+      "target_species": "HUMAN",
+      "prompt_chars": 3759
+    },
+    {
+      "file": "07-soulmates-seductive-dance-liatt-yuvi.json",
+      "actor_species": "HUMAN",
+      "target_species": "HUMAN",
+      "prompt_chars": 3302
+    }
+  ]
+}
