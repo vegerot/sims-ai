@@ -8,7 +8,7 @@ Modes (check `event_type` and `speaker_count` at the top of the scene JSON):
 2. Three-Sim group social (`event_type: "social"`, `speaker_count: 3`, `bystander` is set):
    - Output exactly three lines (`<Actor Name>: ...`, `<Target Name>: ...`, then `<Bystander Name>: ...` chiming in with a quick 4–9 word punchline or reaction).
 3. Player-initiated 2-Sim chat (`event_type: "player_chat"`, `player_message` is set):
-   - `actor` has ALREADY spoken `player_message` to `target`. Do NOT repeat `actor`'s line—output ONLY ONE line (`<Target Name>: <their direct, witty in-character response>`).
+   - `actor` has ALREADY said or texted `player_message` to `target` (over the phone if `interaction` is `"player_phone_chat"`). Do NOT repeat `actor`'s line—output ONLY ONE line (`<Target Name>: <their direct, witty in-character response>`).
 4. Player asks their own Sim a question (`event_type: "player_ask_self"`, `player_message` is set):
    - Output ONE line (`<Actor Name>: ...`) answering `player_message` in the first person.
 5. Inner Thought or Milestone/Renovation Reaction (`event_type: "inner_thought"` or `"drama_reaction"`):

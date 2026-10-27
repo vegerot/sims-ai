@@ -35,6 +35,7 @@ from sims4.utils import flexmethod
 from singletons import DEFAULT
 from ui.ui_dialog_generic import UiDialogTextInputOkCancel
 from ui.ui_dialog_notification import UiDialogNotification
+from ui.ui_dialog_picker import SimPickerRow, UiSimPicker
 from zone import Zone
 
 _enabled = globals().get('_enabled', True)
@@ -279,6 +280,8 @@ def _activity_entry(act_id, stbl, target_obj):
 
 
 def _sim_activities(sim, info=None):
+    if sim is None:
+        return []
     activities = []
     seen_targets = set()
     for si in (getattr(sim, 'si_state', None) or ()):
@@ -431,7 +434,7 @@ def _sim_social_connections(info):
 
 def _sim_snapshot(sim_or_info):
     info = getattr(sim_or_info, 'sim_info', sim_or_info)
-    sim = sim_or_info if hasattr(sim_or_info, 'sim_info') else info.get_sim_instance()
+    sim = info.get_sim_instance()
     mood = info.get_mood()
     traits = list(info.trait_tracker.personality_traits)
     personality_names = {trait.__name__ for trait in traits}
@@ -604,7 +607,7 @@ def _social_participants(interaction):
 def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome, player_message=None, bystander=None):
     global _event_count
     _event_count += 1
-    any_out = any(getattr(s, 'is_outside', False) for s in (actor, target, bystander) if s is not None)
+    any_out = any(getattr(getattr(s, 'sim_info', s).get_sim_instance(), 'is_outside', False) for s in (actor, target, bystander) if s is not None)
     venue = _venue_snapshot(include_weather=any_out)
     event = {
         'type': event_type, 'outcome': outcome,
@@ -781,7 +784,9 @@ class _ReplyPoller:
                 target_info = None
             else:
                 title = '{} ↔ {}'.format(event['actor']['name'], target_data['name']) if target_data else event['actor']['name']
-                if used_bystander:
+                if event.get('interaction') == 'player_phone_chat':
+                    title = '{} (Phone)'.format(title)
+                elif used_bystander:
                     title = '{} (+ {})'.format(title, bystander_data['name'])
             audio_dur = float((reply.get('tts') or {}).get('duration_seconds') or 0.0)
             now = time.monotonic()
@@ -877,6 +882,56 @@ def _on_pie_ask_self(actor_sim, _target_sim):
                 'PLAYER_INITIATED', player_message=text), actor_sim))
 
 
+def _on_pie_call_someone(actor_sim, _target_sim):
+    global _last_partner_id
+    if actor_sim is None:
+        return
+    a_info = actor_sim.sim_info
+    tracker = getattr(a_info, 'relationship_tracker', None)
+    raw_others = list(tracker.get_target_sim_infos()) if (tracker is not None and hasattr(tracker, 'get_target_sim_infos')) else []
+    contacts = []
+    seen = {int(a_info.sim_id)}
+    for other in raw_others:
+        oid = int(getattr(other, 'sim_id', 0) or 0)
+        if not oid or oid in seen or not _is_human(other) or 'do_not_remove' in _sim_name(other).lower():
+            continue
+        seen.add(oid)
+        score = abs(_friendship_score(tracker, oid)) + abs(float(tracker.get_relationship_score(oid, RelationshipTrack.ROMANCE_TRACK) or 0.0))
+        contacts.append((-score, other))
+    if not contacts:
+        _notify('Banter Lab', f'{a_info.first_name} has not met anyone to call or text yet!', a_info, timeout_ms=4500)
+        return
+    contacts.sort(key=lambda item: item[0])
+    picker = UiSimPicker.TunableFactory().default(
+        a_info,
+        title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(f'Call / Text from {_sim_name(a_info)}'),
+        text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text('Choose someone to call or text:'),
+    )
+    for _, other in contacts[:24]:
+        picker.add_row(SimPickerRow(other.sim_id, tag=other))
+
+    def _on_picked(dialog):
+        global _last_partner_id
+        try:
+            if not getattr(dialog, 'accepted', False):
+                return
+            t_info = dialog.get_single_result_tag()
+            if t_info is None:
+                return
+            _last_partner_id = (int(t_info.sim_id), time.monotonic())
+            t_target = t_info.get_sim_instance() or t_info
+            _open_text_dialog(
+                a_info, f'{_sim_name(a_info)} → {_sim_name(t_info)} (Phone)',
+                f'What does {a_info.first_name} say or text to {t_info.first_name}?', t_info,
+                lambda text: _submit(_make_event(
+                    'player_chat', 'phone-', actor_sim, t_target, 'player_phone_chat', None,
+                    'PLAYER_INITIATED', player_message=text), actor_sim, t_target))
+        except Exception:
+            _record_error()
+
+    picker.show_dialog(on_response=_on_picked)
+
+
 def _on_pie_thoughts(actor_sim, target_sim):
     thinker = target_sim if (target_sim is not None and getattr(target_sim, 'is_sim', False)) else actor_sim
     if thinker is not None:
@@ -936,13 +991,15 @@ def _install_pie_menu_interaction():
         return 0
     if not _pie_classes:
         _pie_classes = (
-            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000001, 30, False,
-                          lambda actor, target, fname: ('Disable English Banter' if _enabled else 'Enable English Banter')
-                          if target is actor else f'Speak to {fname} (English)...', _on_pie_main),
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000004, 30, True,
+                          lambda _actor, _target, _fname: 'Call / Text Someone (English)...', _on_pie_call_someone),
             _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000002, 29, True,
                           lambda _actor, _target, fname: f'Ask {fname} a Question (English)...', _on_pie_ask_self),
             _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000003, 28, False,
                           lambda _actor, target, fname: f"{'Hear' if _is_human(getattr(target, 'sim_info', target)) else 'Translate'} {fname}'s Thoughts (English)", _on_pie_thoughts),
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000001, 27, False,
+                          lambda actor, target, fname: ('Disable English Banter' if _enabled else 'Enable English Banter')
+                          if target is actor else f'Speak to {fname} (English)...', _on_pie_main),
         )
     guids = {c.guid64 for c in _pie_classes}
     count = 0

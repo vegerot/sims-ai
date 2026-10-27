@@ -67,7 +67,7 @@ An in-game social action between an Actor and a Target chosen by the simulation 
 _Avoid_: Affordance, mixer, social event
 
 **Player conversation**:
-A two-Sim exchange initiated when the player types what the active Sim says to a Target Sim on the lot.
+A two-Sim exchange initiated when the player types what the active Sim says to a Target Sim on the lot or over the phone.
 _Avoid_: Direct chat, manual social
 
 **Self-question**:

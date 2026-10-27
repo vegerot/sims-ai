@@ -1,0 +1,32 @@
+{
+  "experiment": "27-off-lot-phone-call-sim-picker",
+  "kenya_calls_ex_tal_or": {
+    "chat_s": 2.827,
+    "tts_post_chat_s": 1.946,
+    "voices": [
+      "sage",
+      "verse"
+    ],
+    "duration_s": 6.72,
+    "relationship_romance": -92.8,
+    "text": "Kenya Bower: Stop texting me at 2am, meimei likes me better anyway.\ntal or akiva: Meimei has standards. I have your number."
+  },
+  "live_in_game_verification": {
+    "save_slot": "Slot_00000002.save (Robles-Ruano @ Parkside Place)",
+    "event_id": "phone-1793119023126-3",
+    "ui_title": "Jay Robles ↔ tal or akiva (Phone)",
+    "actor": "Jay Robles",
+    "off_lot_target": "tal or akiva (08 Taka Soi 15, Tomarang)",
+    "relationship_bits": [
+      "HaveBeenRomantic"
+    ],
+    "voices": [
+      "verse",
+      "ash"
+    ],
+    "chat_s": 3.567,
+    "tts_post_chat_s": 2.47,
+    "duration_s": 8.06,
+    "text": "Jay Robles: Doli is right in the kitchen, don't text me right now!\ntal or akiva: I’m not texting—you’re calling. Also, why is Doli in your kitchen?"
+  }
+}
