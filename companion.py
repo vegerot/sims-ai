@@ -579,7 +579,7 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
     }
 
 
-def _synthesize_pet_windows_tts(spoken_text: str, sim: dict) -> dict:
+def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str = 'coral') -> dict:
     voice = 'Microsoft Zira Desktop' if str(sim.get('gender') or '').upper() == 'FEMALE' else 'Microsoft David Desktop'
     ps_cmd = (
         '[Console]::InputEncoding = [System.Text.Encoding]::UTF8; '
@@ -602,6 +602,8 @@ def _synthesize_pet_windows_tts(spoken_text: str, sim: dict) -> dict:
         check=True,
         creationflags=subprocess.CREATE_NO_WINDOW,
     )
+    if not res.stdout:
+        return _synthesize_single_line_openrouter(spoken_text, fallback_voice, str(sim.get('mood') or 'Fine'))
     return {
         'voice': voice, 'tone': 'windows_sapi5_pet', 'pcm': res.stdout,
         'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t0, 3),
@@ -627,7 +629,7 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
         for spoken, voice, sim in tasks:
             is_pet = _SPECIES_NAMES.get(str(sim.get('species')), str(sim.get('species') or 'HUMAN')).upper() != 'HUMAN'
             if is_pet:
-                futures.append((voice, pool.submit(_synthesize_pet_windows_tts, spoken, sim)))
+                futures.append((voice, pool.submit(_synthesize_pet_windows_tts, spoken, sim, voice)))
             else:
                 futures.append((voice, pool.submit(_synthesize_single_line_openrouter, spoken, voice, str(sim.get('mood') or 'Fine'))))
         line_results = []

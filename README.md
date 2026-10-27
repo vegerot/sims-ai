@@ -28,10 +28,12 @@ Console commands (`Ctrl+Shift+C`):
 
 All player controls (**Enable/Disable English Banter**, **Ask <Sim> a Question (English)...**, and **Speak to <Sim> (English)...**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
 
-Build using Python 3.7, matching the installed game:
+Build and deploy using Python 3.7 (or uninstall / wipe playtest data for a clean slate):
 
 ```powershell
 & '.\.local\python37\python.exe' '.\build.py'
+python3.15 '.\build.py' --uninstall
+python3.15 '.\build.py' --reset-data
 ```
 
 The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Runtime logs (`events.jsonl`, `companion.stdout.log`), `memories.json`, `cost_summary.json`, and `reply.json` live in `.local/data` outside OneDrive so OneDrive is never polled or written at runtime. Rebuild after any game update: `BanterLabUI.package` ships a patched copy of `Notifications.gfx` (`ShowNextMessage` honors `notification.timeout_duration`).

@@ -1,8 +1,13 @@
-"""Build BanterLab.ts4script and BanterLabUI.package, then deploy to Mods/BanterLab."""
+"""Build BanterLab.ts4script and BanterLabUI.package, deploy, or uninstall (--uninstall / --reset-data)."""
 
+import argparse
+import ctypes
 import importlib.util
+import json
+import os
 import py_compile
 import shutil
+import stat
 import struct
 import sys
 import tempfile
@@ -10,7 +15,8 @@ import zipfile
 import zlib
 from pathlib import Path
 
-DEFAULT_DEPLOY_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab')
+DEFAULT_TS4_USER_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4')
+DEFAULT_DEPLOY_DIR = DEFAULT_TS4_USER_DIR / 'Mods' / 'BanterLab'
 DEFAULT_UI_PACKAGE = Path(r'C:\Program Files\EA Games\The Sims 4\Data\Client\UI.package')
 
 
@@ -178,11 +184,70 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
     return output_pkg
 
 
+def uninstall_mod():
+    if DEFAULT_DEPLOY_DIR.exists():
+        for child in list(DEFAULT_DEPLOY_DIR.rglob('*')):
+            if child.is_file():
+                os.chmod(str(child), stat.S_IWRITE)
+                child.unlink()
+        if os.name == 'nt':
+            # Clear OneDrive read-only/system directory flags before rmdir
+            ctypes.windll.kernel32.SetFileAttributesW(str(DEFAULT_DEPLOY_DIR), 0x10)
+        try:
+            DEFAULT_DEPLOY_DIR.rmdir()
+        except PermissionError:
+            tmp = Path(tempfile.mkdtemp(prefix='banter-uninstall-'))
+            shutil.move(str(DEFAULT_DEPLOY_DIR), str(tmp / 'BanterLab'))
+        print(f'Uninstalled {DEFAULT_DEPLOY_DIR}')
+    else:
+        print(f'Already uninstalled ({DEFAULT_DEPLOY_DIR} absent)')
+    thumb_cache = DEFAULT_TS4_USER_DIR / 'localthumbcache.package'
+    if thumb_cache.exists():
+        thumb_cache.unlink()
+        print(f'Removed {thumb_cache}')
+
+
+def reset_runtime_data(root):
+    data_dir = root / '.local' / 'data'
+    tts_dir = root / '.local' / 'tts'
+    for name in ('events.jsonl', 'memories.json', 'reply.json', 'companion.stdout.log', 'companion.stderr.log'):
+        p = data_dir / name
+        if p.exists():
+            p.unlink()
+            print(f'Removed {p}')
+    cost_path = data_dir / 'cost_summary.json'
+    if cost_path.exists():
+        cost = json.loads(cost_path.read_text(encoding='utf-8-sig'))
+        cost['session_usd'] = 0.0
+        cost['session_exchanges'] = 0
+        cost_path.write_text(json.dumps(cost, indent=2) + '\n', encoding='utf-8')
+    if tts_dir.exists():
+        removed_wavs = 0
+        for wav in tts_dir.glob('*.wav'):
+            wav.unlink()
+            removed_wavs += 1
+        if removed_wavs:
+            print(f'Removed {removed_wavs} cached WAV files from {tts_dir}')
+
+
 def main():
-    if sys.version_info[:2] != (3, 7):
-        raise SystemExit('The installed game requires Python 3.7 bytecode.')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--uninstall', action='store_true', help='Remove Mods/BanterLab and localthumbcache.package')
+    parser.add_argument('--reset-data', action='store_true', help='Clear .local/data logs/memories and .local/tts WAVs')
+    args = parser.parse_args()
 
     root = Path(__file__).resolve().parent
+    if args.reset_data:
+        reset_runtime_data(root)
+    if args.uninstall:
+        uninstall_mod()
+        return
+    if args.reset_data and sys.version_info[:2] != (3, 7):
+        return
+
+    if sys.version_info[:2] != (3, 7):
+        raise SystemExit('The installed game requires Python 3.7 bytecode (.local/python37/python.exe).')
+
     source = root / 'src'
     output = root / 'dist' / 'BanterLab.ts4script'
     ui_pkg_output = root / 'dist' / 'BanterLabUI.package'

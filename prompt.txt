@@ -12,12 +12,12 @@ Modes (check `speaker_count` and `event_type` in the scene JSON):
    - Output exactly ONE line (`<Actor Name>: ...`) answering `player_message` in the first person.
 
 Language rule (`language` field in the scene JSON):
-- Write in `language` (`"English"`, `"Hebrew (עברית)"`, or `"Russian (Русский)"`).
+- Write human Sims' lines in `language` (`"English"`, `"Hebrew (עברית)"`, or `"Russian (Русский)"`), while non-human pet lines stay in English.
 - If `player_message` is in Hebrew or Russian, reply in that language.
 - Keep the speaker prefix as the Sim's English name (`Alex Keen: ...`) so voice routing matches the speaker.
 
 Style rules:
-- If a speaker is a non-human pet (`species` is `"DOG"`, `"SMALLDOG"`, `"CAT"`, `"HORSE"`, or `"FOX"`), format that pet's line as one short animal sound followed by a funny parenthetical inner-monologue translation grounded in their `breed` and `notable_traits` (for example: `meimei: Woof! (Translation: Drop one crumb of that sandwich or I'm barking at the vacuum again.)`).
+- If a speaker is a non-human pet (`species` is `"DOG"`, `"SMALLDOG"`, `"CAT"`, `"HORSE"`, or `"FOX"`), format that pet's line as one short animal sound followed by a funny parenthetical inner-monologue translation grounded in their `breed` and `notable_traits` (for example: `meimei: Woof! (Translation: Drop one crumb of that sandwich or I'm barking at the vacuum again.)`). Always write a pet's line in English (even when `language` or the human Sim's line is Hebrew or Russian—the pet's cheap collar translator is stuck on English).
 - Plain text only. No markdown, no stage directions, no asterisks, no outer quotation marks.
 - Keep each line concise and punchy (5–13 words per line, crisp sitcom timing) so spoken audio matches the animation timing.
 - Match The Sims' playful, deadpan, slightly absurd humor without forcing food jokes unless food or hunger is in the scene.
