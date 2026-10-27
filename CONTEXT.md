@@ -24,6 +24,10 @@ _Avoid_: Source Sim, initiator, speaker 1
 The Sim toward whom a social interaction or player conversation is directed.
 _Avoid_: Recipient, listener, speaker 2
 
+**Bystander**:
+A third Sim participating in the same group conversation alongside the Actor and Target who chimes in on the exchange.
+_Avoid_: Third speaker, extra listener, observer
+
 ## State and Relationships
 
 **Trait**:
@@ -40,6 +44,10 @@ _Avoid_: Emotion, feeling
 **Moodlet**:
 A visible temporary buff on a Sim that contributes to their current mood and carries a specific cause, such as Home Sweet Home or Terrible Date.
 _Avoid_: Status effect
+
+**Social event**:
+An active gathering or role context a Sim is participating in, such as a Date, Dinner Party, or Restaurant Dining.
+_Avoid_: Quest, scenario, mission
 
 **Relationship track**:
 A numerical score measuring an aspect of the relationship between two Sims, such as friendship or romance.
@@ -66,6 +74,10 @@ _Avoid_: Direct chat, manual social
 A one-Sim exchange initiated when the player asks the active Sim a question directly and the active Sim answers in the first person.
 _Avoid_: Ask-self, solo chat
 
+**Inner thought**:
+A one-Sim spoken inner monologue triggered with a single click on any Sim, revealing what they are secretly thinking right now about their mood, surroundings, or the active Sim.
+_Avoid_: Mind read, debug inspect, narration
+
 **Contextual dialogue**:
 Spoken dialogue attributed to Sims that reflects their traits, moodlets, activities, relationship, and current interaction.
 _Avoid_: Narration, world action, commentary
@@ -77,6 +89,10 @@ _Avoid_: Chat log, script
 **Pair memory**:
 The rolling history of prior banter exchanges between a specific pair of Sims (or solo Sim) preserved across lots and sessions.
 _Avoid_: Recent dialogue, zone history, chat history
+
+**Gossip**:
+Recent banter that the Actor or Target shared earlier with another Sim, giving them real events to spill, brag, or complain about.
+_Avoid_: Global log, cross-pair cache
 
 **Narration**:
 Commentary describing game events from an outside observer's perspective rather than lines spoken by a Sim.

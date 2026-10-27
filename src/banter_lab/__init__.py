@@ -19,6 +19,7 @@ import alarms
 import clock
 import services
 import sims4.commands
+from crafting.crafting_tunable import CraftingTuning
 from distributor.ops import SetVoiceActor
 from distributor.shared_messages import IconInfoData
 from distributor.system import Distributor
@@ -33,26 +34,31 @@ from ui.ui_dialog_generic import UiDialogTextInputOkCancel
 from ui.ui_dialog_notification import UiDialogNotification
 from zone import Zone
 
-_enabled = True
+_enabled = globals().get('_enabled', True)
 _original_voice_actors = globals().get('_original_voice_actors', {})
-_muted_until = {}
-_audio_until = 0.0
-_last_social = None
-_event_count = 0
+_muted_until = globals().get('_muted_until', {})
+_audio_until = globals().get('_audio_until', 0.0)
+_last_social = globals().get('_last_social')
+_event_count = globals().get('_event_count', 0)
 _pending = None
 _alarm = None
 _pie_interaction_cls = None
 _pie_ask_self_cls = None
+_pie_thoughts_cls = None
 _companion_proc = globals().get('_companion_proc')
 _last_companion_spawn = 0.0
 _seen_errors = set()
-_skip_counts = {}
+_skip_counts = globals().get('_skip_counts', {})
 
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
 _PASSIVE_CONTAINERS = ('sim_Chat', 'sim_BeAffectionate', 'SimToPet_Socials', 'simToPet_Socials_Converse', 'petSocial_DogToDog_SocialGroup', 'petSocial_PetToPet_SocialGroup')
 _IDLE_POSTURES = ('sim-stand', 'sim_Stand_Exclusive', 'sim-sit')
 _SPECIES_NAMES = {1: 'HUMAN', 2: 'DOG', 3: 'CAT', 4: 'SMALLDOG', 5: 'FOX', 6: 'HORSE'}
+_OUTFIT_NAMES = {
+    1: 'FORMAL', 2: 'ATHLETIC', 3: 'SLEEP', 4: 'PARTY', 5: 'BATHING',
+    6: 'CAREER', 7: 'SITUATION', 8: 'SPECIAL', 9: 'SWIMWEAR', 10: 'HOTWEATHER', 11: 'COLDWEATHER',
+}
 
 _PROJECT_ROOT = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai'
 _data_directory = os.path.join(_PROJECT_ROOT, '.local', 'data')
@@ -114,6 +120,11 @@ def _sim_name(sim_or_info):
     return f'{info.first_name} {info.last_name}'.strip()
 
 
+def _is_human(info):
+    sp = getattr(info, 'extended_species', None) or getattr(info, 'species', 1)
+    return getattr(sp, 'name', _SPECIES_NAMES.get(sp, 'HUMAN')) == 'HUMAN'
+
+
 def _true_voice_actor(info):
     sim_id = int(info.sim_id)
     if sim_id in _original_voice_actors:
@@ -122,12 +133,14 @@ def _true_voice_actor(info):
     if current and current != _MUTE_VOICE_ACTOR:
         _original_voice_actors[sim_id] = current
         return current
+    if not _is_human(info):
+        return current
     gender = str(getattr(getattr(info, 'gender', None), 'name', '')).upper()
     return 1802970394 if gender == 'FEMALE' else 1685527063
 
 
 def _set_voice_actor(info, actor_hash):
-    if int(getattr(info, 'voice_actor', 0)) != actor_hash:
+    if actor_hash and int(getattr(info, 'voice_actor', 0)) != actor_hash:
         info.voice_actor = actor_hash
         sim = info.get_sim_instance()
         if sim is not None:
@@ -137,7 +150,8 @@ def _set_voice_actor(info, actor_hash):
 def _mute_replaced(infos, seconds):
     deadline = time.monotonic() + seconds
     for info in infos:
-        if info is not None:
+        # Only mute human Simlish; pets keep their real in-game barks/meows alongside collar TTS.
+        if info is not None and _is_human(info):
             _true_voice_actor(info)
             _set_voice_actor(info, _MUTE_VOICE_ACTOR)
             _muted_until[int(info.sim_id)] = deadline
@@ -202,12 +216,35 @@ def _notify(title, text, owner=None, secondary_owner=None, timeout_ms=None):
     dialog.show_dialog(**kwargs)
 
 
-def _crafted_recipe(obj):
+def _crafted_details(obj):
     crafting = getattr(obj, 'crafting_component', None)
     recipe = crafting.get_recipe() if crafting is not None and hasattr(crafting, 'get_recipe') else None
     if recipe is None:
-        return None, None
-    return getattr(recipe, '__name__', type(recipe).__name__), _string_hash(getattr(recipe, 'get_recipe_name', None))
+        return {}
+    out = {
+        'recipe': getattr(recipe, '__name__', type(recipe).__name__),
+        'recipe_stbl': _string_hash(getattr(recipe, 'get_recipe_name', None)),
+    }
+    crafter_id = int(getattr(crafting, 'crafter_sim_id', 0) or 0)
+    if crafter_id:
+        mgr = services.sim_info_manager()
+        crafter = mgr.get(crafter_id) if mgr is not None else None
+        if crafter is not None:
+            out['cooked_by'] = _sim_name(crafter)
+    if hasattr(obj, 'has_state'):
+        q_state = getattr(CraftingTuning, 'QUALITY_STATE', None)
+        if q_state is not None and obj.has_state(q_state):
+            q_val = obj.get_state(q_state)
+            if q_val is not None:
+                out['quality'] = getattr(q_val, '__name__', None)
+                out['quality_stbl'] = _string_hash(getattr(q_val, 'display_name', None))
+        f_state = getattr(CraftingTuning, 'FRESHNESS_STATE', None)
+        if f_state is not None and obj.has_state(f_state) and obj.get_state(f_state) is getattr(CraftingTuning, 'SPOILED_STATE_VALUE', None):
+            out['spoiled'] = True
+        m_state = getattr(CraftingTuning, 'MASTERWORK_STATE', None)
+        if m_state is not None and obj.has_state(m_state) and obj.get_state(m_state) is getattr(CraftingTuning, 'MASTERWORK_STATE_VALUE', None):
+            out['masterwork'] = True
+    return {k: v for k, v in out.items() if v}
 
 
 def _sim_activities(sim):
@@ -219,14 +256,39 @@ def _sim_activities(sim):
         stbl = _string_hash(getattr(si, 'display_name', None), sim, target_obj)
         if not stbl and target_obj is None:
             continue
-        recipe_name, recipe_stbl = _crafted_recipe(target_obj) if target_obj is not None else (None, None)
-        activities.append({
+        is_sim_target = target_obj is not None and getattr(target_obj, 'is_sim', False)
+        entry = {
             'id': type(si).__name__, 'stbl': stbl,
-            'target': type(target_obj).__name__ if target_obj is not None else None,
-            'target_stbl': _string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None,
-            'recipe': recipe_name, 'recipe_stbl': recipe_stbl,
-        })
+            'target': _sim_name(target_obj) if is_sim_target else (type(target_obj).__name__ if target_obj is not None else None),
+            'target_stbl': None if is_sim_target else (_string_hash(getattr(target_obj, 'catalog_name', None)) if target_obj is not None else None),
+        }
+        if target_obj is not None:
+            entry.update(_crafted_details(target_obj))
+        activities.append(entry)
     return activities[:4]
+
+
+def _sim_situations(sim, info):
+    sit_mgr = services.get_zone_situation_manager()
+    if sit_mgr is None or not hasattr(sit_mgr, 'get_situations_sim_is_in'):
+        return []
+    out = []
+    for sit in (sit_mgr.get_situations_sim_is_in(sim) or ()):
+        sit_name = type(sit).__name__
+        low = sit_name.lower()
+        if any(k in low for k in ('walkby', 'single_job', 'leave', 'ungreeted', 'player_visiting', 'pivotalmoment', 'holidaysituation', '_sub_')):
+            continue
+        user_facing = bool(getattr(sit, 'is_user_facing', False))
+        job = sit.get_current_job_for_sim(sim) if hasattr(sit, 'get_current_job_for_sim') else None
+        job_stbl = _string_hash(getattr(job, 'tooltip_name', None) or getattr(job, 'display_name', None), info) if job is not None else None
+        sit_stbl = _string_hash(getattr(sit, '_display_name', None))
+        if user_facing or job_stbl or any(k in low for k in ('date', 'restaurant', 'diner', 'party', 'wedding', 'hangout', 'business')):
+            out.append({
+                'id': sit_name, 'stbl': sit_stbl,
+                'role': getattr(job, '__name__', None) if job is not None else None,
+                'role_stbl': job_stbl,
+            })
+    return out[:3]
 
 
 def _sim_careers(info):
@@ -336,6 +398,11 @@ def _sim_snapshot(sim):
     breed_name = getattr(info, '_breed_name', None) or getattr(info, 'breed_name', None) or None
     if callable(breed_name):
         breed_name = None
+    outfit_pair = info.get_current_outfit() if hasattr(info, 'get_current_outfit') else None
+    outfit_cat = outfit_pair[0] if isinstance(outfit_pair, tuple) and outfit_pair else None
+    outfit_name = getattr(outfit_cat, 'name', None) or _OUTFIT_NAMES.get(outfit_cat)
+    if outfit_name == 'EVERYDAY' or species_name != 'HUMAN':
+        outfit_name = None
     return {
         'id': str(info.sim_id),
         'name': _sim_name(info),
@@ -344,6 +411,7 @@ def _sim_snapshot(sim):
         'species': species_name,
         'breed': str(breed_name) if breed_name else None,
         'breed_stbl': _string_hash(getattr(info, 'breed_name_key', None)),
+        'outfit': outfit_name,
         'traits': [trait.__name__ for trait in traits],
         'trait_stbls': [s for s in (_string_hash(getattr(t, 'display_name', None), info) for t in traits) if s],
         'extra_traits': [
@@ -357,6 +425,7 @@ def _sim_snapshot(sim):
         'mood': mood.__name__ if mood else None,
         'buffs': buffs[:8],
         'activities': _sim_activities(sim),
+        'situations': _sim_situations(sim, info),
         'social_connections': _sim_social_connections(info),
     }
 
@@ -414,7 +483,7 @@ def _record_skip(reason, interaction_name, interaction_stbl, actor, target):
 def _social_participants(interaction):
     actor = interaction.sim
     if actor is None:
-        return None, None
+        return None, None, None
     target = interaction.get_participant(ParticipantType.TargetSim)
     is_soc = bool(getattr(interaction, 'is_social', False))
     hh_id = services.active_household_id()
@@ -427,15 +496,26 @@ def _social_participants(interaction):
         iname = type(interaction).__name__.lower()
         is_soc = any(k in iname for k in ('petsocial', 'simtopet', 'talkto', 'praise', 'scold', 'lecture', 'calm', 'pamper'))
     if not is_soc or target is None or not getattr(target, 'is_sim', False):
-        return None, None
+        return None, None, None
     if actor.sim_info.sim_id == target.sim_info.sim_id:
-        return None, None
+        return None, None, None
     if actor.sim_info.household_id != hh_id and target.sim_info.household_id != hh_id:
-        return None, None
-    return actor, target
+        return None, None, None
+    bystander = None
+    group = getattr(interaction, 'social_group', None)
+    if group is not None:
+        pair_ids = {actor.sim_info.sim_id, target.sim_info.sim_id}
+        others = [s for s in group if getattr(s, 'is_sim', False) and s.sim_info.sim_id not in pair_ids]
+        if others:
+            others.sort(key=lambda s: (
+                0 if (s.sim_info.household_id == hh_id and not _is_human(s.sim_info)) else
+                1 if s.sim_info.household_id == hh_id else 2
+            ))
+            bystander = others[0]
+    return actor, target, bystander
 
 
-def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome, player_message=None):
+def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome, player_message=None, bystander=None):
     global _event_count
     _event_count += 1
     venue = _venue_snapshot()
@@ -449,6 +529,8 @@ def _make_event(event_type, id_prefix, actor, target, interaction_name, interact
         'actor': _sim_snapshot(actor),
         'target': _sim_snapshot(target) if target is not None else None,
     }
+    if bystander is not None:
+        event['bystander'] = _sim_snapshot(bystander)
     if target is not None:
         event['relationship'] = _relationship_snapshot(actor.sim_info, target.sim_info)
     if player_message is not None:
@@ -466,7 +548,7 @@ def _submit(event, *sims):
         except OSError:
             pass
     _pending = dict(event, zone_id=services.current_zone_id())
-    _mute_replaced([sim.sim_info for sim in sims], _PENDING_TIMEOUT_SECONDS)
+    _mute_replaced([sim.sim_info for sim in sims if sim is not None], _PENDING_TIMEOUT_SECONDS)
     _record(event)
     return event
 
@@ -478,7 +560,7 @@ def _observe(interaction, outcome_result):
     interaction_name = type(interaction).__name__
     if interaction_name in _PASSIVE_CONTAINERS:
         return
-    actor, target = _social_participants(interaction)
+    actor, target, bystander = _social_participants(interaction)
     if actor is None:
         return
     interaction_stbl = _string_hash(getattr(interaction, 'display_name', None), actor, target)
@@ -497,7 +579,8 @@ def _observe(interaction, outcome_result):
         _record_skip('audio_playing', interaction_name, interaction_stbl, actor, target)
         return
     _last_social = (pair, interaction_name, now)
-    _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result), actor, target)
+    _submit(_make_event('social', '', actor, target, interaction_name, interaction_stbl, outcome_result, bystander=bystander),
+            actor, target, bystander)
 
 
 class _ReplyPoller:
@@ -518,6 +601,8 @@ class _ReplyPoller:
             event = _pending
             _pending = None
             sim_ids = [int(event['actor']['id'])] + ([int(event['target']['id'])] if event.get('target') else [])
+            if event.get('bystander'):
+                sim_ids.append(int(event['bystander']['id']))
             if services.current_zone_id() != event['zone_id'] or 'error' in reply:
                 _restore_mutes(force=True)
                 if 'error' in reply:
@@ -530,13 +615,22 @@ class _ReplyPoller:
             actor_info = manager.get(sim_ids[0])
             target_data = event.get('target')
             target_info = manager.get(sim_ids[1]) if target_data else None
-            title = '{} ↔ {}'.format(event['actor']['name'], target_data['name']) if target_data else event['actor']['name']
+            bystander_data = event.get('bystander')
+            used_bystander = bool(bystander_data and int(reply.get('speaker_count') or 0) >= 3)
+            if event.get('type') == 'inner_thought':
+                title = '{} (Inner Thoughts)'.format(event['actor']['name'])
+                target_info = None
+            else:
+                title = '{} ↔ {}'.format(event['actor']['name'], target_data['name']) if target_data else event['actor']['name']
+                if used_bystander:
+                    title = '{} (+ {})'.format(title, bystander_data['name'])
             audio_dur = float((reply.get('tts') or {}).get('duration_seconds') or 0.0)
             now = time.monotonic()
             _audio_until = now + audio_dur
+            active_muted = set(sim_ids if used_bystander else sim_ids[:2])
             for sim_id in sim_ids:
                 if sim_id in _muted_until:
-                    _muted_until[sim_id] = now + audio_dur + 0.5 if audio_dur > 0.0 else 0.0
+                    _muted_until[sim_id] = (now + audio_dur + 0.5) if (audio_dur > 0.0 and sim_id in active_muted) else 0.0
             _restore_mutes()
             shown_dur = audio_dur if audio_dur > 0.0 else max(2.0, len(reply.get('text', '')) / 18.0)
             timeout_ms = round((shown_dur + 2.0) * 1000)
@@ -622,6 +716,13 @@ def _on_pie_ask_self(actor_sim, _target_sim):
                 'PLAYER_INITIATED', player_message=text), actor_sim))
 
 
+def _on_pie_thoughts(actor_sim, target_sim):
+    thinker = target_sim if (target_sim is not None and getattr(target_sim, 'is_sim', False)) else actor_sim
+    if thinker is not None:
+        observer = actor_sim if (actor_sim is not None and actor_sim is not thinker) else None
+        _submit(_make_event('inner_thought', 'thought-', thinker, observer, 'player_read_thoughts', None, 'PLAYER_INITIATED'))
+
+
 def _make_pie_cls(base_cls, affordance_mgr, guid, priority, self_only, label_fn, run_fn):
     class _PieInteraction(base_cls):
         guid64 = guid
@@ -667,7 +768,7 @@ def _make_pie_cls(base_cls, affordance_mgr, guid, priority, self_only, label_fn,
 
 
 def _install_pie_menu_interaction():
-    global _pie_interaction_cls, _pie_ask_self_cls
+    global _pie_interaction_cls, _pie_ask_self_cls, _pie_thoughts_cls
     affordance_mgr = services.affordance_manager()
     base_cls = affordance_mgr.get(13142) if affordance_mgr is not None else None
     if base_cls is None:
@@ -683,6 +784,11 @@ def _install_pie_menu_interaction():
             base_cls, affordance_mgr, 0xBA47E21AB0000002, 29, True,
             lambda _actor, _target, fname: f'Ask {fname} a Question (English)...',
             _on_pie_ask_self)
+    if _pie_thoughts_cls is None:
+        _pie_thoughts_cls = _make_pie_cls(
+            base_cls, affordance_mgr, 0xBA47E21AB0000003, 28, False,
+            lambda _actor, _target, fname: f"Hear {fname}'s Thoughts (English)",
+            _on_pie_thoughts)
     count = 0
     seen_types = set()
     for info in services.sim_info_manager().values():
@@ -696,9 +802,9 @@ def _install_pie_menu_interaction():
             seen_types.add(cls)
             cleaned = tuple(
                 sa for sa in cls._super_affordances
-                if getattr(sa, 'guid64', None) not in (0xBA47E21AB0000001, 0xBA47E21AB0000002)
+                if getattr(sa, 'guid64', None) not in (0xBA47E21AB0000001, 0xBA47E21AB0000002, 0xBA47E21AB0000003)
             )
-            cls._super_affordances = cleaned + (_pie_interaction_cls, _pie_ask_self_cls)
+            cls._super_affordances = cleaned + (_pie_interaction_cls, _pie_ask_self_cls, _pie_thoughts_cls)
         count += 1
     return count
 

@@ -1,0 +1,69 @@
+{
+  "experiment": "21-gossip-chef-situations-bystander-and-keepalive",
+  "harness": "offline_companion_benchmark_with_real_openrouter_and_sapi5",
+  "sapi5_warm_worker_timings": [
+    {
+      "call": 1,
+      "ttlt_s": 0.548,
+      "pcm_bytes": 174696
+    },
+    {
+      "call": 2,
+      "ttlt_s": 0.01,
+      "pcm_bytes": 195336
+    },
+    {
+      "call": 3,
+      "ttlt_s": 0.014,
+      "pcm_bytes": 206856
+    }
+  ],
+  "gossip_scene": {
+    "recent_gossip_injected": [
+      {
+        "pair": "Kenya Bower :: Olive Tinker",
+        "interaction": "Joke about Body Hair",
+        "text": "Olive Tinker: My body hair’s developing faster than my grades.\nKenya Bower: At least one thing here has a future."
+      }
+    ],
+    "text": "meimei: Woof! (Translation: The neighbors gossip; I investigate every doorbell.)\nKenya Bower: You’re my best listener; that date was a disaster.",
+    "chat_s": 2.732,
+    "tts_s": 2.524,
+    "audio_s": 10.08,
+    "voices": [
+      "Microsoft Zira Desktop",
+      "sage"
+    ]
+  },
+  "date_chef_outfit_scene": {
+    "actor_outfit": "SLEEP",
+    "actor_social_events": [
+      "Situation_Date (job_Date_Actor)"
+    ],
+    "actor_activities": [
+      {
+        "id": "generic_consume_food",
+        "target_label": "foodPlateEatMulti_MonteCristo",
+        "recipe_label": "recipe_Food_Homestyle_MonteCristo",
+        "cooked_by": "yuvi ronen",
+        "quality": "Quality_Poor"
+      }
+    ],
+    "text": "liatt chonen: That sandwich was surprisingly brave for quality poor.\nyuvi ronen: I cooked it; the karaoke machine cooked me worse.",
+    "chat_s": 1.738,
+    "tts_s": 1.912,
+    "audio_s": 8.03
+  },
+  "three_sim_bystander_scene": {
+    "speaker_count": 3,
+    "text": "Olive Tinker: Restaurant lighting makes every stray hair look ambitious.\nKenya Bower: Confidence is noticing—and refusing to discuss it.\nmeimei: Woof! (Translation: Hairy sheepdog reporting; please investigate my vacuum nemesis.)",
+    "chat_s": 2.145,
+    "tts_s": 1.631,
+    "audio_s": 14.91,
+    "voices": [
+      "alloy",
+      "sage",
+      "Microsoft Zira Desktop"
+    ]
+  }
+}

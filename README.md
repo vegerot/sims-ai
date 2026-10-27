@@ -15,7 +15,7 @@ Resume by reading `plan.md`, then the newest `progress.md` entries. Check the wo
 
 ## In-game script mod (`src/banter_lab`)
 
-`src/banter_lab` observes social interactions involving the active household and supports direct player-to-Sim conversation. Click your active Sim for **Enable/Disable English Banter** and **Ask <Sim> a Question (English)...**; click another Sim for **Speak to <Sim> (English)...**. On lot load it starts `companion.py` from this repository with `--parent-pid`, so no terminal is needed.
+`src/banter_lab` observes social interactions involving the active household and supports direct player-to-Sim conversation. Click your active Sim for **Enable/Disable English Banter**, **Ask <Sim> a Question (English)...**, and **Hear <Sim>'s Thoughts (English)**; click any other Sim or pet for **Speak to <Sim> (English)...** and 1-click **Hear <Sim>'s Thoughts (English)**. On lot load it starts `companion.py` from this repository with `--parent-pid`, so no terminal is needed.
 
 Console commands (`Ctrl+Shift+C`):
 
@@ -26,7 +26,7 @@ Console commands (`Ctrl+Shift+C`):
 | `banter.reload` | Hot-reload `BanterLab.ts4script`. |
 | `banter.stop` | Turn English banter off and restore any muted Simlish voices. |
 
-All player controls (**Enable/Disable English Banter**, **Ask <Sim> a Question (English)...**, and **Speak to <Sim> (English)...**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
+All player controls (**Enable/Disable English Banter**, **Ask <Sim> a Question (English)...**, **Speak to <Sim> (English)...**, and 1-click **Hear <Sim>'s Thoughts (English)**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
 
 Build and deploy using Python 3.7 (or uninstall / wipe playtest data for a clean slate):
 
@@ -79,3 +79,4 @@ python3.15 '.\companion.py' --once '.\experiments\replay-set'
 18. **[18 — OpenRouter TTS endpoint benchmark](experiments/18-openrouter-tts-endpoint-benchmark/result.json):** Verified the Antigravity scratch WAVs via `google/gemini-3.8-flash` audio transcription, benchmarked 5 `/api/v1/audio/speech` models across English/spicy/Hebrew/Russian, and added a 14-line per-line refusal fallback to `google/gemini-3.8-flash-lite-tts`.
 19. **[19 — Line length & rhythm A/B](experiments/19-line-length-and-rhythm-ab/result.json) & [Replay set](experiments/replay-set/):** Benchmarked `8–22` vs. `6–16` vs. `5–11` words/line across 6 real save events (`10.85 s` → `8.18 s` → `7.27 s` avg audio duration), fixed missing `same_household` on `scene['relationship']` (`meimei <-> Kenya Bower`), and restored UTF-8 stdout reconfiguration in `companion.py`.
 20. **[20 — Cleaned-context 7-scene replay verification](experiments/20-cleaned-context-replay-verification/result.json):** Verified all 7 real save scenes in `experiments/replay-set/` after filtering street-stranger townies, `trait_Attraction_*` turn-on spam, and passive room/lot buffs and preserving trailing `sentimentBit_*` entries (`avg_prompt_tokens = 1,921`).
+21. **[21 — Gossip, chef/quality, social events, 3-Sim bystander, & keep-alive/SAPI5 acceleration](experiments/21-gossip-chef-situations-bystander-and-keepalive/result.json):** Cut warm Windows SAPI5 pet synthesis from `0.83 s` to `10–38 ms` (`22–70×` faster), added thread-local keep-alive TLS pooling, and verified cross-partner `recent_gossip`, `cooked_by` + dish `quality`, active `social_events` + `outfit`, 3-Sim `bystander` chime-ins, and 1-click `Hear <Sim>'s Thoughts (English)` live across `Slot_00000003.save` (`aurora Hussain` & `Chánh Linh`) and `Slot_00000002.save` (`Kenya Bower`, `Hitomi Ishii`, & `meimei`).

@@ -9,6 +9,7 @@ speech with openai/gpt-audio-mini, and plays it when the game logs `displayed`.
 import argparse
 import base64
 import ctypes
+import http.client
 import json
 import msvcrt
 import os
@@ -17,9 +18,8 @@ import re
 import struct
 import subprocess
 import sys
+import threading
 import time
-import urllib.error
-import urllib.request
 import wave
 import winsound
 import zlib
@@ -42,9 +42,50 @@ MULTILINGUAL_CHANCE = 0.12
 
 _stbl_cache: dict[int, str] | None = None
 _sim_voice_assignments: dict[str, str] = {}
+_tls_local = threading.local()
+_sapi_lock = threading.Lock()
+_sapi_proc: subprocess.Popen | None = None
+BYSTANDER_HUMAN_CHANCE = 0.40
+BYSTANDER_PET_CHANCE = 0.75
+
+
+def _openrouter_conn(reset: bool = False) -> http.client.HTTPSConnection:
+    conn = getattr(_tls_local, 'conn', None)
+    if reset and conn is not None:
+        try:
+            conn.close()
+        except OSError:
+            pass
+        conn = None
+    if conn is None:
+        conn = http.client.HTTPSConnection('openrouter.ai', timeout=25)
+        _tls_local.conn = conn
+    return conn
+
+
+def _openrouter_request(method: str, path: str, body: bytes | None = None, timeout: float = 20.0) -> http.client.HTTPResponse:
+    headers = {'Authorization': f'Bearer {OPENROUTER_API_KEY}', 'Connection': 'keep-alive'}
+    if body is not None:
+        headers['Content-Type'] = 'application/json'
+    for attempt in range(2):
+        conn = _openrouter_conn(reset=(attempt > 0))
+        conn.timeout = timeout
+        try:
+            conn.request(method, path, body=body, headers=headers)
+            resp = conn.getresponse()
+            if resp.status >= 400:
+                err_body = resp.read().decode('utf-8', errors='replace')[:300]
+                raise OSError(f'HTTP {resp.status} on {path}: {err_body}')
+            return resp
+        except (http.client.HTTPException, ConnectionError, TimeoutError, OSError):
+            _openrouter_conn(reset=True)
+            if attempt == 1:
+                raise
+    raise RuntimeError('Unreachable')
 
 FEMALE_OPENROUTER_VOICES = ('coral', 'nova', 'shimmer', 'sage', 'ballad', 'alloy')
 MALE_OPENROUTER_VOICES = ('ash', 'echo', 'onyx', 'verse', 'fable')
+YOUTH_OPENROUTER_VOICES = ('shimmer', 'coral', 'nova', 'fable', 'sage')
 GEMINI_VOICE_MAP = {
     'coral': 'Kore', 'nova': 'Aoede', 'shimmer': 'Leda', 'sage': 'Zephyr', 'ballad': 'Aoede', 'alloy': 'Kore',
     'ash': 'Puck', 'echo': 'Fenrir', 'onyx': 'Charon', 'verse': 'Orus', 'fable': 'Puck',
@@ -165,16 +206,34 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
     return out
 
 
+def _stbl_source_mtime(game_dir: Path) -> float:
+    mtimes = [0.0]
+    exe = game_dir / 'Game' / 'Bin' / 'TS4_x64.exe'
+    if exe.exists():
+        mtimes.append(exe.stat().st_mtime)
+    if DEFAULT_MODS_DIR.exists():
+        for pkg in DEFAULT_MODS_DIR.rglob('*.package'):
+            if pkg.name != 'BanterLabUI.package':
+                mtimes.append(pkg.stat().st_mtime)
+    return round(max(mtimes), 3)
+
+
 def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     global _stbl_cache
     if _stbl_cache is not None:
         return _stbl_cache
+    meta_path = STBL_CACHE_PATH.with_suffix('.meta.json')
+    cur_mtime = _stbl_source_mtime(game_dir)
     if STBL_CACHE_PATH.exists():
-        _stbl_cache = {
-            int(k): v
-            for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()
-        }
-        return _stbl_cache
+        cached_mtime = json.loads(meta_path.read_text(encoding='utf-8')).get('max_mtime') if meta_path.exists() else cur_mtime
+        if cached_mtime == cur_mtime:
+            if not meta_path.exists():
+                meta_path.write_text(json.dumps({'max_mtime': cur_mtime}), encoding='utf-8')
+            _stbl_cache = {
+                int(k): v
+                for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()
+            }
+            return _stbl_cache
     strings: dict[int, str] = {}
     if game_dir.exists():
         for pkg in sorted(game_dir.rglob('Strings_ENG_US.package')):
@@ -188,6 +247,7 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     if strings:
         STBL_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
         STBL_CACHE_PATH.write_text(json.dumps(strings, ensure_ascii=False), encoding='utf-8')
+        meta_path.write_text(json.dumps({'max_mtime': cur_mtime}), encoding='utf-8')
     _stbl_cache = strings
     return _stbl_cache
 
@@ -219,7 +279,7 @@ def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict 
         )
     text = re.sub(r'<[^>]+>|\{[^{}]*\}|["“”]\s*["“”]', '', text)
     text = ' '.join(text.split()).strip()
-    if not text or any(p in text.lower() for p in ('(should not be seen)', '**debug**', 'set 01')):
+    if not text or any(p in text.lower() for p in ('(should not be seen)', '**debug**', '** debug **', 'set 01')):
         return None
     return text
 
@@ -290,12 +350,16 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         if act.get('id') == 'carrying':
             continue
         lbl = resolve_stbl(act.get('stbl'), sim, partner)
-        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target')
+        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or (None if act.get('target') == 'object_sim' else act.get('target'))
         rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
+        qlbl = resolve_stbl(act.get('quality_stbl'), sim, partner) or re.sub(r'^Quality_', '', str(act.get('quality') or '')) or None
         if lbl or tlbl:
             raw_acts.append({k: v for k, v in {
                 'id': act.get('id'), 'label': lbl, 'target_label': tlbl,
                 'recipe_label': rlbl if rlbl != tlbl else None,
+                'cooked_by': act.get('cooked_by'),
+                'quality': 'Spoiled' if act.get('spoiled') else qlbl,
+                'masterwork': True if act.get('masterwork') else None,
             }.items() if v})
     labelled_targets = {a.get('target_label') for a in raw_acts if a.get('label') and a.get('target_label')}
     activities = [a for a in raw_acts if a.get('label') or a.get('target_label') not in labelled_targets]
@@ -314,12 +378,27 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
                 'bits': fb[:14],
                 'reverse_bits': rb[:8],
             }.items() if v})
+    events = []
+    for sit in (sim.get('situations') or []):
+        sname = resolve_stbl(sit.get('stbl'), sim, partner)
+        rname = resolve_stbl(sit.get('role_stbl'), sim, partner)
+        raw_s, raw_r = sit.get('id'), sit.get('role')
+        if sname and rname and sname != rname:
+            lbl = f'{sname} ({rname})'
+        elif rname or sname:
+            lbl = rname or sname
+        else:
+            lbl = f'{raw_s} ({raw_r})' if (raw_s and raw_r) else (raw_s or raw_r)
+        if lbl and lbl not in events:
+            events.append(lbl)
+    species = _SPECIES_NAMES.get(str(sim.get('species')), sim.get('species') or 'HUMAN')
     raw = {
         'name': sim.get('name'),
         'age': sim.get('age'),
         'gender': sim.get('gender'),
-        'species': _SPECIES_NAMES.get(str(sim.get('species')), sim.get('species') or 'HUMAN'),
+        'species': species,
         'breed': resolve_stbl(sim.get('breed_stbl'), sim, partner) or sim.get('breed'),
+        'outfit': sim.get('outfit') if species == 'HUMAN' else None,
         'mood': _clean_mood(mood),
         'household_funds': sim.get('household_funds'),
         'trait_labels': [l for l in (resolve_stbl(s, sim, partner) for s in sim.get('trait_stbls', [])) if l] or sim.get('traits'),
@@ -329,6 +408,7 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         'top_skills': skills,
         'active_buffs': buffs,
         'activity_labels': activities,
+        'social_events': events,
         'social_connections': connections[:6],
     }
     return {k: v for k, v in raw.items() if v}
@@ -349,6 +429,24 @@ class MemoryStore:
 
     def get_memory(self, actor_name: str, target_name: str | None = None, limit: int = 4) -> list[dict]:
         return (self.pairs.get(self.make_key(actor_name, target_name)) or [])[-limit:]
+
+    def get_gossip(self, actor_name: str, target_name: str | None = None, limit: int = 2) -> list[dict]:
+        if not target_name:
+            return []
+        cur_key = self.make_key(actor_name, target_name)
+        speakers = {actor_name.strip(), target_name.strip()}
+        cutoff = time.time() - 21600.0
+        hits = []
+        for k, entries in self.pairs.items():
+            if k == cur_key or k.startswith('solo::') or ' :: ' not in k:
+                continue
+            parts = set(k.split(' :: '))
+            if parts & speakers:
+                for e in entries[-2:]:
+                    if float(e.get('ts') or 0) >= cutoff:
+                        hits.append((float(e.get('ts') or 0), {'pair': k, 'interaction': e.get('interaction'), 'text': e.get('text')}))
+        hits.sort(key=lambda x: -x[0])
+        return [h[1] for h in hits[:limit]]
 
     def record(self, event: dict, scene: dict, text: str) -> None:
         actor = event.get('actor') or {}
@@ -374,10 +472,8 @@ class CostTracker:
         self.summary_path = data_dir / 'cost_summary.json'
         prev = json.loads(self.summary_path.read_text(encoding='utf-8-sig')) if self.summary_path.exists() else {}
         try:
-            req = urllib.request.Request(
-                'https://openrouter.ai/api/v1/key', headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}'})
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                key = json.loads(resp.read().decode('utf-8'))['data']
+            resp = _openrouter_request('GET', '/api/v1/key', timeout=8)
+            key = json.loads(resp.read().decode('utf-8'))['data']
             self.key_usage_at_start = float(key['usage'])
             self.key_limit_remaining = key.get('limit_remaining')
         except (OSError, KeyError, ValueError):
@@ -409,11 +505,18 @@ def choose_scene_language(event: dict) -> str:
     return 'Russian (Русский)' if r < MULTILINGUAL_CHANCE else 'English'
 
 
-def build_scene(event: dict, language: str = 'English', pair_memory: list[dict] | None = None) -> dict:
+def build_scene(
+    event: dict,
+    language: str = 'English',
+    pair_memory: list[dict] | None = None,
+    recent_gossip: list[dict] | None = None,
+    include_bystander: bool = False,
+) -> dict:
     actor = event['actor']
     target = event.get('target') if isinstance(event.get('target'), dict) else None
+    bystander = event.get('bystander') if (include_bystander and isinstance(event.get('bystander'), dict)) else None
     event_type = event.get('type', 'social')
-    speaker_count = 1 if target is None or event_type == 'player_ask_self' else 2
+    speaker_count = 1 if target is None or event_type in ('player_ask_self', 'inner_thought') else (3 if bystander is not None else 2)
     interaction_label = resolve_stbl(event.get('interaction_stbl'), actor, target)
     venue_label = resolve_stbl(event.get('venue_stbl'), actor, target)
     lot_traits = [z for z in (event.get('lot_traits') or []) if 'hidden' not in z.lower()]
@@ -431,6 +534,7 @@ def build_scene(event: dict, language: str = 'English', pair_memory: list[dict] 
         'business': event.get('business'),
         'actor': _clean_sim_for_prompt(actor, target),
         'target': _clean_sim_for_prompt(target, actor) if target else None,
+        'bystander': _clean_sim_for_prompt(bystander, actor) if bystander else None,
     }
     scene = {k: v for k, v in scene.items() if v is not None or k in ('target', 'outcome', 'interaction_label', 'venue_label')}
     if target and isinstance(event.get('relationship'), dict):
@@ -451,20 +555,24 @@ def build_scene(event: dict, language: str = 'English', pair_memory: list[dict] 
         scene['player_message'] = event['player_message']
     if pair_memory:
         scene['pair_memory'] = pair_memory[-4:]
+    if recent_gossip:
+        scene['recent_gossip'] = recent_gossip[:2]
     return scene
 
 
-def select_openrouter_voice(sim: dict, slot: int = 0, avoid_voice: str | None = None) -> str:
-    sim_id = str(sim.get('id') or sim.get('name') or slot)
-    cached = _sim_voice_assignments.get(sim_id)
-    if cached and cached != avoid_voice:
-        return cached
-    pool = FEMALE_OPENROUTER_VOICES if str(sim.get('gender') or '').upper() == 'FEMALE' else MALE_OPENROUTER_VOICES
-    id_num = abs(int(sim['id'])) if str(sim.get('id') or '').lstrip('-').isdigit() else sum(ord(c) for c in sim_id)
-    base_idx = (id_num + slot) % len(pool)
-    chosen = pool[(base_idx + 1) % len(pool)] if pool[base_idx] == avoid_voice else pool[base_idx]
-    _sim_voice_assignments[sim_id] = chosen
-    return chosen
+def select_openrouter_voice(sim: dict, avoid_voices: tuple[str, ...] = ()) -> str:
+    sim_id = str(sim.get('id') or sim.get('name') or '0')
+    age = str(sim.get('age') or '').upper()
+    pool = YOUTH_OPENROUTER_VOICES if age in ('CHILD', 'TODDLER', 'INFANT') else (
+        FEMALE_OPENROUTER_VOICES if str(sim.get('gender') or '').upper() == 'FEMALE' else MALE_OPENROUTER_VOICES)
+    base = _sim_voice_assignments.get(sim_id)
+    if not base:
+        id_num = abs(int(sim['id'])) if str(sim.get('id') or '').lstrip('-').isdigit() else sum(ord(c) for c in sim_id)
+        base = pool[id_num % len(pool)]
+        _sim_voice_assignments[sim_id] = base
+    if base not in avoid_voices:
+        return base
+    return next((v for v in pool if v not in avoid_voices), base)
 
 
 MOOD_TO_DELIVERY_TONE = {
@@ -486,6 +594,7 @@ MOOD_TO_DELIVERY_TONE = {
     'Embarrassed': 'flustered, awkward, defensive',
     'Inspired': 'animated, expressive, enthusiastic',
     'Focused': 'crisp, matter-of-fact, sharp',
+    'Asleep': 'groggy, sleepy, half-awake',
 }
 
 
@@ -500,8 +609,10 @@ def _transcript_matches(spoken_text: str, transcript: str) -> bool:
     return not spoken or len(spoken & _word_set(transcript)) / len(spoken) >= 0.6
 
 
-def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) -> dict:
+def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str, age: str = '') -> dict:
     tone = MOOD_TO_DELIVERY_TONE.get(_clean_mood(mood) or 'Fine', 'natural, expressive, playful')
+    if age.upper() in ('CHILD', 'TODDLER', 'INFANT'):
+        tone = f'young, bright, playful; {tone}'
     spoken_words = _word_set(spoken_text)
     payload = {
         'model': TTS_MODEL,
@@ -523,50 +634,47 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
             {'role': 'user', 'content': f'Read aloud verbatim: <read>{spoken_text}</read>'},
         ],
     }
-    req = urllib.request.Request(
-        'https://openrouter.ai/api/v1/chat/completions',
-        data=json.dumps(payload).encode('utf-8'),
-        headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}', 'Content-Type': 'application/json'},
-        method='POST',
-    )
     t0 = time.monotonic()
     ttfa = None
     pcm_chunks: list[bytes] = []
     transcript_parts: list[str] = []
     usage: dict = {}
-    with urllib.request.urlopen(req, timeout=25) as resp:
-        for raw in resp:
-            ln = raw.decode('utf-8').strip()
-            if not ln.startswith('data: ') or ln[6:] == '[DONE]':
-                continue
-            chunk = json.loads(ln[6:])
-            if chunk.get('usage'):
-                usage = chunk['usage']
-            choices = chunk.get('choices') or []
-            if choices:
-                audio = (choices[0].get('delta') or {}).get('audio') or {}
-                if audio.get('data'):
-                    if ttfa is None:
-                        ttfa = round(time.monotonic() - t0, 3)
-                    pcm_chunks.append(base64.b64decode(audio['data']))
-                if audio.get('transcript'):
-                    transcript_parts.append(audio['transcript'])
-                    tr_words = _word_set(''.join(transcript_parts))
-                    if spoken_words and len(tr_words) >= 4 and not (tr_words & spoken_words):
-                        break
+    resp = _openrouter_request('POST', '/api/v1/chat/completions', json.dumps(payload).encode('utf-8'), timeout=25)
+    aborted = False
+    while True:
+        raw = resp.readline()
+        if not raw:
+            break
+        ln = raw.decode('utf-8').strip()
+        if not ln.startswith('data: ') or ln[6:] == '[DONE]':
+            continue
+        chunk = json.loads(ln[6:])
+        if chunk.get('usage'):
+            usage = chunk['usage']
+        choices = chunk.get('choices') or []
+        if choices:
+            audio = (choices[0].get('delta') or {}).get('audio') or {}
+            if audio.get('data'):
+                if ttfa is None:
+                    ttfa = round(time.monotonic() - t0, 3)
+                pcm_chunks.append(base64.b64decode(audio['data']))
+            if audio.get('transcript'):
+                transcript_parts.append(audio['transcript'])
+                tr_words = _word_set(''.join(transcript_parts))
+                if spoken_words and len(tr_words) >= 4 and not (tr_words & spoken_words):
+                    aborted = True
+                    break
+    if aborted:
+        _openrouter_conn(reset=True)
+    else:
+        resp.read()
     ttlt = round(time.monotonic() - t0, 3)
     transcript = ''.join(transcript_parts).strip()
     if not pcm_chunks or not _transcript_matches(spoken_text, transcript):
         gem_voice = GEMINI_VOICE_MAP.get(voice, 'Kore')
-        gem_req = urllib.request.Request(
-            'https://openrouter.ai/api/v1/audio/speech',
-            data=json.dumps({'model': FALLBACK_TTS_MODEL, 'input': spoken_text, 'voice': gem_voice, 'response_format': 'pcm'}).encode('utf-8'),
-            headers={'Authorization': f'Bearer {OPENROUTER_API_KEY}', 'Content-Type': 'application/json'},
-            method='POST',
-        )
+        gem_body = json.dumps({'model': FALLBACK_TTS_MODEL, 'input': spoken_text, 'voice': gem_voice, 'response_format': 'pcm'}).encode('utf-8')
         t_gem = time.monotonic()
-        with urllib.request.urlopen(gem_req, timeout=20) as gem_resp:
-            gem_pcm = gem_resp.read()
+        gem_pcm = _openrouter_request('POST', '/api/v1/audio/speech', gem_body, timeout=20).read()
         return {
             'voice': f'{voice}->{gem_voice}', 'tone': tone, 'pcm': gem_pcm,
             'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t_gem, 3), 'transcript': spoken_text,
@@ -580,48 +688,58 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str) 
 
 
 def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str = 'coral') -> dict:
+    global _sapi_proc
     voice = 'Microsoft Zira Desktop' if str(sim.get('gender') or '').upper() == 'FEMALE' else 'Microsoft David Desktop'
-    ps_cmd = (
+    ps_loop = (
         '[Console]::InputEncoding = [System.Text.Encoding]::UTF8; '
         'Add-Type -AssemblyName System.Speech; '
         '$s = [System.Speech.Synthesis.SpeechSynthesizer]::new(); '
-        f'$s.SelectVoice({json.dumps(voice)}); '
-        '$ms = [System.IO.MemoryStream]::new(); '
         '$fmt = [System.Speech.AudioFormat.SpeechAudioFormatInfo]::new('
         '24000, [System.Speech.AudioFormat.AudioBitsPerSample]::Sixteen, [System.Speech.AudioFormat.AudioChannel]::Mono); '
-        '$s.SetOutputToAudioStream($ms, $fmt); '
-        '$s.Speak([Console]::In.ReadToEnd()); '
-        '[Console]::OpenStandardOutput().Write($ms.ToArray(), 0, [int]$ms.Length)'
+        '$out = [Console]::OpenStandardOutput(); '
+        'while (($line = [Console]::In.ReadLine()) -ne $null) { '
+        '  $req = $line | ConvertFrom-Json; $s.SelectVoice($req.voice); '
+        '  $ms = [System.IO.MemoryStream]::new(); $s.SetOutputToAudioStream($ms, $fmt); '
+        '  $s.Speak([string]$req.text); $s.SetOutputToNull(); '
+        '  $hdr = [System.Text.Encoding]::ASCII.GetBytes("$($ms.Length)`n"); '
+        '  $out.Write($hdr, 0, $hdr.Length); $out.Write($ms.ToArray(), 0, [int]$ms.Length); $out.Flush() '
+        '}'
     )
     t0 = time.monotonic()
-    res = subprocess.run(
-        ['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', ps_cmd],
-        input=spoken_text.encode('utf-8'),
-        capture_output=True,
-        timeout=15,
-        check=True,
-        creationflags=subprocess.CREATE_NO_WINDOW,
-    )
-    if not res.stdout:
+    with _sapi_lock:
+        if _sapi_proc is None or _sapi_proc.poll() is not None:
+            _sapi_proc = subprocess.Popen(
+                ['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', ps_loop],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+        assert _sapi_proc.stdin is not None and _sapi_proc.stdout is not None
+        _sapi_proc.stdin.write((json.dumps({'voice': voice, 'text': spoken_text}, ensure_ascii=False) + '\n').encode('utf-8'))
+        _sapi_proc.stdin.flush()
+        nbytes = int(_sapi_proc.stdout.readline().decode('ascii').strip() or '0')
+        pcm = _sapi_proc.stdout.read(nbytes) if nbytes > 0 else b''
+    if not pcm:
         return _synthesize_single_line_openrouter(spoken_text, fallback_voice, str(sim.get('mood') or 'Fine'))
     return {
-        'voice': voice, 'tone': 'windows_sapi5_pet', 'pcm': res.stdout,
+        'voice': voice, 'tone': 'windows_sapi5_pet', 'pcm': pcm,
         'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t0, 3),
         'transcript': spoken_text, 'cost_usd': 0.0,
     }
 
 
-def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, wav_path: Path) -> dict:
+def synthesize_dialogue_openrouter(
+    text: str, actor: dict, target: dict | None, wav_path: Path, bystander: dict | None = None, single_speaker: bool = False
+) -> dict:
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    actor_voice = select_openrouter_voice(actor, 0)
-    target_voice = select_openrouter_voice(target, 1, avoid_voice=actor_voice) if target else None
+    speakers = [actor] if (single_speaker or target is None) else ([actor, target, bystander] if bystander else [actor, target])
+    voices: list[str] = []
+    for sim in speakers:
+        voices.append(select_openrouter_voice(sim, tuple(voices)))
     tasks = []
-    for idx, line in enumerate(lines[:1 if target is None else 2]):
+    for idx, line in enumerate(lines[:len(speakers)]):
         spoken = re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', (line.split(':', 1)[1] if ':' in line else line), flags=re.IGNORECASE).strip(' "“”')
-        sim = actor if idx == 0 or target is None else target
-        voice = actor_voice if idx == 0 or target_voice is None else target_voice
         if spoken:
-            tasks.append((spoken, voice, sim))
+            tasks.append((spoken, voices[idx], speakers[idx]))
 
     started = time.monotonic()
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
@@ -631,7 +749,7 @@ def synthesize_dialogue_openrouter(text: str, actor: dict, target: dict | None, 
             if is_pet:
                 futures.append((voice, pool.submit(_synthesize_pet_windows_tts, spoken, sim, voice)))
             else:
-                futures.append((voice, pool.submit(_synthesize_single_line_openrouter, spoken, voice, str(sim.get('mood') or 'Fine'))))
+                futures.append((voice, pool.submit(_synthesize_single_line_openrouter, spoken, voice, str(sim.get('mood') or 'Fine'), str(sim.get('age') or ''))))
         line_results = []
         for voice, future in futures:
             try:
@@ -665,25 +783,38 @@ def _strip_outer_quotes(text: str) -> str:
     return s[1:-1].strip() if len(s) >= 2 and s[0] in '"“”«' and s[-1] in '"“”»' else s
 
 
-def _normalize_dialogue_lines(raw_text: str, event: dict) -> str:
+def _normalize_dialogue_lines(raw_text: str, event: dict, speaker_count: int = 2) -> str:
     lines = [ln.strip() for ln in raw_text.splitlines() if ln.strip()]
     actor_name = (event.get('actor') or {}).get('name') or 'Sim'
     target = event.get('target')
     target_name = target.get('name') if isinstance(target, dict) else None
+    bystander = event.get('bystander')
+    bystander_name = bystander.get('name') if isinstance(bystander, dict) else None
     event_type = event.get('type', 'social')
     player_msg = (event.get('player_message') or '').strip()
 
-    if target is None or event_type == 'player_ask_self':
+    if target is None or event_type in ('player_ask_self', 'inner_thought'):
         last = lines[-1] if lines else ''
         return f"{actor_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
     if event_type == 'player_chat' and player_msg:
         last = lines[-1] if lines else ''
         return f"{actor_name}: {player_msg}\n{target_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
+    defaults = [actor_name, target_name or 'Sim', bystander_name or 'Sim']
     out = []
-    for idx, ln in enumerate(lines[:2]):
-        spk, body = ln.split(':', 1) if ':' in ln else (actor_name if idx == 0 else (target_name or 'Sim'), ln)
+    for idx, ln in enumerate(lines[:speaker_count]):
+        spk, body = ln.split(':', 1) if ':' in ln else (defaults[min(idx, 2)], ln)
         out.append(f"{spk.strip('* ')}: {_strip_outer_quotes(body)}")
     return '\n'.join(out)
+
+
+def _should_include_bystander(event: dict) -> bool:
+    bys = event.get('bystander')
+    if event.get('type', 'social') != 'social' or not isinstance(bys, dict):
+        return False
+    if event.get('force_bystander'):
+        return True
+    is_pet = _SPECIES_NAMES.get(str(bys.get('species')), str(bys.get('species') or 'HUMAN')).upper() != 'HUMAN'
+    return random.random() < (BYSTANDER_PET_CHANCE if is_pet else BYSTANDER_HUMAN_CHANCE)
 
 
 def generate(
@@ -695,30 +826,28 @@ def generate(
     language = choose_scene_language(event)
     actor_name = str(event['actor'].get('name') or '')
     target = event.get('target')
-    pair_mem = memory_store.get_memory(actor_name, target.get('name') if target else None)
-    scene = build_scene(event, language=language, pair_memory=pair_mem)
+    target_name = target.get('name') if isinstance(target, dict) else None
+    use_bystander = _should_include_bystander(event)
+    bystander = event.get('bystander') if use_bystander else None
+    pair_mem = memory_store.get_memory(actor_name, target_name)
+    gossip = memory_store.get_gossip(actor_name, target_name)
+    scene = build_scene(event, language=language, pair_memory=pair_mem, recent_gossip=gossip, include_bystander=use_bystander)
     payload = {
         'model': CHAT_MODEL,
         'messages': [
             {'role': 'system', 'content': (ROOT / 'prompt.txt').read_text(encoding='utf-8')},
             {'role': 'user', 'content': json.dumps(scene, ensure_ascii=False)},
         ],
-        'max_tokens': 300,
+        'max_tokens': 320,
         'reasoning': {'effort': REASONING_EFFORT},
     }
-    request = urllib.request.Request(
-        'https://openrouter.ai/api/v1/chat/completions',
-        data=json.dumps(payload).encode('utf-8'),
-        headers={'Authorization': 'Bearer ' + OPENROUTER_API_KEY, 'Content-Type': 'application/json'},
-        method='POST',
-    )
     started = time.monotonic()
-    with urllib.request.urlopen(request, timeout=20) as response:
-        result = json.load(response)
+    resp = _openrouter_request('POST', '/api/v1/chat/completions', json.dumps(payload).encode('utf-8'), timeout=20)
+    result = json.loads(resp.read().decode('utf-8'))
     raw_text = result['choices'][0]['message']['content'].strip()
     if not raw_text:
         raise ValueError('The model returned no dialogue.')
-    text = _normalize_dialogue_lines(raw_text, event)
+    text = _normalize_dialogue_lines(raw_text, event, speaker_count=scene['speaker_count'])
     usage = result.get('usage', {})
     out = {
         'event_id': event['event_id'],
@@ -733,7 +862,9 @@ def generate(
     }
     cost_usd = float(usage.get('cost') or 0.0)
     if tts_dir is not None:
-        out['tts'] = synthesize_dialogue_openrouter(text, event['actor'], target, tts_dir / f"{event['event_id']}.wav")
+        out['tts'] = synthesize_dialogue_openrouter(
+            text, event['actor'], target, tts_dir / f"{event['event_id']}.wav", bystander=bystander,
+            single_speaker=(scene['speaker_count'] == 1))
         cost_usd += out['tts']['tts_cost_usd']
     out['_scene'] = scene
     out['_cost_usd'] = cost_usd
@@ -841,7 +972,7 @@ def main():
                 if audio_path and float(event.get('displayed_at') or 0) >= started_at - 5.0:
                     winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 continue
-            if (event.get('type') not in ('social', 'player_chat', 'player_ask_self')
+            if (event.get('type') not in ('social', 'player_chat', 'player_ask_self', 'inner_thought')
                     or float(event.get('observed_at') or 0) < started_at - 15.0):
                 continue
             try:
