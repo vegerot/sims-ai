@@ -393,43 +393,50 @@ def _friendship_score(tracker, other_id):
     return 0.0
 
 
-def _sim_social_connections(info):
+_STORY_REL_KEYWORDS = (
+    'married', 'engaged', 'significant_other', 'soulmates', 'lovers', 'exes', 'broken_up', 'divorced',
+    'unfaithful', 'fellinlove', 'havebeenromantic', 'sentimentbit_', 'family_', 'isdog', 'iscat',
+    'neighbor', 'landlord', 'tenant', 'coworkers', 'partnersincrime', 'blinddate', 'hadlewddream',
+    'hadsex', 'bff', 'good_friends', 'nemesis', 'despised', 'nolongerfriends',
+)
+
+
+def _scored_relations(info):
     tracker = getattr(info, 'relationship_tracker', None)
     if tracker is None or not hasattr(tracker, 'get_target_sim_infos'):
         return []
-    scored = []
-    sim_id = int(info.sim_id)
+    out = []
+    seen = {int(info.sim_id)}
     hh_id = getattr(info, 'household_id', None)
     partner_ids = (getattr(info, 'spouse_sim_id', None), getattr(info, 'fiance_sim_id', None))
     for other in list(tracker.get_target_sim_infos()):
-        other_id = int(getattr(other, 'sim_id', 0) or 0) if other is not None else 0
-        if not other_id or other_id == sim_id:
+        oid = int(getattr(other, 'sim_id', 0) or 0) if other is not None else 0
+        name = _sim_name(other) if oid and oid not in seen else ''
+        if not name or 'do_not_remove' in name.lower():
             continue
-        other_name = _sim_name(other)
-        if not other_name or 'do_not_remove' in other_name.lower():
-            continue
-        bits = [b.__name__ for b in tracker.get_all_bits(other_id)]
-        other_tracker = getattr(other, 'relationship_tracker', None)
-        rev_bits = [b.__name__ for b in other_tracker.get_all_bits(sim_id)
-                    if b.__name__ not in bits] if other_tracker is not None else []
-        friendship = _friendship_score(tracker, other_id)
-        romance = round(float(tracker.get_relationship_score(other_id, RelationshipTrack.ROMANCE_TRACK)), 1)
+        seen.add(oid)
+        bits = [b.__name__ for b in tracker.get_all_bits(oid)]
+        ot = getattr(other, 'relationship_tracker', None)
+        rev_bits = [b.__name__ for b in ot.get_all_bits(int(info.sim_id)) if b.__name__ not in bits] if ot is not None else []
+        friendship = _friendship_score(tracker, oid)
+        romance = round(float(tracker.get_relationship_score(oid, RelationshipTrack.ROMANCE_TRACK) or 0.0), 1)
         same_hh = bool(hh_id and getattr(other, 'household_id', None) == hh_id)
-        is_partner = other_id in partner_ids
-        all_lower = ' '.join(bits + rev_bits).lower()
-        has_story = any(k in all_lower for k in (
-            'married', 'engaged', 'significant_other', 'soulmates', 'lovers', 'exes', 'broken_up', 'divorced',
-            'unfaithful', 'fellinlove', 'havebeenromantic', 'sentimentbit_', 'family_', 'isdog', 'iscat',
-            'neighbor', 'landlord', 'tenant', 'coworkers', 'partnersincrime', 'blinddate', 'hadlewddream',
-            'hadsex', 'bff', 'good_friends', 'nemesis', 'despised', 'nolongerfriends',
-        ))
-        if is_partner or same_hh or has_story or abs(romance) >= 15.0 or abs(friendship) >= 25.0:
-            scored.append((-int(is_partner), -int(same_hh), -int(has_story), -(abs(romance) + abs(friendship)), {
-                'id': str(other_id), 'name': other_name, 'same_household': same_hh,
-                'friendship': friendship, 'romance': romance, 'bits': bits, 'reverse_bits': rev_bits,
-            }))
-    scored.sort(key=lambda item: item[:4])
-    return [item[4] for item in scored[:8]]
+        is_partner = oid in partner_ids
+        has_story = any(k in ' '.join(bits + rev_bits).lower() for k in _STORY_REL_KEYWORDS)
+        rank = (-int(is_partner), -int(same_hh), -int(has_story), -(abs(romance) + abs(friendship)))
+        out.append((rank, other, {
+            'id': str(oid), 'name': name, 'same_household': same_hh,
+            'friendship': friendship, 'romance': romance, 'bits': bits, 'reverse_bits': rev_bits,
+        }))
+    out.sort(key=lambda item: item[0])
+    return out
+
+
+def _sim_social_connections(info):
+    return [
+        entry for rank, _other, entry in _scored_relations(info)
+        if rank[:3] != (0, 0, 0) or abs(entry['romance']) >= 15.0 or abs(entry['friendship']) >= 25.0
+    ][:8]
 
 
 def _sim_snapshot(sim_or_info):
@@ -604,11 +611,42 @@ def _social_participants(interaction):
     return actor, target, bystander
 
 
+def _nearby_sims(actor_or_info, *excluded):
+    a_sim = getattr(actor_or_info, 'sim_info', actor_or_info).get_sim_instance()
+    if a_sim is None:
+        return []
+    excl = {int(getattr(x, 'sim_info', x).sim_id) for x in (actor_or_info,) + excluded if x is not None}
+    apos = a_sim.position
+    alevel, aout = a_sim.level, bool(getattr(a_sim, 'is_outside', False))
+    near = []
+    for oinfo in services.sim_info_manager().values():
+        if int(oinfo.sim_id) in excl:
+            continue
+        osim = oinfo.get_sim_instance()
+        if osim is None or osim.level != alevel or bool(getattr(osim, 'is_outside', False)) != aout:
+            continue
+        opos = osim.position
+        d2 = (apos.x - opos.x) ** 2 + (apos.z - opos.z) ** 2
+        if d2 <= 100.0:
+            sp_obj = getattr(oinfo, 'extended_species', None) or getattr(oinfo, 'species', None)
+            sp_name = getattr(sp_obj, 'name', None) or _SPECIES_NAMES.get(sp_obj, 'HUMAN')
+            act_stbl = None
+            for si in (getattr(osim, 'si_state', None) or ()):
+                if not getattr(si, 'is_social', False) and type(si).__name__ not in _IDLE_POSTURES:
+                    act_stbl = _string_hash(getattr(si, 'display_name', None), osim, getattr(si, 'target', None))
+                    if act_stbl:
+                        break
+            near.append((d2, {'name': _sim_name(oinfo), 'species': sp_name, 'dist_m': round(d2 ** 0.5, 1), 'activity_stbl': act_stbl}))
+    near.sort(key=lambda item: item[0])
+    return [item[1] for item in near[:4]]
+
+
 def _make_event(event_type, id_prefix, actor, target, interaction_name, interaction_stbl, outcome, player_message=None, bystander=None):
     global _event_count
     _event_count += 1
     any_out = any(getattr(getattr(s, 'sim_info', s).get_sim_instance(), 'is_outside', False) for s in (actor, target, bystander) if s is not None)
     venue = _venue_snapshot(include_weather=any_out)
+    nearby = _nearby_sims(actor, target, bystander)
     event = {
         'type': event_type, 'outcome': outcome,
         'event_id': f'{id_prefix}{int(time.time() * 1000)}-{_event_count}',
@@ -619,6 +657,8 @@ def _make_event(event_type, id_prefix, actor, target, interaction_name, interact
         'actor': _sim_snapshot(actor),
         'target': _sim_snapshot(target) if target is not None else None,
     }
+    if nearby:
+        event['nearby_sims'] = nearby
     if bystander is not None:
         event['bystander'] = _sim_snapshot(bystander)
     if target is not None:
@@ -887,27 +927,19 @@ def _on_pie_call_someone(actor_sim, _target_sim):
     if actor_sim is None:
         return
     a_info = actor_sim.sim_info
-    tracker = getattr(a_info, 'relationship_tracker', None)
-    raw_others = list(tracker.get_target_sim_infos()) if (tracker is not None and hasattr(tracker, 'get_target_sim_infos')) else []
-    contacts = []
-    seen = {int(a_info.sim_id)}
-    for other in raw_others:
-        oid = int(getattr(other, 'sim_id', 0) or 0)
-        if not oid or oid in seen or not _is_human(other) or 'do_not_remove' in _sim_name(other).lower():
-            continue
-        seen.add(oid)
-        score = abs(_friendship_score(tracker, oid)) + abs(float(tracker.get_relationship_score(oid, RelationshipTrack.ROMANCE_TRACK) or 0.0))
-        contacts.append((-score, other))
+    contacts = [
+        other for _rank, other, _entry in _scored_relations(a_info)
+        if _is_human(other) and (not getattr(other, 'is_ghost', False) or getattr(other, 'is_selectable', False))
+    ]
     if not contacts:
         _notify('Banter Lab', f'{a_info.first_name} has not met anyone to call or text yet!', a_info, timeout_ms=4500)
         return
-    contacts.sort(key=lambda item: item[0])
     picker = UiSimPicker.TunableFactory().default(
         a_info,
         title=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text(f'Call / Text from {_sim_name(a_info)}'),
         text=lambda *args, **kwargs: LocalizationHelperTuning.get_raw_text('Choose someone to call or text:'),
     )
-    for _, other in contacts[:24]:
+    for other in contacts[:24]:
         picker.add_row(SimPickerRow(other.sim_id, tag=other))
 
     def _on_picked(dialog):

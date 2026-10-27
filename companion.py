@@ -264,6 +264,14 @@ def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict 
         is_female = str(sim.get('gender', '')).upper() == 'FEMALE'
         text = text.replace('{' + idx + '.SimFirstName}', first_name)
         text = text.replace('{' + idx + '.SimName}', full_name)
+        for ptok, m_val, f_val in (
+            ('SimPronounSubjective', 'he', 'she'),
+            ('SimPronounObjective', 'him', 'her'),
+            ('SimPronounPossessiveDependent', 'his', 'her'),
+            ('SimPronounPossessiveIndependent', 'his', 'hers'),
+            ('SimPronounReflexive', 'himself', 'herself'),
+        ):
+            text = text.replace(f'{{{idx}.{ptok}}}', f_val if is_female else m_val)
         text = re.sub(
             r'\{M' + idx + r'\.([^{}]*)\}\{F' + idx + r'\.([^{}]*)\}',
             lambda m, fem=is_female: m.group(2 if fem else 1),
@@ -305,7 +313,7 @@ _NOISY_TRAIT_SUBSTRINGS = (
     'pet_age_', 'discipline_', 'disciplinedout_', 'trait_hidden_', '_hidden',
     'relexpectations_', 'practicemakesperfect', 'noopinion_', 'civicpolicy_',
     'attraction_haircolor_', 'attraction_outfitcolor_', 'likes_color_', 'dislikes_color_',
-    'iscustomgender',
+    'iscustomgender', 'trait_cas_story_',
 )
 
 
@@ -343,8 +351,10 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     ]
     raw_acts = []
     for act in (sim.get('activities') or []):
-        lbl = 'Ordered at restaurant' if act.get('id') == 'restaurant_order' else resolve_stbl(act.get('stbl'), sim, partner)
-        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target')
+        aid = str(act.get('id') or '')
+        is_sit = 'sit' in aid.lower()
+        lbl = 'Ordered at restaurant' if aid == 'restaurant_order' else resolve_stbl(act.get('stbl'), sim, partner)
+        tlbl = None if is_sit else (resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target'))
         rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
         qlbl = resolve_stbl(act.get('quality_stbl'), sim, partner) or re.sub(r'^Quality_', '', str(act.get('quality') or '')) or None
         if lbl or tlbl or rlbl:
@@ -359,7 +369,10 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
     labelled_targets = {a.get('target_label') for a in raw_acts if a.get('label') and a.get('target_label')}
     activities = []
     seen_unlabelled = set()
+    has_non_sit = any('sit' not in str(a.get('id') or '').lower() for a in raw_acts)
     for a in raw_acts:
+        if has_non_sit and 'sit' in str(a.get('id') or '').lower():
+            continue
         if a.get('label'):
             activities.append(a)
         elif a.get('target_label') not in labelled_targets and a.get('target_label') not in seen_unlabelled:
@@ -555,6 +568,14 @@ def build_scene(
         'weather': re.sub(r'(?i)\bweather_', '', str(event.get('weather') or '')).replace('_', ' ') or None,
         'lot_traits': lot_traits or None,
         'business': event.get('business'),
+        'nearby_sims': [
+            f"{n['name']} (" + ', '.join(x for x in (
+                n.get('species') if n.get('species') and n.get('species') != 'HUMAN' else None,
+                f"{n['dist_m']}m",
+                resolve_stbl(n.get('activity_stbl'), n),
+            ) if x) + ')'
+            for n in (event.get('nearby_sims') or []) if isinstance(n, dict) and n.get('name')
+        ] or None,
         'actor': _clean_sim_for_prompt(actor, target),
         'target': _clean_sim_for_prompt(target, actor) if target else None,
         'bystander': _clean_sim_for_prompt(bystander, actor) if bystander else None,

@@ -28,6 +28,10 @@ _Avoid_: Recipient, listener, speaker 2
 A third Sim participating in the same group conversation alongside the Actor and Target who chimes in on the exchange.
 _Avoid_: Third speaker, extra listener, observer
 
+**Nearby Sim**:
+Another Sim or pet currently in the same space within earshot of the Actor who is not speaking in the exchange, such as a spouse in the kitchen or a cat lounging nearby.
+_Avoid_: Bystander, background townie
+
 ## State and Relationships
 
 **Trait**:

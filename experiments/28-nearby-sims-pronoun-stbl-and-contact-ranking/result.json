@@ -1,0 +1,45 @@
+{
+  "experiment": "28-nearby-sims-pronoun-stbl-and-contact-ranking",
+  "pronoun_stbl_verification": {
+    "stbl_key": 4177530367,
+    "female_resolved": "This action will result in the loss of any previously purchased Small Business Perks. Aurora will have to repurchase them with her refunded Perk Points in order to unlock them again.",
+    "male_resolved": "This action will result in the loss of any previously purchased Small Business Perks. Max will have to repurchase them with his refunded Perk Points in order to unlock them again."
+  },
+  "nearby_sims_ask_self": {
+    "nearby_sims_in_scene": [
+      "gefen berger (2.4m)",
+      "meimei (SMALLDOG, 1.5m)"
+    ],
+    "chat_s": 3.249,
+    "text": "Kenya Bower: Let the dog screen it; she has better boundaries."
+  },
+  "live_catscratch_cottage_verification": {
+    "save_slot": "Slot_00000002.save (Lynx @ Catscratch Cottage, Brindleton Bay)",
+    "live_hebrew_exchange": {
+      "event_id": "1793122331318-1",
+      "language": "Hebrew (עברית)",
+      "voices": [
+        "sage",
+        "verse"
+      ],
+      "text": "Catarina Lynx: ספר לי על עצמך—אבל קצר, הכרית גונבת לי תשומת לב.\nmax sexy: אני צופה בתחזית. מסתבר שגם פתיתי שלג רוצים יחס."
+    },
+    "live_nearby_sims_inner_thought": {
+      "event_id": "thought-1793123174438-8",
+      "actor": "max sexy",
+      "aspiration_resolved": "Nerd Brain",
+      "nearby_sims": [
+        "Catarina Lynx (0.8m, Watch Cooking Shows for Ideas)"
+      ]
+    },
+    "anti_echo_loveseat_before_vs_after": {
+      "before_fix_pillow_mentions_in_8_exchanges": 6,
+      "cause_identified": "seating_Sit target_label=\"Could Use More Pillows\" + ambiguous callback wording in prompt.txt",
+      "after_fix_exchanges": [
+        "1793123788262-9: Catarina Lynx: Deep thoughts: why does our cottage have two bathrooms? / max sexy: Nerd Brain says one bed, two baths is efficient plumbing.",
+        "1793123857853-10: max sexy: I watched one cooking show; now I’m legally a chef. / Catarina Lynx: Adorable. I’ll tell the kitchen you’re coming."
+      ],
+      "after_fix_pillow_mentions": 0
+    }
+  }
+}

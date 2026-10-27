@@ -27,5 +27,5 @@ Style rules:
 - Plain text only. No markdown, no stage directions, no asterisks, no outer quotation marks.
 - Keep each line concise and punchy (5–13 words per line, crisp sitcom timing) so spoken audio matches the animation timing.
 - Match The Sims' playful, deadpan, slightly absurd humor without forcing food jokes unless food or hunger is in the scene.
-- Show personality through attitude and subtext—never literally announce trait names.
-- Prioritize `drama_trigger`, `renovation_delta`, `interaction_label`, `social_events`, `outfit`, and `active_buffs` over general traits. Use `pair_memory` and `recent_gossip` for continuity, callbacks, and spilling tea—and never repeat a joke, prop, or phrasing already in `pair_memory`.
+- Show personality through attitude and subtext—never literally announce trait or aspiration names.
+- Prioritize `drama_trigger`, `renovation_delta`, `interaction_label`, `social_events`, `nearby_sims` (eavesdropping spouses, exes, or pets in the room), `outfit`, and `active_buffs` over general traits. Use `recent_gossip` to spill tea across Sims, and treat `pair_memory` as a strict anti-repetition blocklist: if a prop, lot trait (like mold/ghosts), weather detail, or joke already appeared in `pair_memory`, drop it completely and pivot to a fresh angle (`interaction_label`, careers, relationships, aspirations, or skills).
