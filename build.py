@@ -16,9 +16,11 @@ import zipfile
 import zlib
 from pathlib import Path
 
+DEFAULT_TS4_DIR = Path(r'C:\Program Files\EA Games\The Sims 4')
 DEFAULT_TS4_USER_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4')
 DEFAULT_DEPLOY_DIR = DEFAULT_TS4_USER_DIR / 'Mods' / 'BanterLab'
-DEFAULT_UI_PACKAGE = Path(r'C:\Program Files\EA Games\The Sims 4\Data\Client\UI.package')
+DEFAULT_UI_PACKAGE = DEFAULT_TS4_DIR / 'Data' / 'Client' / 'UI.package'
+DEFAULT_GAME_INI = DEFAULT_TS4_DIR / 'Game' / 'Bin' / 'Default.ini'
 
 
 def _encode_u30(val):
@@ -33,7 +35,214 @@ def _encode_u30(val):
             return bytes(out)
 
 
-def _patch_gfx_doabc(chunk, replacements):
+def _decode_u30(buf, pos):
+    val = shift = 0
+    while True:
+        b = buf[pos]
+        pos += 1
+        val |= (b & 0x7F) << shift
+        if not (b & 0x80):
+            return val, pos
+        shift += 7
+
+
+def _skip_u30(buf, pos, count=1):
+    for _ in range(count):
+        _, pos = _decode_u30(buf, pos)
+    return pos
+
+
+def _patch_notifications_abc(tag):
+    """Symbolically patch NotificationsMain.ShowNextMessage in DoABC to honor notification.timeout_duration > 0."""
+    p = tag.index(0, 4) + 5  # DoABC flags (4B) + null-terminated name + minor/major version (4B)
+    for _ in range(2):
+        cnt, p = _decode_u30(tag, p)
+        p = _skip_u30(tag, p, max(0, cnt - 1))
+    dbl_cnt, p = _decode_u30(tag, p)
+    p += max(0, dbl_cnt - 1) * 8
+    str_cnt, p = _decode_u30(tag, p)
+    strings = ['']
+    for _ in range(max(0, str_cnt - 1)):
+        slen, p = _decode_u30(tag, p)
+        strings.append(tag[p:p + slen].decode('utf-8', errors='replace'))
+        p += slen
+    ns_cnt, p = _decode_u30(tag, p)
+    namespaces = [(0, '')]
+    for _ in range(max(0, ns_cnt - 1)):
+        kind = tag[p]
+        ni, p = _decode_u30(tag, p + 1)
+        namespaces.append((kind, strings[ni]))
+    nsset_cnt, p = _decode_u30(tag, p)
+    for _ in range(max(0, nsset_cnt - 1)):
+        cnt, p = _decode_u30(tag, p)
+        p = _skip_u30(tag, p, cnt)
+    mn_cnt, p = _decode_u30(tag, p)
+    mn_names = ['']
+    td_mn = timer_mn = None
+    for idx in range(1, mn_cnt):
+        k = tag[p]
+        p += 1
+        if k in (0x07, 0x0D):
+            ns, p = _decode_u30(tag, p)
+            nm, p = _decode_u30(tag, p)
+            sname = strings[nm]
+            mn_names.append(sname)
+            if k == 0x07 and namespaces[ns] == (0x16, '') and sname == 'timeout_duration':
+                td_mn = idx
+            elif k == 0x07 and namespaces[ns] == (0x16, 'flash.utils') and sname == 'Timer':
+                timer_mn = idx
+        elif k in (0x0F, 0x10):
+            nm, p = _decode_u30(tag, p)
+            mn_names.append(strings[nm])
+        elif k in (0x11, 0x12):
+            mn_names.append('')
+        elif k in (0x09, 0x0E):
+            nm, p = _decode_u30(tag, p)
+            p = _skip_u30(tag, p)
+            mn_names.append(strings[nm])
+        elif k in (0x1B, 0x1C):
+            p = _skip_u30(tag, p)
+            mn_names.append('')
+        elif k == 0x1D:
+            p = _skip_u30(tag, p)
+            cnt, p = _decode_u30(tag, p)
+            p = _skip_u30(tag, p, cnt)
+            mn_names.append('')
+        else:
+            raise ValueError('Unknown ABC multiname kind {:#x}'.format(k))
+    assert td_mn is not None and timer_mn is not None, (td_mn, timer_mn)
+
+    meth_cnt, p = _decode_u30(tag, p)
+    for _ in range(meth_cnt):
+        pcnt, p = _decode_u30(tag, p)
+        p = _skip_u30(tag, p, pcnt + 2)
+        mf = tag[p]
+        p += 1
+        if mf & 0x08:
+            oc, p = _decode_u30(tag, p)
+            for _ in range(oc):
+                p = _skip_u30(tag, p) + 1
+        if mf & 0x80:
+            p = _skip_u30(tag, p, pcnt)
+    meta_cnt, p = _decode_u30(tag, p)
+    for _ in range(meta_cnt):
+        p = _skip_u30(tag, p)
+        ic, p = _decode_u30(tag, p)
+        p = _skip_u30(tag, p, ic * 2)
+
+    def read_traits(pos):
+        tc, pos = _decode_u30(tag, pos)
+        out = []
+        for _ in range(tc):
+            tn, pos = _decode_u30(tag, pos)
+            kb = tag[pos]
+            pos += 1
+            tk, ta = kb & 0x0F, kb >> 4
+            mid = None
+            if tk in (0, 6):
+                pos = _skip_u30(tag, pos, 2)
+                vi, pos = _decode_u30(tag, pos)
+                if vi:
+                    pos += 1
+            elif tk in (1, 2, 3, 5):
+                pos = _skip_u30(tag, pos)
+                mid, pos = _decode_u30(tag, pos)
+            elif tk == 4:
+                pos = _skip_u30(tag, pos, 2)
+            if ta & 0x04:
+                mc, pos = _decode_u30(tag, pos)
+                pos = _skip_u30(tag, pos, mc)
+            out.append((mn_names[tn], tk, mid))
+        return out, pos
+
+    inst_cnt, p = _decode_u30(tag, p)
+    target_mid = None
+    for _ in range(inst_cnt):
+        iname, p = _decode_u30(tag, p)
+        p = _skip_u30(tag, p)
+        ifl = tag[p]
+        p = _skip_u30(tag, p + 1) if (ifl & 0x08) else (p + 1)
+        ic, p = _decode_u30(tag, p)
+        p = _skip_u30(tag, p, ic + 1)
+        trs, p = read_traits(p)
+        if mn_names[iname] == 'NotificationsMain':
+            for tname, tk, mid in trs:
+                if tname == 'ShowNextMessage' and tk == 1:
+                    target_mid = mid
+    assert target_mid is not None, 'NotificationsMain.ShowNextMessage not found'
+    for _ in range(inst_cnt):
+        _, p = read_traits(_skip_u30(tag, p))
+    scr_cnt, p = _decode_u30(tag, p)
+    for _ in range(scr_cnt):
+        _, p = read_traits(_skip_u30(tag, p))
+
+    op_0 = {
+        0x02, 0x20, 0x21, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x30, 0x47, 0x48,
+        0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x82, 0x85, 0x87,
+        0x90, 0x91, 0x93, 0x95, 0x96, 0x97,
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB,
+        0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4,
+        0xC0, 0xC1, 0xC4, 0xC5, 0xC6, 0xC7,
+        0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7,
+    }
+    op_u30_1 = {
+        0x25, 0x2C, 0x2D, 0x2E, 0x2F, 0x40, 0x41, 0x42, 0x55, 0x56, 0x58,
+        0x5D, 0x5E, 0x60, 0x61, 0x62, 0x63, 0x66, 0x68, 0x80, 0x86,
+        0x92, 0x94, 0xC2, 0xC3, 0xF0, 0xF1,
+    }
+    op_u30_2 = {0x45, 0x46, 0x4A, 0x4C, 0x4E, 0x4F}
+
+    body_cnt, p = _decode_u30(tag, p)
+    for _ in range(body_cnt):
+        mid, p = _decode_u30(tag, p)
+        clen_pos = _skip_u30(tag, p, 4)
+        clen, p = _decode_u30(tag, clen_pos)
+        cend_pos = p + clen
+        code = tag[p:cend_pos]
+        ecnt, p = _decode_u30(tag, cend_pos)
+        p = _skip_u30(tag, p, ecnt * 5)
+        _, p = read_traits(p)
+        if mid == target_mid:
+            assert ecnt == 0, 'Unexpected exception blocks in ShowNextMessage'
+            timer_u30 = _encode_u30(timer_mn)
+            anchor = b'\x75\xd7\xd0\x5d' + timer_u30 + b'\xd3\x4a' + timer_u30 + b'\x01'
+            assert code.count(anchor) == 1, 'Expected 1 Timer(_loc3_) anchor in ShowNextMessage'
+            ins_pos = code.index(anchor) + 2
+            td_u30 = _encode_u30(td_mn)
+            set_body = b'\xd1\x66' + td_u30 + b'\x75\xd7'
+            injected = (
+                b'\xd1\x66'
+                + td_u30
+                + b'\x24\x00\x0e'
+                + len(set_body).to_bytes(3, 'little', signed=True)
+                + set_body
+            )
+            patched_pre = bytearray(code[:ins_pos])
+            cp = 0
+            while cp < ins_pos:
+                op = patched_pre[cp]
+                cp += 1
+                if op in op_0:
+                    pass
+                elif op == 0x24:
+                    cp += 1
+                elif 0x0C <= op <= 0x19:
+                    rel = int.from_bytes(patched_pre[cp:cp + 3], 'little', signed=True)
+                    if (cp + 3 + rel) >= ins_pos:
+                        patched_pre[cp:cp + 3] = (rel + len(injected)).to_bytes(3, 'little', signed=True)
+                    cp += 3
+                elif op in op_u30_1:
+                    cp = _skip_u30(patched_pre, cp)
+                elif op in op_u30_2:
+                    cp = _skip_u30(patched_pre, cp, 2)
+                else:
+                    raise ValueError('Unhandled AVM2 opcode {:#x} at {}'.format(op, cp - 1))
+            new_code = bytes(patched_pre) + injected + code[ins_pos:]
+            return tag[:clen_pos] + _encode_u30(len(new_code)) + new_code + tag[cend_pos:]
+    raise RuntimeError('ShowNextMessage method body not found')
+
+
+def _patch_gfx_doabc(chunk, tag_patcher):
     nbits = chunk[8] >> 3
     tpos = 8 + (5 + nbits * 4 + 7) // 8 + 4
     while tpos < len(chunk):
@@ -48,11 +257,7 @@ def _patch_gfx_doabc(chunk, replacements):
             data_start = tpos + 2
         data_end = data_start + tl
         if tt == 82:
-            tag_data = chunk[data_start:data_end]
-            for old_bytes, new_bytes in replacements:
-                count = tag_data.count(old_bytes)
-                assert count == 1, f'Expected 1 occurrence of ABC pattern, found {count}'
-                tag_data = tag_data.replace(old_bytes, new_bytes, 1)
+            tag_data = tag_patcher(chunk[data_start:data_end])
             new_tl = len(tag_data)
             assert len_pos is not None
             new_chunk = (
@@ -156,33 +361,32 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
                 chunk = zlib.decompress(chunk)
             raw_resources[inst] = (rtype, rgroup, inst, chunk)
 
-    # Patch Notifications.gfx (ShowNextMessage honors notification.timeout_duration in ms when > 0)
-    old_6609 = bytes.fromhex(
-        'd0 30 20 80 1f d5 20 85 d6 28 d7 20 80 0e 63 04 d0 66 da 2d 66 80 26 24 00 0e b3 00 00 '
-        'd0 66 da 2d 24 00 46 90 26 01 60 1f 87 80 1f d5 d1 66 df 0f 46 c8 03 00 85 d6 60 90 99 01 '
-        '60 e2 01 66 e8 8f 01 d2 66 80 26 d0 66 d9 2d 66 dc 0f a2 46 fc 1c 02 75 d7 d0 5d e7 05 d3 '
-        '4a e7 05 01 68 db 2d d0 66 db 2d 60 6b 66 c9 9f 01 d0 66 ee 2d 27 24 00 27 4f db 14 05 d0 '
-        '4f e8 2d 00 d0 d1 66 af 27 60 1f 66 a4 97 01 ab 68 e0 2d d0 d0 66 e0 2d 76 2a 11 06 00 00 '
-        '29 d0 66 df 2d 76 2a 11 06 00 00 29 d0 66 dd 2d 76 68 de 2d 2c 84 08 d1 2c 82 b3 01 d0 66 '
-        'de 2d 2c 84 b3 01 27 55 03 80 0e 63 04 60 37 2c 86 b3 01 62 04 4f 96 03 02 10 05 00 00 d0 '
-        '27 68 dd 2d 47'
-    )
-    new_6609 = (
-        old_6609[:25]
-        + bytes.fromhex('0e c3 00 00')
-        + old_6609[29:84]
-        + bytes.fromhex('d1 66 e3 0f 24 00 0e 06 00 00 d1 66 e3 0f 75 d7')
-        + old_6609[84:]
-    )
     n_type, n_group, n_inst, n_chunk = raw_resources[notif_inst]
-    patched_notif = _patch_gfx_doabc(
-        n_chunk,
-        [(_encode_u30(len(old_6609)) + old_6609, _encode_u30(len(new_6609)) + new_6609)],
-    )
-
+    patched_notif = _patch_gfx_doabc(n_chunk, _patch_notifications_abc)
     _write_dbpf_package(output_pkg, [(n_type, n_group, n_inst, patched_notif)])
     print(f'Built {output_pkg} ({output_pkg.stat().st_size} bytes)')
     return output_pkg
+
+
+def _ensure_mods_enabled(user_dir=DEFAULT_TS4_USER_DIR, game_ini=DEFAULT_GAME_INI):
+    """Sync GameVersion.txt to Default.ini and ensure script mods stay enabled across EA patches."""
+    if game_ini.exists() and user_dir.exists():
+        m = re.search(r'(?m)^gameversion\s*=\s*(\S+)', game_ini.read_text(encoding='utf-8', errors='replace'))
+        if m:
+            ver = m.group(1).encode('ascii')
+            expected_gv = struct.pack('<I', len(ver)) + ver
+            gv_path = user_dir / 'GameVersion.txt'
+            if not gv_path.exists() or gv_path.read_bytes() != expected_gv:
+                gv_path.write_bytes(expected_gv)
+                print(f'Synced {gv_path} to {m.group(1)}')
+    opt_path = user_dir / 'Options.ini'
+    if opt_path.exists():
+        raw = opt_path.read_bytes()
+        updated = re.sub(rb'(?m)^modsdisabled\s*=\s*\d+', b'modsdisabled = 0', raw)
+        updated = re.sub(rb'(?m)^scriptmodsenabled\s*=\s*\d+', b'scriptmodsenabled = 1', updated)
+        if updated != raw:
+            opt_path.write_bytes(updated)
+            print(f'Enabled script mods in {opt_path}')
 
 
 def uninstall_mod():
@@ -206,13 +410,16 @@ def uninstall_mod():
     if thumb_cache.exists():
         thumb_cache.unlink()
         print(f'Removed {thumb_cache}')
-    bmd_log = DEFAULT_TS4_USER_DIR / 'Mods' / 'Basemental Drugs' / 'Basemental Drugs Log.log'
-    if bmd_log.exists():
-        txt = bmd_log.read_text(encoding='utf-8', errors='replace')
-        if 'BanterLab' in txt:
-            kept = [ln for ln in txt.splitlines() if 'BanterLab' not in ln]
-            bmd_log.write_text('\n'.join(kept) + '\n', encoding='utf-8')
-            print(f'Scrubbed BanterLab entry from {bmd_log}')
+    for log_path in (
+        DEFAULT_TS4_USER_DIR / 'Mods' / 'Basemental Drugs' / 'Basemental Drugs Log.log',
+        DEFAULT_TS4_USER_DIR / 'WickedWhimsInfoLog.log',
+    ):
+        if log_path.exists():
+            txt = log_path.read_text(encoding='utf-8', errors='replace')
+            if 'BanterLab' in txt:
+                kept = [ln for ln in txt.splitlines() if 'BanterLab' not in ln]
+                log_path.write_text('\n'.join(kept) + '\n', encoding='utf-8')
+                print(f'Scrubbed BanterLab entry from {log_path}')
 
 
 def reset_runtime_data(root):
@@ -298,6 +505,7 @@ def main():
                 print(f'Deployed {dest}')
             except PermissionError:
                 print(f'Skipped locked {dest} (close The Sims 4 to replace .package)')
+        _ensure_mods_enabled()
 
 
 if __name__ == '__main__':

@@ -1043,6 +1043,15 @@ def main():
             if args.parent_pid and time.monotonic() - last_parent_check > 2.0:
                 last_parent_check = time.monotonic()
                 if not _is_pid_running(args.parent_pid):
+                    deployed_ui = DEFAULT_MODS_DIR / 'BanterLab' / 'BanterLabUI.package'
+                    ui_pkg = DEFAULT_GAME_DIR / 'Data' / 'Client' / 'UI.package'
+                    if deployed_ui.exists() and ui_pkg.exists() and ui_pkg.stat().st_mtime > deployed_ui.stat().st_mtime + 1.0:
+                        with contextlib.suppress(Exception):
+                            import build
+                            dist_ui = ROOT / 'dist' / 'BanterLabUI.package'
+                            if build.build_ui_package(dist_ui, ui_pkg):
+                                deployed_ui.write_bytes(dist_ui.read_bytes())
+                                build._ensure_mods_enabled()
                     print('The game exited; companion exiting.', flush=True)
                     return
             batch = []

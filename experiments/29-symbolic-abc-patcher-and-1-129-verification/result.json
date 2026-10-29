@@ -1,0 +1,82 @@
+{
+  "experiment": "29-symbolic-abc-patcher-and-1-129-verification",
+  "date": "2026-10-28",
+  "ea_patch": {
+    "previous_version": "1.128.90.1030",
+    "updated_version": "1.129.39.1030",
+    "notifications_gfx_instance": "0x47928BF88A95BD53",
+    "notifications_gfx_uncompressed_bytes_1_128": 1564314,
+    "notifications_gfx_uncompressed_bytes_1_129": 1566328,
+    "show_next_message_method_id_1_128": 6609,
+    "show_next_message_method_id_1_129": 6616
+  },
+  "symbolic_abc_patcher_verification": {
+    "reproduces_1_128_bytes_identically": true,
+    "resolved_symbols_1_129": {
+      "timeout_duration_multiname": 2019,
+      "flash_utils_Timer_multiname": 742,
+      "NotificationsMain_ShowNextMessage_method_id": 6616,
+      "injected_bytes": 16
+    },
+    "dist_banter_lab_ui_package_bytes": 693724,
+    "python_3_7_and_3_15_compatible": true,
+    "simulation_zip_hooked_modules_verified": 14,
+    "stbl_en_us_rebuilt_entries": 176312
+  },
+  "live_1_129_39_1030_verification": {
+    "disposable_save_slot": "Slot_00000099.save (aurora Hussain @ 11C Sungai Point, Tomarang)",
+    "mods_disabled_modal_on_boot": false,
+    "companion_auto_spawn_pid": 56384,
+    "pie_menu_installed_sims": 6,
+    "python_or_ui_exceptions": 0,
+    "exchanges_verified": [
+      {
+        "event_id": "thought-1793245149126-1",
+        "timeout_duration_ms": 5670,
+        "text": "aurora Hussain: This book’s fascinating; my rent’s still the plot twist."
+      },
+      {
+        "event_id": "thought-1793245173175-2",
+        "timeout_duration_ms": 5960,
+        "text": "aurora Hussain: I’m happy, well-fed, and renting haunted square footage."
+      },
+      {
+        "event_id": "thought-1793245589020-3",
+        "timeout_duration_ms": 6630,
+        "text": "aurora Hussain: Sports are simpler than romance: fewer awkward landlord meetings."
+      },
+      {
+        "event_id": "thought-1793245852919-4",
+        "timeout_duration_ms": 6090,
+        "text": "aurora Hussain: This romance novel has better chemistry than my landlord meetings."
+      },
+      {
+        "event_id": "thought-1793246010415-5",
+        "observed_at": 1793246010.4157877,
+        "displayed_at": 1793246014.110259,
+        "end_to_end_latency_s": 3.694,
+        "chat_s": 1.73,
+        "tts_s": 1.594,
+        "audio_s": 5.12,
+        "timeout_duration_ms": 7120,
+        "screenshot_visible_at_plus_ms": 6410,
+        "screenshot_auto_dismissed_at_plus_ms": 13645,
+        "vanilla_default_timeout_ms": 20000,
+        "text": "aurora Hussain: I’m reading about unlikely coincidences; my landlord’s probably in chapter two."
+      }
+    ],
+    "companion_auto_exit_on_game_close": true,
+    "save_hygiene_verified": {
+      "restored_save_files_verified": 36,
+      "options_ini_restored": true,
+      "game_version_txt_restored": true,
+      "mods_banter_lab_removed": true,
+      "mod_logs_scrubbed": [
+        "Mods/Basemental Drugs/Basemental Drugs Log.log",
+        "WickedWhimsInfoLog.log"
+      ]
+    },
+    "session_cost_usd": 0.0024,
+    "cumulative_cost_usd": 0.1786
+  }
+}
