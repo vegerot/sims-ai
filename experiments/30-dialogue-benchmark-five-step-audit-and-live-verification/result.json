@@ -1,0 +1,102 @@
+{
+  "experiment": "30-dialogue-benchmark-five-step-audit-and-live-verification",
+  "date": "2026-10-29",
+  "game_version": "1.129.39.1030",
+  "dialogue_benchmark": [
+    "Is the dialogue funny?",
+    "Does it make sense for the character to say this in their current in-game situation?"
+  ],
+  "code_line_counts": {
+    "companion.py": 1224,
+    "src/banter_lab/__init__.py": 1186,
+    "build.py": 503,
+    "prompt.txt": 30,
+    "total_4_core_files": 2943,
+    "peak_bloat_1cb08ab": 4049,
+    "net_reduction_vs_peak_pct": -27.3
+  },
+  "five_step_deletions_and_fixes": [
+    "Deleted 14-row _FAMILY_TARGET_ROLES humanize table, _humanize_family_bit, 9-arg _filter_bits, and raw reverse_bits prompt emission; replaced with 7-line _orient_bit(bit, owner_first, other_first) + _merged_bits (3/3 on 08-teen-advice-tala-jay.json recognize Jay Robles as dad with 0 'Mom' inversions).",
+    "Deleted _run_once_paths connected-component graph bucketing and MemoryStore._lock (~38 lines) since live companion.py is single-threaded.",
+    "Deleted unused 3-Sim bystander chime-in path (0/146 real hits in events.jsonl) and added 2-Sim post-drama drama_reaction when dramatic partner is still within 12 m.",
+    "Deleted companion.py shutdown import build hook; build.py now writes BanterLab.ts4script and BanterLabUI.package atomically via .tmp + os.replace.",
+    "Removed ~145 paranoid getattr/hasattr wrappers across src/banter_lab/__init__.py while preserving outer-boundary _record_error() safety.",
+    "Stripped static lot_value, lot_rooms, passive lot_traits, household_funds, and paid-up RENTAL_UNIT business from non-home prompts (eliminating rent/mold obsession on unrelated chats while restoring them automatically when about_home=True).",
+    "Suppressed catalog appliance SKUs ('InvisiView Flat Panel Tabletop TV') on already-labelled activities ('Watch Romance') while preserving carried book titles and food/recipe names.",
+    "Filtered trait_Attraction_* calculator weights, trait_isPremadePO, neutral relBit_Attraction_3_ / relBit_RelSat_3_, buff_Want_Gained_* meta-buffs, and un-met 0.0 coworkers; banned semicolons (;) in prompt.txt.",
+    "Fixed colon preservation in player_message, speaker-matched TTS voice routing, displayed-gated MemoryStore recording, mismatched reply.json removal race, English lock on English player_message and pet scenes, and Pie Menu hiding when BanterLab is disabled."
+  ],
+  "live_verified_exchanges": [
+    {
+      "event_id": "thought-1793270258180-1",
+      "type": "inner_thought",
+      "text": "aurora Hussain: This politician’s making less sense than my last cooking experiment.",
+      "elapsed_seconds": 1.98,
+      "tts_elapsed_seconds": 1.805
+    },
+    {
+      "event_id": "ask-1793270346368-2",
+      "type": "player_ask",
+      "player_message": "How is your morning going?",
+      "text": "aurora Hussain: Pretty tasty, actually. Even breakfast survived my coordination.",
+      "elapsed_seconds": 1.545,
+      "tts_elapsed_seconds": 1.841
+    },
+    {
+      "event_id": "phone-1793271031336-3",
+      "type": "player_chat",
+      "interaction": "player_phone_chat",
+      "player_message": "Heads up: I cooked breakfast today",
+      "text": "aurora Hussain: Heads up: I cooked breakfast today\nPanya Li: Breakfast, huh? I’m impressed. Should I be worried?",
+      "elapsed_seconds": 1.897,
+      "tts_elapsed_seconds": 1.894
+    },
+    {
+      "event_id": "1793272329591-4",
+      "type": "social",
+      "interaction": "Funny Introduction",
+      "text": "Panya Li: I practiced this introduction on the romance channel. You’re welcome.\naurora Hussain: That explains the awkward delivery. At least you’re cute.",
+      "elapsed_seconds": 2.411,
+      "tts_elapsed_seconds": 2.023
+    },
+    {
+      "event_id": "thought-1793272440645-5",
+      "type": "inner_thought",
+      "text": "Panya Li: I’m blushing at a TV romance, and you’re right there.",
+      "elapsed_seconds": 1.793,
+      "tts_elapsed_seconds": 1.914
+    },
+    {
+      "event_id": "chat-1793272550305-6",
+      "type": "player_chat",
+      "about_home": false,
+      "player_message": "Are you watching the TV or watching me?",
+      "text": "aurora Hussain: Are you watching the TV or watching me?\nPanya Li: You, unfortunately. The TV has better dialogue, though.",
+      "elapsed_seconds": 2.762,
+      "tts_elapsed_seconds": 1.541
+    },
+    {
+      "event_id": "chat-1793274139757-7",
+      "type": "player_chat",
+      "about_home": true,
+      "oriented_bits": [
+        "aurora_is_tenant_of_Panya"
+      ],
+      "player_message": "Heads up: is my rent going up next month?",
+      "text": "aurora Hussain: Heads up: is my rent going up next month?\nPanya Li: Not next month. I’m trying to keep this conversation charming.",
+      "elapsed_seconds": 2.12,
+      "tts_elapsed_seconds": 2.197
+    }
+  ],
+  "surprise_and_save_hygiene": {
+    "disposable_save_deleted": "Slot_00000099.save",
+    "verified_saves": "36/36",
+    "options_and_gameversion_verified": true,
+    "mods_banterlab_present": false,
+    "wickedwhims_and_basemental_intact": true,
+    "banterlab_mentions_in_ts4_dir": 0,
+    "parent_pid_auto_exit_verified": true,
+    "windows_master_audio_muted": false,
+    "exceptions_generated": 0
+  }
+}

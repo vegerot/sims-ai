@@ -1,0 +1,407 @@
+{
+  "type": "drama_reaction",
+  "outcome": "DRAMA_MOMENT",
+  "event_id": "drama-1793111061913-2",
+  "observed_at": 1793111061.9133961,
+  "interaction": "drama_reaction",
+  "interaction_stbl": null,
+  "venue": "venue_MultiUnit",
+  "venue_stbl": 574271278,
+  "lot_name": "11C Sungai Point",
+  "lot_value": 118263,
+  "lot_rooms": "2 bed / 1 bath",
+  "weather": null,
+  "lot_traits": [
+    "ZoneModifiers_Hidden_BBGameplayEffects",
+    "zoneModifier_Hidden_FuseBox_On",
+    "zoneModifiers_lotTrait_moldSystem_susceptibleToMold",
+    "zoneModifier_lotTrait_Haunted"
+  ],
+  "business": {
+    "type": "RENTAL_UNIT",
+    "is_open": false,
+    "is_owned_by_active": false,
+    "star_rating": 1,
+    "daily_rent": 129
+  },
+  "actor": {
+    "id": "55476264782922099",
+    "name": "aurora Hussain",
+    "age": "YOUNGADULT",
+    "gender": "FEMALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "outfit": null,
+    "pregnant": null,
+    "is_outside": false,
+    "traits": [
+      "trait_CatLover",
+      "trait_Clumsy",
+      "trait_Proper"
+    ],
+    "trait_stbls": [
+      2354615563,
+      2182590620,
+      2585796774
+    ],
+    "extra_traits": [
+      "trait_SexualOrientation_WooHooInterests_Male",
+      "trait_SexualOrientation_WooHooInterests_Female",
+      "trait_GenderOptions_Clothing_WomensWear",
+      "trait_WalkStyleDefault",
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "trait_Handedness_Right",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Minor",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Lover_Major",
+      "trait_youngAdult",
+      "trait_Alluring",
+      "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+      "trait_GenderOptions_Toilet_Sitting",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "trait_Occult_NoOccult",
+      "trait_GenderOptions_AttractedTo_Male",
+      "trait_Species_Human",
+      "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+      "Basemental:Trait_No_GetFamous",
+      "Basemental:Not_Predisposed_to_Addictions_Trait",
+      "trait_GenderOptions_Sexuality_Exploring",
+      "trait_GenderOptions_Frame_Feminine",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "trait_GenderOptions_AttractedTo_NotFemale",
+      "trait_GenderOptions_Lactate_Can",
+      "trait_GenderFemale",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits"
+    ],
+    "aspiration": "Track_Love_C",
+    "aspiration_stbl": 1099065401,
+    "household_funds": 5050,
+    "careers": [],
+    "skills": [],
+    "mood": "Mood_Happy",
+    "buffs": [
+      {
+        "id": "buff_Environment_BBGameplayEffects_GoodEnvironmentSmall",
+        "name_stbl": 1899004182,
+        "reason_stbl": 673048548
+      },
+      {
+        "id": "buff_Food_Cooking_2",
+        "name_stbl": 1279605639,
+        "reason_stbl": 1688226896
+      },
+      {
+        "id": "buff_Sim_Weather_Rain_GreatTime",
+        "name_stbl": 221057881,
+        "reason_stbl": 3105098018
+      },
+      {
+        "id": "TURBODRIVER:WickedWhims_Buff_SexSatisfaction_GenericSexPositive1",
+        "name_stbl": 448198694,
+        "reason_stbl": null
+      }
+    ],
+    "activities": [],
+    "situations": [],
+    "social_connections": [
+      {
+        "id": "532857280101201358",
+        "name": "Panya Li",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "friendship-acquaintances",
+          "relationshipbit_Compatibility_Good",
+          "relBit_Attraction_4_Actor_AttractedTo_Target",
+          "relBit_MultiUnit_TenantToLandlord"
+        ],
+        "reverse_bits": [
+          "relBit_MultiUnit_LandlordToTenant"
+        ]
+      }
+    ]
+  },
+  "target": {
+    "id": "532857280101135460",
+    "name": "Liên Sadya",
+    "age": "ADULT",
+    "gender": "FEMALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "outfit": null,
+    "pregnant": "with Alon Sadya",
+    "is_outside": true,
+    "traits": [
+      "trait_Generous",
+      "trait_Vegetarian",
+      "trait_Loyal"
+    ],
+    "trait_stbls": [
+      3792398713,
+      1425595830,
+      1252968259
+    ],
+    "extra_traits": [
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+      "trait_SimPreference_Likes_Characteristic_Idealist",
+      "trait_SimPreference_Likes_Communication_Compliments",
+      "trait_adult",
+      "trait_SimPreference_Likes_Music_HipHop",
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "trait_SimPreference_Likes_Decor_Luxe",
+      "trait_Umbrella_User",
+      "trait_GenderOptions_Sexuality_NotExploring",
+      "trait_SimPreference_Likes_Decor_ArtDeco",
+      "trait_SimPreference_Dislikes_Color_Brown",
+      "trait_SimPreference_Likes_Communication_Affection",
+      "trait_SimPreference_Likes_Characteristic_KidEnthusiast",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Major",
+      "trait_isPregnant",
+      "Trait_SimPreference_Likes_Activities_Singing",
+      "trait_SimPreference_Likes_Characteristic_HardWorker",
+      "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+      "trait_SimPreference_Likes_Color_Pink",
+      "trait_SimPreference_Likes_Characteristic_Homebody",
+      "trait_Umbrella_Preference_Adult_1",
+      "trait_WalkStyleDefault",
+      "trait_Hidden_Snowboarding_Goofy",
+      "trait_GenderOptions_Toilet_Sitting",
+      "trait_SimPreference_Likes_Decor_Contemporary",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "trait_Gregarious",
+      "trait_SimPreference_Likes_Fashion_Polished",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "trait_Occult_NoOccult",
+      "Trait_SimPreference_Likes_Music_LatinPop",
+      "trait_SimPreference_Dislikes_Characteristic_Argumentative",
+      "trait_GenderOptions_AttractedTo_Male",
+      "trait_isCustomGender",
+      "trait_SimPreference_Likes_Fashion_Rocker",
+      "trait_SimPreference_Likes_Color_Yellow",
+      "trait_SimPreference_Likes_Fashion_Preppy",
+      "trait_GenderOptions_AttractedTo_NotFemale",
+      "trait_Hidden_EP15_NPC_LienSadya",
+      "trait_Species_Human",
+      "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+      "Basemental:Trait_No_GetFamous",
+      "Basemental:Not_Predisposed_to_Addictions_Trait",
+      "trait_SimPreference_Likes_Characteristic_NatureEnthusiast",
+      "trait_Handedness_Left",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Jester_Minor",
+      "trait_SimPreference_Likes_Communication_Interests",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "trait_GenderOptions_Frame_Feminine",
+      "trait_SimPreference_Likes_Fashion_Streetwear",
+      "trait_GenderFemale",
+      "trait_SimPreference_Dislikes_Communication_Arguments",
+      "trait_SimPreference_Likes_Decor_Garden",
+      "Trait_SimPreference_Likes_Music_Island",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+      "trait_GenderOptions_Lactate_Can",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+      "trait_SexualOrientation_WooHooInterests_Male",
+      "trait_SimPreference_Likes_Fashion_Hipster",
+      "trait_GenderOptions_Clothing_WomensWear",
+      "trait_SexualOrientation_WooHooInterests_Female"
+    ],
+    "aspiration": "Track_Popularity_FriendlyNeighbor",
+    "household_funds": 20776,
+    "careers": [
+      {
+        "id": "career_Adult_StyleInfluencer",
+        "track_id": "careerTracks_StyleInfluencer_Track3_Stylist",
+        "track_stbl": 4091134366,
+        "title_stbl": 1067761576,
+        "level": 8,
+        "at_work": false
+      }
+    ],
+    "skills": [
+      {
+        "id": "statistic_Skill_AdultMajor_Writing",
+        "stbl": 143749022,
+        "level": 7
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Charisma",
+        "stbl": 2364309712,
+        "level": 6
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Painting",
+        "stbl": 1035115980,
+        "level": 5
+      }
+    ],
+    "mood": "Mood_Focused",
+    "buffs": [
+      {
+        "id": "buff_Pregnancy_Trimester1",
+        "name_stbl": 2157690611,
+        "reason_stbl": 2470792961
+      }
+    ],
+    "activities": [],
+    "situations": [],
+    "social_connections": [
+      {
+        "id": "532857280101135461",
+        "name": "Alon Sadya",
+        "same_household": true,
+        "friendship": -5.3,
+        "romance": 81,
+        "bits": [
+          "relationshipBit_Fear_BeingCheatedOn_Tracker",
+          "RomanticCombo_Lovers",
+          "friendship-acquaintances",
+          "relbit_SocialContext_Romance_Casual",
+          "relbit_SocialContext_Casual",
+          "familyTrope_close",
+          "romantic_FirstKiss",
+          "romantic-HaveDoneWooHoo",
+          "HaveBeenRomantic",
+          "has_met",
+          "romantic-Married",
+          "relationshipbit_Compatibility_Amazing",
+          "relBit_RelSat_2_Actor_UnsatisfiedWith_Target",
+          "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "532857280101135462",
+        "name": "Cam Sadya",
+        "same_household": true,
+        "friendship": 50.6,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "SpecialBits_Greeted",
+          "relbit_SocialContext_Casual",
+          "has_met",
+          "relationshipbit_Compatibility_Amazing",
+          "familyTrope_loving_target_isSubordinateOf_actor",
+          "family_Target_IsSonOrDaughterOf_Actor"
+        ],
+        "reverse_bits": [
+          "familyTrope_loving_target_IsAuthorityOf_actor",
+          "family_Target_IsParentOf_Actor"
+        ]
+      },
+      {
+        "id": "532857280101135458",
+        "name": "Chánh Linh",
+        "same_household": true,
+        "friendship": 50,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "relationshipbit_Compatibility_Amazing",
+          "family_Target_IsParentOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsSonOrDaughterOf_Actor"
+        ]
+      },
+      {
+        "id": "532857280101135459",
+        "name": "Arturo Linh",
+        "same_household": true,
+        "friendship": 45,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "relationshipbit_Compatibility_Amazing",
+          "familyTrope_loving_target_IsAuthorityOf_actor",
+          "family_Target_IsParentOf_Actor"
+        ],
+        "reverse_bits": [
+          "familyTrope_loving_target_isSubordinateOf_actor",
+          "family_Target_IsSonOrDaughterOf_Actor"
+        ]
+      },
+      {
+        "id": "532857280101201000",
+        "name": "Thi Linh",
+        "same_household": false,
+        "friendship": 50,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "familyTrope_Jokesters",
+          "family_Target_IsBrotherSisterOf_Actor",
+          "neighbor",
+          "multi_unit_neighbor",
+          "relbit_SocialContext_Casual"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "532857280100987840",
+        "name": "Jules Rico",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "relationshipbit_CoWorkers",
+          "relationshipbit_Compatibility_Good",
+          "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+        ],
+        "reverse_bits": [
+          "relBit_Attraction_4_Actor_AttractedTo_Target"
+        ]
+      },
+      {
+        "id": "532857280101058502",
+        "name": "Rahmi Watson",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "relationshipbit_CoWorkers",
+          "relationshipbit_Compatibility_Amazing"
+        ],
+        "reverse_bits": [
+          "relBit_Attraction_4_Actor_AttractedTo_Target"
+        ]
+      },
+      {
+        "id": "532857280101132444",
+        "name": "Doli Ruano",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "relationshipbit_CoWorkers",
+          "relationshipbit_Compatibility_Good"
+        ],
+        "reverse_bits": [
+          "relBit_Attraction_4_Actor_AttractedTo_Target"
+        ]
+      }
+    ]
+  },
+  "drama_buff": {
+    "id": "TURBODRIVER:WickedWhims_Buff_SexSatisfaction_GenericSexPositive1",
+    "name_stbl": 448198694,
+    "reason_stbl": null
+  },
+  "relationship": {
+    "same_household": false,
+    "friendship": 48.5,
+    "romance": 62,
+    "bits": [
+      "romantic-HaveBeenRomantic",
+      "TURBODRIVER:WickedWhims_RelBit_HadSex"
+    ],
+    "reverse_bits": []
+  }
+}

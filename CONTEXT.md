@@ -24,13 +24,9 @@ _Avoid_: Source Sim, initiator, speaker 1
 The Sim toward whom a social interaction or player conversation is directed.
 _Avoid_: Recipient, listener, speaker 2
 
-**Bystander**:
-A third Sim participating in the same group conversation alongside the Actor and Target who chimes in on the exchange.
-_Avoid_: Third speaker, extra listener, observer
-
 **Nearby Sim**:
 Another Sim or pet currently in the same space within earshot of the Actor who is not speaking in the exchange, such as a spouse in the kitchen or a cat lounging nearby.
-_Avoid_: Bystander, background townie
+_Avoid_: Third speaker, background townie
 
 ## State and Relationships
 
@@ -83,11 +79,11 @@ A one-Sim spoken inner monologue triggered with a single click on any Sim, revea
 _Avoid_: Mind read, debug inspect, narration
 
 **Drama reaction**:
-An unprompted one-Sim spoken reaction triggered when a major romance, career, cooking, or disaster moodlet lands on an active-household Sim, such as a terrible date, breakup, promotion, or burned meal.
+An unprompted spoken reaction triggered when a major romance, career, cooking, or disaster moodlet lands on an active-household Sim—spoken alone for solo milestones, or as a two-Sim exchange when the partner involved is right there on the lot.
 _Avoid_: Ambient chatter, buff alert, system toast
 
 **Sim text**:
-An unprompted one-line spoken text message sent by a recent social partner right after a major romantic or social milestone moodlet (such as a terrible date, breakup, or WooHoo) lands on an active-household Sim.
+An unprompted one-line spoken text message sent by a recent social partner who is no longer on the lot right after a major romantic or social milestone moodlet (such as a terrible date, breakup, or WooHoo) lands on an active-household Sim.
 _Avoid_: Phone call, NPC spam
 
 **Renovation reaction**:

@@ -1,0 +1,518 @@
+{
+  "type": "social",
+  "outcome": "SUCCESS",
+  "event_id": "1793116779763-1",
+  "observed_at": 1793116779.7632198,
+  "interaction": "social_AskForAdvice",
+  "interaction_stbl": 886173095,
+  "venue": "venue_residential",
+  "venue_stbl": 4239733099,
+  "lot_name": "Parkside Place",
+  "lot_value": 16900,
+  "lot_rooms": "2 bed / 1 bath",
+  "weather": null,
+  "lot_traits": [
+    "zoneModifier_lotTrait_Homey",
+    "ZoneModifiers_Hidden_BBGameplayEffects",
+    "zoneModifier_lotTrait_QuakeZone"
+  ],
+  "business": null,
+  "actor": {
+    "id": "152301827958548635",
+    "name": "Tala Ruano",
+    "age": "TEEN",
+    "gender": "FEMALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "outfit": null,
+    "pregnant": null,
+    "is_outside": false,
+    "traits": [
+      "trait_Slob",
+      "trait_Vegetarian"
+    ],
+    "trait_stbls": [
+      1794233072,
+      1425595830
+    ],
+    "extra_traits": [
+      "trait_Hidden_BayArea_NPC_TalaRuano",
+      "trait_GenderOptions_Sexuality_Exploring",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "trait_GenderOptions_Frame_Feminine",
+      "trait_GenderFemale",
+      "trait_GenderOptions_Lactate_Can",
+      "trait_GradeSchool_C",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+      "trait_Species_Human",
+      "trait_SexualOrientation_WooHooInterests_Male",
+      "trait_GenderOptions_Clothing_WomensWear",
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "trait_GenderOptions_AttractedTo_NotFemale",
+      "trait_Handedness_Right",
+      "trait_Umbrella_User",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Everyman_Major",
+      "trait_SimPreference_Likes_Characteristic_Cerebral",
+      "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+      "trait_Umbrella_Preference_Adult_1",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "trait_GenderOptions_Toilet_Sitting",
+      "trait_teen",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+      "trait_Occult_NoOccult",
+      "trait_GenderOptions_AttractedTo_Male",
+      "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+      "Basemental:Trait_No_GetFamous",
+      "Basemental:Not_Predisposed_to_Addictions_Trait"
+    ],
+    "aspiration": "Track_Location_BeachBum",
+    "aspiration_stbl": 2682381738,
+    "household_funds": 104505,
+    "careers": [
+      {
+        "id": "career_Teen_HighSchool",
+        "track_id": "HighSchool_Track",
+        "track_stbl": 2433889403,
+        "title_stbl": 1796274465,
+        "level": 3,
+        "at_work": false
+      }
+    ],
+    "skills": [],
+    "mood": "Mood_Sad",
+    "buffs": [
+      {
+        "id": "Basemental:ParentalReactions_ChildSad_Buff",
+        "name_stbl": 3821769902,
+        "reason_stbl": null
+      },
+      {
+        "id": "Basemental:Alcohol_Tipsy_Buff",
+        "name_stbl": 3624138989,
+        "reason_stbl": 1046387251
+      },
+      {
+        "id": "Basemental:Parent_Yell_At_Teen_EmbarrasedBuff_Target_Buff",
+        "name_stbl": 543893205,
+        "reason_stbl": null
+      }
+    ],
+    "activities": [],
+    "situations": [],
+    "social_connections": [
+      {
+        "id": "152301827958548633",
+        "name": "Jay Robles",
+        "same_household": true,
+        "friendship": 45,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "relbit_SocialContext_Casual",
+          "SpecialBits_Greeted",
+          "family_Target_IsParentOf_Actor",
+          "familyTrope_loving_target_IsAuthorityOf_actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsSonOrDaughterOf_Actor",
+          "familyTrope_loving_target_isSubordinateOf_actor"
+        ],
+        "gender": "MALE",
+        "age": "ADULT"
+      },
+      {
+        "id": "152301827958548634",
+        "name": "Doli Ruano",
+        "same_household": true,
+        "friendship": 36.8,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "familyTrope_difficult",
+          "relationshipbit_Compatibility_Bad",
+          "relbit_SocialContext_Casual",
+          "family_Target_IsParentOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsSonOrDaughterOf_Actor"
+        ],
+        "gender": "FEMALE",
+        "age": "ADULT"
+      },
+      {
+        "id": "152301827958549116",
+        "name": "Ignacio Robles",
+        "same_household": false,
+        "friendship": 60,
+        "romance": 0,
+        "bits": [
+          "friendship-good_friends",
+          "has_met",
+          "familyTrope_close",
+          "relationshipbit_Compatibility_Good",
+          "family_Target_IsGrandparentOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsGrandchildOf_Actor"
+        ]
+      },
+      {
+        "id": "152301827958549117",
+        "name": "Bernice Robles",
+        "same_household": false,
+        "friendship": 40,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "familyTrope_Jokesters",
+          "relationshipbit_Compatibility_Amazing",
+          "family_Target_IsAuntUncleOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsNieceNephewOf_Actor"
+        ]
+      },
+      {
+        "id": "152301827958549118",
+        "name": "Ian Robles",
+        "same_household": false,
+        "friendship": 40,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "relationshipbit_Compatibility_Good",
+          "family_Target_IsRelativeInLawOf_Actor"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "152301827958549119",
+        "name": "Aurelio Robles",
+        "same_household": false,
+        "friendship": 40,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "family_Target_IsCousinOf_Actor",
+          "has_met"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "388741052014070518",
+        "name": "Erika Robles",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "infant_CheckOn_NotChecked",
+          "family_Target_IsCousinOf_Actor"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "683727029578039855",
+        "name": "Colleen Robles",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "infant_CheckOn_NotChecked",
+          "family_Target_IsCousinOf_Actor"
+        ],
+        "reverse_bits": []
+      }
+    ]
+  },
+  "target": {
+    "id": "152301827958548633",
+    "name": "Jay Robles",
+    "age": "YOUNGADULT",
+    "gender": "MALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "outfit": null,
+    "pregnant": null,
+    "is_outside": false,
+    "traits": [
+      "trait_Foodie",
+      "trait_Ambitious",
+      "trait_HotHeaded"
+    ],
+    "trait_stbls": [
+      610855744,
+      4031320556,
+      2158002604
+    ],
+    "extra_traits": [
+      "trait_GenderOptions_Clothing_MensWear",
+      "trait_GenderOptions_Sexuality_Exploring",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "trait_GenderOptions_Frame_Feminine",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+      "trait_Attraction_RomanceStyles_PhysicalIntimacy_TurnOn",
+      "trait_SimPreference_Likes_Characteristic_EmotionalDecisionMaker",
+      "trait_SexualOrientation_WooHooInterests_Female",
+      "trait_WalkStyleDefault",
+      "trait_Attraction_SkillArchetypes_Academic_TurnOn",
+      "trait_SimPreference_Dislikes_Communication_PottyHumor",
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+      "trait_Attraction_Activities_Broke_TurnOff",
+      "trait_SimPreference_Likes_Music_HipHop",
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "trait_Attraction_HairColor_HotPink_TurnOff",
+      "trait_SimPreference_Dislikes_Color_Black",
+      "trait_GenderOptions_Toilet_Standing",
+      "trait_Handedness_Right",
+      "trait_Umbrella_User",
+      "trait_youngAdult",
+      "trait_SimPreference_Likes_Color_Purple",
+      "trait_Attraction_Fashion_Polished_TurnOn",
+      "trait_GenderOptions_AttractedTo_NotMale",
+      "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+      "trait_SimPreference_Likes_Characteristic_Homebody",
+      "trait_Umbrella_Preference_Adult_1",
+      "trait_SimPreference_Dislikes_Decor_Boho",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+      "trait_Hidden_BayArea_NPC_JayRobles",
+      "trait_GenderMale",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "trait_GenderOptions_Lactate_CanNot",
+      "trait_Attraction_Characteristics_Idealist_TurnOn",
+      "trait_Attraction_OutfitColor_Pink_TurnOff",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "trait_GenderOptions_AttractedTo_Female",
+      "trait_GenderOptions_Pregnancy_CanImpregnate",
+      "trait_SimPreference_Likes_Activities_Cooking",
+      "trait_Occult_NoOccult",
+      "trait_isCustomGender",
+      "trait_Attraction_HairColor_Blonde_TurnOn",
+      "trait_Attraction_Characteristics_Optimistic_TurnOn",
+      "trait_EssenceOfFlavor",
+      "trait_Attraction_Characteristics_Funny_TurnOff",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Hero_Major",
+      "trait_Species_Human",
+      "Basemental:Trait_No_GetFamous",
+      "Basemental:Not_Predisposed_to_Addictions_Trait",
+      "trait_Attraction_Fashion_Boho_TurnOn"
+    ],
+    "aspiration": "Track_Food_B",
+    "aspiration_stbl": 2775069008,
+    "household_funds": 104505,
+    "careers": [
+      {
+        "id": "careers_Adult_Freelancer_No_Agency",
+        "track_id": "careerTracks_Freelancer_No_Agency",
+        "track_stbl": 1359721405,
+        "title_stbl": 596346863,
+        "level": 1,
+        "at_work": false
+      }
+    ],
+    "skills": [
+      {
+        "id": "statistic_Skill_AdultMajor_GourmetCooking",
+        "stbl": 2942365023,
+        "level": 7
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Logic",
+        "stbl": 737363436,
+        "level": 5
+      }
+    ],
+    "mood": "Mood_Confident",
+    "buffs": [
+      {
+        "id": "Basemental:Alcohol_Tipsy_Buff",
+        "name_stbl": 3624138989,
+        "reason_stbl": 1046387251
+      }
+    ],
+    "activities": [
+      {
+        "id": "carry_holdobject",
+        "stbl": null,
+        "target": "book_Fun_Set3",
+        "target_stbl": 449059023
+      },
+      {
+        "id": "book_read",
+        "stbl": 1591579879,
+        "target": "book_Fun_Set3",
+        "target_stbl": 449059023
+      },
+      {
+        "id": "seating_Sit",
+        "stbl": 431264188,
+        "target": "Part(object_sitLoveseatSC2x1_01)",
+        "target_stbl": 2644428156
+      }
+    ],
+    "situations": [],
+    "social_connections": [
+      {
+        "id": "152301827958548634",
+        "name": "Doli Ruano",
+        "same_household": true,
+        "friendship": 47,
+        "romance": 97.5,
+        "bits": [
+          "RomanticCombo_Sweethearts",
+          "friendship-friend",
+          "relationshipbit_Compatibility_Amazing",
+          "romantic-Married",
+          "has_met",
+          "romantic-HaveDoneWooHoo",
+          "romantic_FirstKiss",
+          "HaveBeenRomantic",
+          "relationshipBit_Fear_BeingCheatedOn_Tracker",
+          "relbit_SocialContext_Casual",
+          "relbit_SocialContext_Romance_Casual",
+          "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+        ],
+        "reverse_bits": [],
+        "gender": "FEMALE",
+        "age": "ADULT"
+      },
+      {
+        "id": "152301827958548635",
+        "name": "Tala Ruano",
+        "same_household": true,
+        "friendship": 45,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "relbit_SocialContext_Casual",
+          "SpecialBits_Greeted",
+          "family_Target_IsSonOrDaughterOf_Actor",
+          "familyTrope_loving_target_isSubordinateOf_actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsParentOf_Actor",
+          "familyTrope_loving_target_IsAuthorityOf_actor"
+        ],
+        "gender": "FEMALE",
+        "age": "TEEN"
+      },
+      {
+        "id": "152301827958549119",
+        "name": "Aurelio Robles",
+        "same_household": false,
+        "friendship": 60,
+        "romance": 0,
+        "bits": [
+          "friendship-good_friends",
+          "has_met",
+          "familyTrope_Jokesters",
+          "relationshipbit_Compatibility_Good",
+          "family_Target_IsNieceNephewOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsAuntUncleOf_Actor"
+        ]
+      },
+      {
+        "id": "152301827958549116",
+        "name": "Ignacio Robles",
+        "same_household": false,
+        "friendship": 60,
+        "romance": 0,
+        "bits": [
+          "friendship-good_friends",
+          "relationshipbit_Compatibility_Good",
+          "has_met",
+          "family_Target_IsParentOf_Actor",
+          "familyTrope_loving_target_IsAuthorityOf_actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsSonOrDaughterOf_Actor",
+          "familyTrope_loving_target_isSubordinateOf_actor"
+        ]
+      },
+      {
+        "id": "152301827958549117",
+        "name": "Bernice Robles",
+        "same_household": false,
+        "friendship": 10,
+        "romance": 0,
+        "bits": [
+          "friendship-acquaintances",
+          "family_Target_IsBrotherSisterOf_Actor",
+          "familyTrope_distant",
+          "has_met",
+          "relationshipbit_Compatibility_Good"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "152301827798007883",
+        "name": "tal or akiva",
+        "same_household": false,
+        "friendship": 3.6,
+        "romance": 0,
+        "bits": [
+          "friendship-acquaintances",
+          "RomanticCombo_Acquaintances",
+          "relationshipbit_Compatibility_Good",
+          "has_met",
+          "HaveBeenRomantic",
+          "relBit_Attraction_3_Actor_NeutralTo_Target"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "388741052014070518",
+        "name": "Erika Robles",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "infant_CheckOn_NotChecked",
+          "family_Target_IsNieceNephewOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsAuntUncleOf_Actor"
+        ]
+      },
+      {
+        "id": "152301827958549118",
+        "name": "Ian Robles",
+        "same_household": false,
+        "friendship": 0,
+        "romance": 0,
+        "bits": [
+          "family_Target_IsSiblingInLawOf_Actor",
+          "relationshipbit_Compatibility_Good"
+        ],
+        "reverse_bits": []
+      }
+    ]
+  },
+  "relationship": {
+    "same_household": true,
+    "friendship": 45,
+    "romance": 0,
+    "bits": [
+      "friendship-friend",
+      "has_met",
+      "relbit_SocialContext_Casual",
+      "SpecialBits_Greeted",
+      "family_Target_IsParentOf_Actor",
+      "familyTrope_loving_target_IsAuthorityOf_actor"
+    ],
+    "reverse_bits": [
+      "family_Target_IsSonOrDaughterOf_Actor",
+      "familyTrope_loving_target_isSubordinateOf_actor"
+    ]
+  }
+}

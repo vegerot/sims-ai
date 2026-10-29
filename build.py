@@ -281,14 +281,12 @@ def _write_dbpf_package(output_path, resources):
     current_offset = 96
     for rtype, rgroup, rinst, raw_bytes in resources:
         comp_bytes = zlib.compress(raw_bytes, 6)
-        inst_hi = (rinst >> 32) & 0xFFFFFFFF
-        inst_lo = rinst & 0xFFFFFFFF
         index_entries.append(struct.pack(
             '<IIIIIIIHH',
             rtype,
             rgroup,
-            inst_hi,
-            inst_lo,
+            (rinst >> 32) & 0xFFFFFFFF,
+            rinst & 0xFFFFFFFF,
             current_offset,
             len(comp_bytes) | 0x80000000,
             len(raw_bytes),
@@ -310,7 +308,9 @@ def _write_dbpf_package(output_path, resources):
     struct.pack_into('<I', header, 80, 0xFFFF)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_bytes(bytes(header) + b''.join(body_chunks) + index_blob)
+    tmp_path = output_path.with_name('{}.{}.tmp'.format(output_path.name, os.getpid()))
+    tmp_path.write_bytes(bytes(header) + b''.join(body_chunks) + index_blob)
+    os.replace(str(tmp_path), str(output_path))
 
 
 def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
@@ -318,39 +318,27 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
         print(f'Skipping UI package build ({ui_pkg} not found)')
         return None
     data = ui_pkg.read_bytes()
+    assert data[:4] == b'DBPF', 'Expected DBPF header in UI.package'
     index_count = struct.unpack_from('<I', data, 36)[0]
-    index_offset = struct.unpack_from('<I', data, 64)[0] or struct.unpack_from('<I', data, 40)[0]
-    pos = index_offset
+    pos = struct.unpack_from('<I', data, 64)[0] or struct.unpack_from('<I', data, 40)[0]
     flags = struct.unpack_from('<I', data, pos)[0]
     pos += 4
-    const_type = struct.unpack_from('<I', data, pos)[0] if (flags & 1) else None
-    if flags & 1:
-        pos += 4
-    const_group = struct.unpack_from('<I', data, pos)[0] if (flags & 2) else None
-    if flags & 2:
-        pos += 4
-    const_inst_hi = struct.unpack_from('<I', data, pos)[0] if (flags & 4) else None
-    if flags & 4:
-        pos += 4
-    const_inst_lo = struct.unpack_from('<I', data, pos)[0] if (flags & 8) else None
-    if flags & 8:
-        pos += 4
+    consts = {}
+    for bit in (1, 2, 4, 8):
+        if flags & bit:
+            consts[bit] = struct.unpack_from('<I', data, pos)[0]
+            pos += 4
 
     notif_inst = 0x47928BF88A95BD53
-    raw_resources = {}
     for _ in range(index_count):
-        rtype = const_type if (flags & 1) else struct.unpack_from('<I', data, pos)[0]
-        if not (flags & 1):
-            pos += 4
-        rgroup = const_group if (flags & 2) else struct.unpack_from('<I', data, pos)[0]
-        if not (flags & 2):
-            pos += 4
-        inst_hi = const_inst_hi if (flags & 4) else struct.unpack_from('<I', data, pos)[0]
-        if not (flags & 4):
-            pos += 4
-        inst_lo = const_inst_lo if (flags & 8) else struct.unpack_from('<I', data, pos)[0]
-        if not (flags & 8):
-            pos += 4
+        vals = []
+        for bit in (1, 2, 4, 8):
+            if bit in consts:
+                vals.append(consts[bit])
+            else:
+                vals.append(struct.unpack_from('<I', data, pos)[0])
+                pos += 4
+        rtype, rgroup, inst_hi, inst_lo = vals
         offset, size_raw, mem_size, comp_type = struct.unpack_from('<IIIH', data, pos)
         pos += 16
         inst = (inst_hi << 32) | inst_lo
@@ -359,13 +347,11 @@ def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
             chunk = data[offset:offset + size]
             if comp_type and size != mem_size:
                 chunk = zlib.decompress(chunk)
-            raw_resources[inst] = (rtype, rgroup, inst, chunk)
-
-    n_type, n_group, n_inst, n_chunk = raw_resources[notif_inst]
-    patched_notif = _patch_gfx_doabc(n_chunk, _patch_notifications_abc)
-    _write_dbpf_package(output_pkg, [(n_type, n_group, n_inst, patched_notif)])
-    print(f'Built {output_pkg} ({output_pkg.stat().st_size} bytes)')
-    return output_pkg
+            patched_notif = _patch_gfx_doabc(chunk, _patch_notifications_abc)
+            _write_dbpf_package(output_pkg, [(rtype, rgroup, inst, patched_notif)])
+            print(f'Built {output_pkg} ({output_pkg.stat().st_size} bytes)')
+            return output_pkg
+    raise RuntimeError('Notifications.gfx resource missing from UI.package')
 
 
 def _ensure_mods_enabled(user_dir=DEFAULT_TS4_USER_DIR, game_ini=DEFAULT_GAME_INI):
@@ -473,7 +459,8 @@ def main():
     output = root / 'dist' / 'BanterLab.ts4script'
     ui_pkg_output = root / 'dist' / 'BanterLabUI.package'
     output.parent.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory() as temporary, zipfile.ZipFile(str(output), 'w', zipfile.ZIP_DEFLATED) as archive:
+    tmp_script = output.with_name(f'{output.name}.{os.getpid()}.tmp')
+    with tempfile.TemporaryDirectory() as temporary, zipfile.ZipFile(str(tmp_script), 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(source.rglob('*.py')):
             relative = path.relative_to(source).with_suffix('.pyc')
             compiled = Path(temporary) / relative
@@ -482,6 +469,7 @@ def main():
                                dfile=relative.as_posix(), doraise=True)
             assert compiled.read_bytes()[:4] == importlib.util.MAGIC_NUMBER
             archive.write(str(compiled), relative.as_posix())
+    os.replace(str(tmp_script), str(output))
     print(f'Built {output}')
     with zipfile.ZipFile(str(output)) as archive:
         assert archive.testzip() is None
@@ -492,18 +480,21 @@ def main():
     if DEFAULT_DEPLOY_DIR.parent.exists():
         DEFAULT_DEPLOY_DIR.mkdir(parents=True, exist_ok=True)
         # companion.py and prompt.txt run from this repository; the game starts them from here.
-        assets = [output]
-        if built_ui is not None:
-            assets.append(built_ui)
+        assets = [output] + ([built_ui] if built_ui is not None else [])
         for asset in assets:
             dest = DEFAULT_DEPLOY_DIR / asset.name
+            tmp_dest = dest.with_name(f'{dest.name}.{os.getpid()}.tmp')
             try:
-                if dest.exists() and dest.read_bytes() == asset.read_bytes():
+                raw_asset = asset.read_bytes()
+                if dest.exists() and dest.read_bytes() == raw_asset:
                     print(f'Up to date {dest}')
                     continue
-                shutil.copy2(str(asset), str(dest))
+                tmp_dest.write_bytes(raw_asset)
+                os.replace(str(tmp_dest), str(dest))
                 print(f'Deployed {dest}')
             except PermissionError:
+                if tmp_dest.exists():
+                    tmp_dest.unlink()
                 print(f'Skipped locked {dest} (close The Sims 4 to replace .package)')
         _ensure_mods_enabled()
 

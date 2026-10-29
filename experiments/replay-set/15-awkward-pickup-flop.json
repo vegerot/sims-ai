@@ -1,0 +1,418 @@
+{
+  "type": "social",
+  "outcome": "FAILURE",
+  "event_id": "1792743999999-15",
+  "observed_at": 1792743125.4260032,
+  "interaction": "mixer_social_PickUpLine_targeted_romance_alwaysOn",
+  "interaction_stbl": null,
+  "venue": "venue_karaoke",
+  "venue_stbl": 3332074628,
+  "lot_name": "Planet Honey Pop!",
+  "lot_traits": [
+    "ZoneModifiers_Hidden_BBGameplayEffects",
+    "zoneModifier_lotTrait_Singles_Hangout",
+    "zoneModifier_lotTrait_Convivial"
+  ],
+  "business": null,
+  "actor": {
+    "id": "532857279925977109",
+    "name": "yuvi ronen",
+    "age": "YOUNGADULT",
+    "gender": "MALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "voice_actor": 1685527060,
+    "voice_pitch": 0.16,
+    "traits": [
+      "trait_Good",
+      "trait_Geek"
+    ],
+    "trait_stbls": [
+      66466717,
+      3818473410
+    ],
+    "extra_traits": [
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "trait_GenderOptions_Toilet_Standing",
+      "trait_Handedness_Right",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Minor",
+      "trait_Quick_Learner",
+      "trait_Hidden_UniversityEnrollment_HasSeenEnrollmentInfo",
+      "trait_youngAdult",
+      "trait_SimPreference_Likes_Activities_VideoGaming",
+      "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+      "trait_GenderOptions_AttractedTo_NotMale",
+      "trait_CivicPolicy_SkillBased_SelfSufficient",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+      "trait_GenderOptions_Lactate_CanNot",
+      "trait_GenderMale",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "trait_Occult_NoOccult",
+      "trait_GenderOptions_Pregnancy_CanImpregnate",
+      "trait_Hidden_HadWooHoo",
+      "Basemental:Trait_No_GetFamous",
+      "trait_Species_Human",
+      "trait_GenderOptions_Clothing_MensWear",
+      "Basemental:Not_Predisposed_to_Addictions_Trait",
+      "trait_GenderOptions_Sexuality_Exploring",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sage_Major",
+      "trait_GenderOptions_AttractedTo_Female",
+      "trait_SexualOrientation_WooHooInterests_Female",
+      "trait_GenderOptions_Frame_Masculine",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+      "trait_SexualOrientation_WooHooInterests_Male",
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+      "trait_WalkStyleDefault"
+    ],
+    "aspiration": "Track_Knowledge_B",
+    "aspiration_stbl": null,
+    "household_funds": 66421,
+    "careers": [
+      {
+        "id": "careers_Adult_Critic",
+        "track_id": "careerTracks_Critic_Basic",
+        "track_stbl": 2480909071,
+        "title_stbl": 2955871035,
+        "level": 2,
+        "at_work": false
+      }
+    ],
+    "skills": [
+      {
+        "id": "statistic_Skill_AdultMajor_VideoGaming",
+        "stbl": 3924981164,
+        "level": 3,
+        "points": 6910.4
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Charisma",
+        "stbl": 2364309712,
+        "level": 3,
+        "points": 4006.9
+      },
+      {
+        "id": "statistic_Skill_AdultMinor_Entrepreneur",
+        "stbl": 3707168815,
+        "level": 3,
+        "points": 3700
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Romance",
+        "stbl": 1559876043,
+        "level": 2,
+        "points": 1849.4
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Singing",
+        "stbl": 3770158393,
+        "level": 2,
+        "points": 1846.4
+      },
+      {
+        "id": "statistic_Skill_AdultMajor_Writing",
+        "stbl": 143749022,
+        "level": 2,
+        "points": 1540
+      }
+    ],
+    "mood": "Mood_Happy",
+    "mood_intensity": 0,
+    "buffs": [
+      {
+        "id": "buff_Sentiment_Close_Happy_Primary_generic_LT",
+        "name_stbl": 2186527397,
+        "reason_stbl": 37241699
+      },
+      {
+        "id": "Buff_Motives_Energy_Tired",
+        "name_stbl": 2381700963,
+        "reason_stbl": 455992919
+      },
+      {
+        "id": "Buff_Trait_Good_GoodVIbes",
+        "name_stbl": 2407348272,
+        "reason_stbl": 2483427880
+      }
+    ],
+    "activities": [
+      {
+        "id": "seating_sit_CTYAE",
+        "stbl": 431264188,
+        "target": "object_barstool",
+        "target_stbl": 1261473172,
+        "recipe": null,
+        "recipe_stbl": null
+      }
+    ],
+    "social_connections": [
+      {
+        "id": "532857279943344160",
+        "name": "liatt chonen",
+        "same_household": true,
+        "friendship": 100,
+        "romance": 89.5,
+        "bits": [
+          "relbit_SocialContext_Casual",
+          "relationshipBits_Mischief_PartnersInCrime",
+          "relationshipBit_Fear_BeingCheatedOn_Tracker",
+          "RomanticCombo_Soulmates",
+          "friendship-good_friends",
+          "SpecialBits_Greeted",
+          "lifeMilestoneBit_FellInLove",
+          "relbit_SocialContext_Romance_Casual",
+          "romantic_FirstKiss",
+          "HaveBeenRomantic",
+          "has_met",
+          "romantic-Significant_Other",
+          "relbit_SocialContext_Fun_Casual",
+          "bit_NoLongerFriends",
+          "romanceTrope_wholesome",
+          "romantic-HaveDoneWooHoo",
+          "romantic-HaveDoneWooHoo_Recently",
+          "TURBODRIVER:WickedWhims_RelBit_HadSex_7Days",
+          "TURBODRIVER:WickedWhims_Relbit_Nudity_ReactionCooldown",
+          "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+          "relBit_RelSat_4_Actor_SatisfiedWith_Target",
+          "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+          "sentimentBit_Actor_CloseTo_Target_LT_generic",
+          "shortTermBits_healedNegativeSentiment",
+          "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh",
+          "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Noticed_Hot",
+          "sentimentBit_Actor_CloseTo_Target_ST_generic",
+          "TURBODRIVER:WickedWhims_RelBit_Memories_MemoryType_Sex_FirstTime",
+          "TURBODRIVER:WickedWhims_RelBit_Sex_Relationships_LastSexPartner",
+          "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+        ],
+        "reverse_bits": [
+          "sentimentBit_Actor_CloseTo_Target_ST_qualityTime"
+        ]
+      }
+    ]
+  },
+  "target": {
+    "id": "532857280101202308",
+    "name": "Carlos López",
+    "age": "YOUNGADULT",
+    "gender": "MALE",
+    "species": "HUMAN",
+    "breed": null,
+    "breed_stbl": null,
+    "voice_actor": 1685527061,
+    "voice_pitch": -0.54,
+    "traits": [
+      "trait_Mean",
+      "trait_Childish",
+      "trait_active"
+    ],
+    "trait_stbls": [
+      2293829572,
+      456166972,
+      3863913220
+    ],
+    "extra_traits": [
+      "trait_Attraction_SkillArchetypes_Academic_TurnOn",
+      "trait_Attraction_SkillArchetypes_Nature_TurnOn",
+      "trait_Attraction_Characteristics_Pessimistic_TurnOff",
+      "trait_Attraction_HairColor_Platinum_TurnOff",
+      "trait_Umbrella_User",
+      "trait_Attraction_RomanceStyles_GiftGiving_TurnOff",
+      "trait_Attraction_Characteristics_Ambitionless_TurnOn",
+      "trait_Attraction_HairColor_Gray_TurnOn",
+      "trait_GenderOptions_AttractedTo_NotMale",
+      "trait_SimPreference_Likes_Activities_Mixology",
+      "trait_Hidden_Snowboarding_Goofy",
+      "trait_GenderMale",
+      "trait_RelExpectations_WoohooExclusivity_Yes",
+      "trait_SimPreference_Likes_Music_Kids",
+      "trait_SimPreference_Likes_Activities_Fitness",
+      "trait_GenderOptions_Pregnancy_CanImpregnate",
+      "trait_Attraction_SkillArchetypes_Health&Sports_TurnOn",
+      "trait_Species_Human",
+      "trait_Attraction_Fashion_Preppy_TurnOn",
+      "trait_Attraction_Characteristics_Homebody_TurnOn",
+      "trait_GenderOptions_Clothing_MensWear",
+      "trait_High_Metabolism",
+      "trait_GenderOptions_Sexuality_Exploring",
+      "trait_RelExpectations_EmotionalExclusivity_Yes",
+      "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+      "trait_Attraction_Fashion_Rocker_TurnOff",
+      "trait_Attraction_HairColor_Green_TurnOff",
+      "trait_Attraction_HairColor_Orange_TurnOff",
+      "trait_SexualOrientation_WooHooInterests_NotMale",
+      "trait_Attraction_Characteristics_Messy_TurnOff",
+      "trait_Attraction_Activities_SelfEmployed_TurnOn",
+      "trait_Attraction_Fashion_Polished_TurnOn",
+      "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+      "trait_Attraction_Fashion_Hipster_TurnOff",
+      "trait_Attraction_OutfitColor_Black_TurnOff",
+      "trait_Attraction_RomanceStyles_Flirting_TurnOff",
+      "trait_SimPreference_Dislikes_Color_Pink",
+      "trait_RelExpectations_OpenToChange_Yes",
+      "trait_Attraction_SkillArchetypes_Engineering_TurnOn",
+      "Basemental:Predisposed_to_Addictions_Trait",
+      "trait_isCustomGender",
+      "trait_Attraction_HairColor_Brown_TurnOff",
+      "Basemental:Trait_No_GetFamous",
+      "trait_Handedness_Left",
+      "trait_SexualOrientation_WooHooInterests_Female",
+      "trait_GenderOptions_Frame_Masculine",
+      "trait_SimPreference_Likes_Activities_Mischief",
+      "trait_Attraction_OutfitColor_Red_TurnOn",
+      "trait_Attraction_SkillArchetypes_Cooking_TurnOn",
+      "trait_SimPreference_Likes_Color_Red",
+      "trait_RelExpectations_PhysicalExclusivity_Yes",
+      "trait_Attraction_Activities_Broke_TurnOff",
+      "trait_Attraction_SkillArchetypes_Performer_TurnOff",
+      "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Everyman_Major",
+      "trait_Attraction_RomanceStyles_Woohoo_TurnOn",
+      "trait_Attraction_SkillArchetypes_Arts&Crafts_TurnOff",
+      "trait_Attraction_SkillArchetypes_SenseOfHumor_TurnOff",
+      "trait_Attraction_HairColor_Auburn_TurnOff",
+      "trait_SimPreference_Dislikes_Activities_RocketScience",
+      "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+      "trait_GenderOptions_Lactate_CanNot",
+      "trait_Attraction_OutfitColor_Pink_TurnOff",
+      "trait_SimPreference_Dislikes_Music_Romance",
+      "trait_WalkStyleTough",
+      "trait_GenderOptions_AttractedTo_Female",
+      "trait_Attraction_Fashion_Outdoorsy_TurnOn",
+      "trait_Attraction_Characteristics_Cerebral_TurnOff",
+      "trait_Attraction_RomanceStyles_PhysicalIntimacy_TurnOn",
+      "trait_Attraction_RomanceStyles_Affection_TurnOn",
+      "trait_Attraction_Characteristics_PetEnthusiast_TurnOff",
+      "trait_Attraction_Characteristics_FamilyMotivated_TurnOff",
+      "trait_GenderOptions_Toilet_Standing",
+      "trait_Attraction_Characteristics_HighEnergy_TurnOn",
+      "trait_Attraction_Activities_HighlySkilled_TurnOff",
+      "trait_Attraction_HairColor_Turquoise_TurnOff",
+      "trait_youngAdult",
+      "trait_Umbrella_Preference_Adult_1",
+      "trait_Attraction_Characteristics_Idealist_TurnOn",
+      "trait_Attraction_SkillArchetypes_DrinkMaking_TurnOn",
+      "trait_Attraction_Characteristics_Hardworking_TurnOff",
+      "trait_Occult_NoOccult",
+      "trait_Attraction_SkillArchetypes_Interpersonal_TurnOff",
+      "trait_Attraction_HairColor_Blonde_TurnOn",
+      "trait_Attraction_Activities_Taken_TurnOn",
+      "trait_Attraction_OutfitColor_Yellow_TurnOn",
+      "trait_Attraction_Activities_Wealthy_TurnOn",
+      "trait_Attraction_HairColor_Black_TurnOff",
+      "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults"
+    ],
+    "aspiration": "Track_Athletic_A",
+    "aspiration_stbl": null,
+    "household_funds": 12000,
+    "careers": [
+      {
+        "id": "career_Adult_Athletic",
+        "track_id": "Athletic_Track2_ProfessionalAthlete",
+        "track_stbl": 3378492284,
+        "title_stbl": 42873409,
+        "level": 6,
+        "at_work": false
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_Fitness",
+        "stbl": 656926678,
+        "level": 4,
+        "points": 8005
+      }
+    ],
+    "mood": "Mood_Confident",
+    "mood_intensity": 0,
+    "buffs": [
+      {
+        "id": "buff_Relationship_NewFriend",
+        "name_stbl": 2392673174,
+        "reason_stbl": 818439033
+      },
+      {
+        "id": "buff_LotMods_BaseGame_Convivial_Visible",
+        "name_stbl": 2965669563,
+        "reason_stbl": 2633803656
+      }
+    ],
+    "activities": [
+      {
+        "id": "seating_sit_CTYAE",
+        "stbl": 431264188,
+        "target": "object_barstool",
+        "target_stbl": 1261473172,
+        "recipe": null,
+        "recipe_stbl": null
+      }
+    ],
+    "social_connections": [
+      {
+        "id": "532857280101202307",
+        "name": "Mónica López",
+        "same_household": true,
+        "friendship": 45,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "SpecialBits_Greeted",
+          "relbit_SocialContext_Casual",
+          "relationshipbit_Compatibility_Bad",
+          "family_Target_IsParentOf_Actor"
+        ],
+        "reverse_bits": [
+          "family_Target_IsSonOrDaughterOf_Actor"
+        ]
+      },
+      {
+        "id": "532857280101202309",
+        "name": "Luz López",
+        "same_household": true,
+        "friendship": 44,
+        "romance": 0,
+        "bits": [
+          "friendship-friend",
+          "has_met",
+          "family_Target_IsBrotherSisterOf_Actor",
+          "relationshipbit_Compatibility_Good"
+        ],
+        "reverse_bits": []
+      },
+      {
+        "id": "532857280100699961",
+        "name": "Liberty Lee",
+        "same_household": false,
+        "friendship": 42.5,
+        "romance": 0,
+        "bits": [
+          "SpecialBits_Greeted",
+          "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+          "friendship-friend",
+          "HasBeenFriends",
+          "has_met",
+          "relbit_SocialContext_Casual",
+          "relationshipbit_Compatibility_Good",
+          "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+          "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+        ],
+        "reverse_bits": []
+      }
+    ]
+  },
+  "relationship": {
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+      "SpecialBits_Greeted",
+      "relbit_SocialContext_Casual"
+    ],
+    "bit_stbls": [
+      4138471614
+    ],
+    "reverse_bits": [],
+    "reverse_bit_stbls": []
+  }
+}

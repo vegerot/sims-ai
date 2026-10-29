@@ -2,8 +2,8 @@
 
 The game mod starts this process (`--data-directory`, `--parent-pid`); it exits when the game exits.
 It tails the game's events.jsonl, writes reply.json, synthesizes trilingual (English / Hebrew / Russian)
-speech with openai/gpt-audio-mini, and plays it when the game logs `displayed`.
-`--once scene.json` generates text for one captured event (for offline prompt experiments).
+speech with openai/gpt-audio-mini (plus classic Windows SAPI5 voices for pets), and plays it on `displayed`.
+`--once scene.json` (or a directory of scenes) generates text offline for prompt evaluation.
 """
 
 import argparse
@@ -43,13 +43,32 @@ TTS_MODEL = 'openai/gpt-audio-mini'
 FALLBACK_TTS_MODEL = 'google/gemini-3.8-flash-lite-tts'
 MULTILINGUAL_CHANCE = 0.12
 
+_GENERATION_EVENT_TYPES = (
+    'social', 'player_chat', 'player_ask_self', 'inner_thought',
+    'drama_reaction', 'sim_text', 'renovation_reaction',
+)
+_PLAYER_PRIORITY_TYPES = ('player_chat', 'player_ask_self', 'inner_thought')
+_SINGLE_SPEAKER_TYPES = ('player_ask_self', 'inner_thought', 'renovation_reaction', 'sim_text')
+_HOME_TOPIC_RE = re.compile(
+    r'\b(home|house|apartment|flat|rent|landlord|lease|room|bedroom|bathroom|kitchen|'
+    r'decor|furniture|renovat|remodel|money|broke|afford|simoleon|cost|price|buy|evict|mold|quake|haunt)\b',
+    re.IGNORECASE,
+)
+_IDLE_SIT_RE = re.compile(r'(?:^|[_-])sit(?:$|[_-])', re.IGNORECASE)
+
 _stbl_cache: dict[int, str] | None = None
 _sim_voice_assignments: dict[str, str] = {}
 _tls_local = threading.local()
 _sapi_lock = threading.Lock()
 _sapi_proc: subprocess.Popen | None = None
-BYSTANDER_HUMAN_CHANCE = 0.40
-BYSTANDER_PET_CHANCE = 0.75
+
+FEMALE_OPENROUTER_VOICES = ('coral', 'nova', 'shimmer', 'sage', 'ballad', 'alloy')
+MALE_OPENROUTER_VOICES = ('ash', 'echo', 'onyx', 'verse', 'fable')
+YOUTH_OPENROUTER_VOICES = ('shimmer', 'coral', 'nova', 'fable', 'sage')
+GEMINI_VOICE_MAP = {
+    'coral': 'Kore', 'nova': 'Aoede', 'shimmer': 'Leda', 'sage': 'Zephyr', 'ballad': 'Aoede', 'alloy': 'Kore',
+    'ash': 'Puck', 'echo': 'Fenrir', 'onyx': 'Charon', 'verse': 'Orus', 'fable': 'Puck',
+}
 
 
 def _openrouter_conn(reset: bool = False) -> http.client.HTTPSConnection:
@@ -84,13 +103,6 @@ def _openrouter_request(method: str, path: str, body: bytes | None = None, timeo
                 raise
     raise RuntimeError('Unreachable')
 
-FEMALE_OPENROUTER_VOICES = ('coral', 'nova', 'shimmer', 'sage', 'ballad', 'alloy')
-MALE_OPENROUTER_VOICES = ('ash', 'echo', 'onyx', 'verse', 'fable')
-YOUTH_OPENROUTER_VOICES = ('shimmer', 'coral', 'nova', 'fable', 'sage')
-GEMINI_VOICE_MAP = {
-    'coral': 'Kore', 'nova': 'Aoede', 'shimmer': 'Leda', 'sage': 'Zephyr', 'ballad': 'Aoede', 'alloy': 'Kore',
-    'ash': 'Puck', 'echo': 'Fenrir', 'onyx': 'Charon', 'verse': 'Orus', 'fable': 'Puck',
-}
 
 def _refpack_decompress(data: bytes) -> bytes:
     pos = 0
@@ -101,8 +113,7 @@ def _refpack_decompress(data: bytes) -> bytes:
     size_len = 4 if (flags & 0x80) else 3
     if flags & 0x01:
         pos += size_len
-    for _ in range(size_len):
-        pos += 1
+    pos += size_len
     out = bytearray()
     while pos < len(data):
         b0 = data[pos]
@@ -118,8 +129,7 @@ def _refpack_decompress(data: bytes) -> bytes:
             for _ in range(count):
                 out.append(out[-offset])
         elif not (b0 & 0x40):
-            b1 = data[pos]
-            b2 = data[pos + 1]
+            b1, b2 = data[pos], data[pos + 1]
             pos += 2
             proc = b1 >> 6
             out.extend(data[pos:pos + proc])
@@ -129,9 +139,7 @@ def _refpack_decompress(data: bytes) -> bytes:
             for _ in range(count):
                 out.append(out[-offset])
         elif not (b0 & 0x20):
-            b1 = data[pos]
-            b2 = data[pos + 1]
-            b3 = data[pos + 2]
+            b1, b2, b3 = data[pos], data[pos + 1], data[pos + 2]
             pos += 3
             proc = b0 & 0x03
             out.extend(data[pos:pos + proc])
@@ -157,32 +165,26 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
     if data[:4] != b'DBPF':
         return {}
     index_count = struct.unpack_from('<I', data, 36)[0]
-    index_offset = struct.unpack_from('<I', data, 64)[0] or struct.unpack_from('<I', data, 40)[0]
-    pos = index_offset
+    pos = struct.unpack_from('<I', data, 64)[0] or struct.unpack_from('<I', data, 40)[0]
     flags = struct.unpack_from('<I', data, pos)[0]
     pos += 4
-    const_type = struct.unpack_from('<I', data, pos)[0] if (flags & 1) else None
-    if flags & 1:
-        pos += 4
-    if flags & 2:
-        pos += 4
-    const_inst_hi = struct.unpack_from('<I', data, pos)[0] if (flags & 4) else None
-    if flags & 4:
-        pos += 4
-    if flags & 8:
-        pos += 4
+    consts: list[int | None] = []
+    for bit in range(4):
+        if flags & (1 << bit):
+            consts.append(struct.unpack_from('<I', data, pos)[0])
+            pos += 4
+        else:
+            consts.append(None)
     out: dict[int, str] = {}
     for _ in range(index_count):
-        rtype = const_type if (flags & 1) else struct.unpack_from('<I', data, pos)[0]
-        if not (flags & 1):
-            pos += 4
-        if not (flags & 2):
-            pos += 4
-        inst_hi = const_inst_hi if (flags & 4) else struct.unpack_from('<I', data, pos)[0]
-        if not (flags & 4):
-            pos += 4
-        if not (flags & 8):
-            pos += 4
+        vals: list[int] = []
+        for bit in range(4):
+            if consts[bit] is not None:
+                vals.append(consts[bit])
+            else:
+                vals.append(struct.unpack_from('<I', data, pos)[0])
+                pos += 4
+        rtype, _, inst_hi, _ = vals
         offset, size_raw, mem_size, comp_type = struct.unpack_from('<IIIH', data, pos)
         pos += 16
         size = size_raw & 0x7FFFFFFF
@@ -191,12 +193,10 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
             continue
         chunk = data[offset:offset + size]
         if comp_type and size != mem_size:
-            if (len(chunk) >= 2 and chunk[0] in (0x10, 0x50) and chunk[1] == 0xFB) or (
+            is_refpack = (len(chunk) >= 2 and chunk[0] in (0x10, 0x50) and chunk[1] == 0xFB) or (
                 len(chunk) >= 6 and chunk[4] in (0x10, 0x50) and chunk[5] == 0xFB
-            ):
-                chunk = _refpack_decompress(chunk)
-            else:
-                chunk = zlib.decompress(chunk)
+            )
+            chunk = _refpack_decompress(chunk) if is_refpack else zlib.decompress(chunk)
         if chunk[:4] != b'STBL':
             continue
         _, _, num_entries, _, _ = struct.unpack_from('<HBQHI', chunk, 4)
@@ -249,7 +249,12 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     return _stbl_cache
 
 
-def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict | None = None) -> str | None:
+def resolve_stbl(
+    string_id: int | None,
+    actor: dict | None = None,
+    target: dict | None = None,
+    obj_name: str | None = None,
+) -> str | None:
     if not isinstance(string_id, int) or not string_id:
         return None
     raw = load_stbl_dictionary().get(string_id)
@@ -282,7 +287,11 @@ def resolve_stbl(string_id: int | None, actor: dict | None = None, target: dict 
             lambda m, fem=is_female: m.group(1 if fem else 2),
             text,
         )
-    text = re.sub(r'<[^>]+>|\{[^{}]*\}|["“”]\s*["“”]', '', text)
+    if obj_name:
+        for tok in ('{0.ObjectName}', '{1.ObjectName}', '{2.ObjectName}', '{0.String}', '{1.String}'):
+            text = text.replace(tok, obj_name)
+    text = re.sub(r'<[^>]+>|\{[^{}]*\}', '', text)
+    text = re.sub(r'["“”]\s*["“”]', '', text)
     text = ' '.join(text.split()).strip()
     if not text or any(p in text.lower() for p in ('(should not be seen)', '**debug**', '** debug **', 'set 01')):
         return None
@@ -297,24 +306,29 @@ _NOISY_REL_BIT_SUBSTRINGS = (
     'relbit_socialcontext_', 'shortterm_recentnegativesocial',
     'pettopet_relationshipbit_neutral', 'simtopet_relationshipbit_02_acquaintance',
     'relationshipbit_simtosim', 'friendship-acquaintances', 'romanticcombo_acquaintances',
-    'compatibility_good', 'compatibility_bad', 'relbit_attraction_4_', 'attractiveness_visual_',
-    'attractiveness_noticed_', 'relationship_archetype_hint_',
-    'healednegativesentiment', 'memories_memorytype_', 'hasbeenfriends',
-    'romantic_firstkiss', 'shorttermbits_restuarants_dining',
+    'compatibility_good', 'compatibility_bad', 'relbit_attraction_3_', 'relbit_attraction_4_',
+    'relbit_relsat_3_', 'attractiveness_visual_', 'attractiveness_noticed_',
+    'relationship_archetype_hint_', 'healednegativesentiment', 'memories_memorytype_',
+    'hasbeenfriends', 'romantic_firstkiss', 'shorttermbits_restuarants_dining',
 )
-
 
 _NOISY_TRAIT_SUBSTRINGS = (
     'genderoptions', 'walkstyle', 'handedness', 'occult_nooccult', 'species_',
     'speciesextended_', 'umbrella', 'pregnan', 'lactat', 'toilet', 'clothing', 'frame_',
-    'attractedto', 'woohoointerests', 'hasdefaults', 'hasgeneratedtraits',
+    'attractedto', 'trait_attraction_', 'woohoointerests', 'hasdefaults', 'hasgeneratedtraits',
     'nudity_core', 'no_getfamous', 'not_predisposed', 'trait_adult', 'trait_teen',
     'trait_elder', 'trait_youngadult', 'genderfemale', 'gendermale', 'tailstyle',
     'pet_age_', 'discipline_', 'disciplinedout_', 'trait_hidden_', '_hidden',
     'relexpectations_', 'practicemakesperfect', 'noopinion_', 'civicpolicy_',
     'attraction_haircolor_', 'attraction_outfitcolor_', 'likes_color_', 'dislikes_color_',
-    'iscustomgender', 'trait_cas_story_',
+    'iscustomgender', 'trait_cas_story_', 'trait_ispremadepo', 'trait_quick_learner',
+    'trait_alluring', 'trait_gregarious', 'trait_animal_attraction', 'trait_collector',
+    'trait_essenceofflavor', 'trait_hometurf', 'trait_business_savvy', 'trait_dastardly',
+    'trait_muser', 'trait_high_metabolism', 'trait_gradeschool_', 'trait_highschool_',
+    'autonomy_cannabis',
 )
+
+_ACTOR_TARGET_RE = re.compile(r'(?:(?<=_)|^)(actor|target)(?=_|$)', re.IGNORECASE)
 
 
 def _clean_mood(mood: str | None) -> str | None:
@@ -322,13 +336,49 @@ def _clean_mood(mood: str | None) -> str | None:
     return m or None
 
 
-def _filter_bits(bits: list[str] | None, friendship: float = 0.0) -> list[str]:
-    out = [b for b in (bits or []) if not any(x in b.lower() for x in _NOISY_REL_BIT_SUBSTRINGS)]
-    return [b for b in out if b != 'bit_NoLongerFriends'] if friendship >= 35.0 else out
+def _orient_bit(bit: str, owner_first: str, other_first: str) -> str:
+    low = bit.lower()
+    if 'tenanttolandlord' in low:
+        return f'{owner_first}_is_tenant_of_{other_first}'
+    if 'landlordtotenant' in low:
+        return f'{owner_first}_is_landlord_of_{other_first}'
+    return _ACTOR_TARGET_RE.sub(lambda m: owner_first if m.group(1).lower() == 'actor' else other_first, bit)
 
 
-def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
+def _merged_bits(
+    bits: list[str] | None,
+    reverse_bits: list[str] | None,
+    friendship: float,
+    romance: float,
+    same_household: bool,
+    about_home: bool,
+    owner_first: str,
+    other_first: str,
+) -> list[str]:
+    low_ties = not same_household and abs(friendship) < 15.0 and abs(romance) < 15.0
+    out: list[str] = []
+    for raw, a, b, rev in [
+        *((x, owner_first, other_first, False) for x in (bits or [])),
+        *((x, other_first, owner_first, True) for x in (reverse_bits or [])),
+    ]:
+        low = raw.lower()
+        if rev and not low.startswith(('sentimentbit_', 'relbit_attraction_', 'relbit_relsat_')):
+            continue
+        if any(x in low for x in _NOISY_REL_BIT_SUBSTRINGS):
+            continue
+        if friendship >= 35.0 and raw == 'bit_NoLongerFriends':
+            continue
+        if low_ties and ('coworker' in low or 'neighbor' in low or (not about_home and ('landlord' in low or 'tenant' in low))):
+            continue
+        oriented = _orient_bit(raw, a, b)
+        if oriented not in out:
+            out.append(oriented)
+    return out
+
+
+def _clean_sim_for_prompt(sim: dict, partner: dict | None = None, about_home: bool = False) -> dict:
     mood = str(sim.get('mood') or '')
+    sim_first = (str(sim.get('name') or 'Sim').split() or ['Sim'])[0]
     partner_id = str(partner.get('id') or '') if isinstance(partner, dict) else ''
     careers = [
         f"{resolve_stbl(c.get('track_stbl'), sim, partner) or c.get('track_id') or c.get('id')}"
@@ -347,51 +397,58 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
             'reason': resolve_stbl(b.get('reason_stbl'), sim, partner),
         }.items() if v}
         for b in (sim.get('buffs') or [])
-        if not str(b.get('id') or '').lower().startswith(('buff_environment_', 'buff_lotmods_')) and not any(x in str(b.get('id') or '').lower() for x in ('period_effect_none', 'attractiveness_noticed_', 'relsat_relbit_')) and b.get('id') != 'Buff'
+        if not str(b.get('id') or '').lower().startswith(('buff_environment_', 'buff_lotmods_', 'buff_want_gained_'))
+        and not any(x in str(b.get('id') or '').lower() for x in ('period_effect_none', 'attractiveness_noticed_', 'relsat_relbit_'))
+        and b.get('id') != 'Buff'
     ]
     raw_acts = []
+    labelled_targets = set()
     for act in (sim.get('activities') or []):
         aid = str(act.get('id') or '')
-        is_sit = 'sit' in aid.lower()
-        lbl = 'Ordered at restaurant' if aid == 'restaurant_order' else resolve_stbl(act.get('stbl'), sim, partner)
-        tlbl = None if is_sit else (resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target'))
+        if _IDLE_SIT_RE.search(aid):
+            continue
+        tlbl = resolve_stbl(act.get('target_stbl'), sim, partner) or act.get('target')
+        lbl = 'Ordered at restaurant' if aid == 'restaurant_order' else resolve_stbl(act.get('stbl'), sim, partner, obj_name=tlbl)
+        if lbl and tlbl:
+            labelled_targets.add(tlbl)
         rlbl = resolve_stbl(act.get('recipe_stbl'), sim, partner) or act.get('recipe')
         qlbl = resolve_stbl(act.get('quality_stbl'), sim, partner) or re.sub(r'^Quality_', '', str(act.get('quality') or '')) or None
-        if lbl or tlbl or rlbl:
+        keep_target = not lbl or bool(rlbl or act.get('cooked_by') or not act.get('target_stbl')) or 'book' in str(act.get('target') or '').lower()
+        shown_target = tlbl if (keep_target and not (lbl and tlbl and tlbl in lbl)) else None
+        if lbl or shown_target or rlbl:
             raw_acts.append({k: v for k, v in {
-                'id': act.get('id'), 'label': lbl, 'target_label': tlbl,
-                'recipe_label': rlbl if rlbl != tlbl else None,
+                'id': act.get('id'),
+                'label': lbl,
+                'target_label': shown_target,
+                'recipe_label': rlbl if rlbl != shown_target else None,
                 'cooked_by': act.get('cooked_by'),
                 'quality': 'Spoiled' if act.get('spoiled') else qlbl,
                 'masterwork': True if act.get('masterwork') else None,
                 'comped': True if act.get('comped') else None,
             }.items() if v})
-    labelled_targets = {a.get('target_label') for a in raw_acts if a.get('label') and a.get('target_label')}
-    activities = []
     seen_unlabelled = set()
-    has_non_sit = any('sit' not in str(a.get('id') or '').lower() for a in raw_acts)
-    for a in raw_acts:
-        if has_non_sit and 'sit' in str(a.get('id') or '').lower():
-            continue
-        if a.get('label'):
-            activities.append(a)
-        elif a.get('target_label') not in labelled_targets and a.get('target_label') not in seen_unlabelled:
-            seen_unlabelled.add(a.get('target_label'))
-            activities.append(a)
+    activities = [
+        a for a in raw_acts
+        if a.get('label') or (a.get('target_label') not in labelled_targets and not (a.get('target_label') in seen_unlabelled or seen_unlabelled.add(a.get('target_label'))))
+    ]
     connections = []
     for conn in sim.get('social_connections') or []:
         if not isinstance(conn, dict) or str(conn.get('id') or '') == partner_id:
             continue
         f_score = float(conn.get('friendship') or 0.0)
-        fb, rb = _filter_bits(conn.get('bits'), f_score), _filter_bits(conn.get('reverse_bits'), f_score)
-        if fb or rb or abs(float(conn.get('romance') or 0.0)) >= 20.0 or abs(float(conn.get('friendship') or 0.0)) >= 35.0:
+        r_score = float(conn.get('romance') or 0.0)
+        same_hh = bool(conn.get('same_household'))
+        c_first = (str(conn.get('name') or 'Sim').split() or ['Sim'])[0]
+        mb = _merged_bits(conn.get('bits'), conn.get('reverse_bits'), f_score, r_score, same_hh, about_home, sim_first, c_first)
+        if mb or abs(r_score) >= 20.0 or abs(f_score) >= 35.0:
             connections.append({k: v for k, v in {
                 'name': conn.get('name'),
-                'same_household': True if conn.get('same_household') else None,
+                'gender': conn.get('gender'),
+                'age': conn.get('age'),
+                'same_household': True if same_hh else None,
                 'friendship': conn.get('friendship'),
                 'romance': conn.get('romance'),
-                'bits': fb[:14],
-                'reverse_bits': rb[:8],
+                'bits': mb[:12],
             }.items() if v})
     events = []
     for sit in (sim.get('situations') or []):
@@ -407,6 +464,8 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         if lbl and lbl not in events:
             events.append(lbl)
     species = str(sim.get('species') or 'HUMAN')
+    funds = sim.get('household_funds')
+    show_funds = funds if (about_home or (isinstance(funds, (int, float)) and funds < 500)) else None
     raw = {
         'name': sim.get('name'),
         'age': sim.get('age'),
@@ -417,9 +476,9 @@ def _clean_sim_for_prompt(sim: dict, partner: dict | None = None) -> dict:
         'pregnant': sim.get('pregnant'),
         'outdoors': True if sim.get('is_outside') else None,
         'mood': _clean_mood(mood),
-        'household_funds': sim.get('household_funds'),
+        'household_funds': show_funds,
         'trait_labels': [l for l in (resolve_stbl(s, sim, partner) for s in sim.get('trait_stbls', [])) if l] or sim.get('traits'),
-        'notable_traits': [t for t in (sim.get('extra_traits') or []) if not any(k in t.lower() for k in _NOISY_TRAIT_SUBSTRINGS)][:18],
+        'notable_traits': [t for t in (sim.get('extra_traits') or []) if not any(k in t.lower() for k in _NOISY_TRAIT_SUBSTRINGS)][:8],
         'aspiration': resolve_stbl(sim.get('aspiration_stbl'), sim, partner) or sim.get('aspiration'),
         'careers': careers,
         'top_skills': skills,
@@ -444,8 +503,16 @@ class MemoryStore:
         a, t = (actor_name or 'Sim').strip(), (target_name or '').strip()
         return ' :: '.join(sorted((a, t))) if t and t != a else f'solo::{a}'
 
-    def get_memory(self, actor_name: str, target_name: str | None = None, limit: int = 4) -> list[dict]:
-        return (self.pairs.get(self.make_key(actor_name, target_name)) or [])[-limit:]
+    @staticmethod
+    def event_target_name(event: dict) -> str | None:
+        if event.get('type') in ('inner_thought', 'renovation_reaction'):
+            return None
+        target = event.get('target')
+        return str(target.get('name') or '').strip() or None if isinstance(target, dict) else None
+
+    def get_memory(self, actor_name: str, target_name: str | None = None) -> list[dict]:
+        limit = 4 if target_name else 2
+        return list((self.pairs.get(self.make_key(actor_name, target_name)) or [])[-limit:])
 
     def get_gossip(self, actor_name: str, target_name: str | None = None, limit: int = 2) -> list[dict]:
         if not target_name:
@@ -453,22 +520,20 @@ class MemoryStore:
         cur_key = self.make_key(actor_name, target_name)
         speakers = {actor_name.strip(), target_name.strip()}
         cutoff = time.time() - 21600.0
-        hits = []
-        for k, entries in self.pairs.items():
-            if k == cur_key or k.startswith('solo::') or ' :: ' not in k:
-                continue
-            parts = set(k.split(' :: '))
-            if parts & speakers:
-                for e in entries[-2:]:
-                    if float(e.get('ts') or 0) >= cutoff:
-                        hits.append((float(e.get('ts') or 0), {'pair': k, 'interaction': e.get('interaction'), 'text': e.get('text')}))
+        hits = [
+            (float(e.get('ts') or 0), {'pair': k, 'interaction': e.get('interaction'), 'text': e.get('text')})
+            for k, entries in self.pairs.items()
+            if k != cur_key and not k.startswith('solo::') and ' :: ' in k and (set(k.split(' :: ')) & speakers)
+            for e in entries[-2:]
+            if float(e.get('ts') or 0) >= cutoff
+        ]
         hits.sort(key=lambda x: -x[0])
         return [h[1] for h in hits[:limit]]
 
     def record(self, event: dict, scene: dict, text: str) -> None:
         actor = event.get('actor') or {}
-        target = None if event.get('type') == 'inner_thought' else (event.get('target') if isinstance(event.get('target'), dict) else None)
-        aname, tname = str(actor.get('name') or '').strip(), (str(target.get('name') or '').strip() if target else '')
+        aname = str(actor.get('name') or '').strip()
+        tname = self.event_target_name(event)
         if not aname or not text:
             return
         key = self.make_key(aname, tname)
@@ -476,7 +541,7 @@ class MemoryStore:
         self.pairs[key] = lst
         lst.append({
             'ts': round(time.time(), 1),
-            'lot': scene.get('lot_name') or scene.get('venue_label') or scene.get('venue'),
+            'lot': scene.get('lot_name') or scene.get('venue'),
             'interaction': scene.get('interaction_label') or scene.get('interaction'),
             'outcome': scene.get('outcome'),
             'text': text.strip(),
@@ -513,17 +578,38 @@ class CostTracker:
         }
 
 
-
 def choose_scene_language(event: dict) -> str:
-    msg = event.get('player_message') or ''
-    if re.search(r'[֐-׿]', msg):
+    msg = (event.get('player_message') or '').strip()
+    if re.search(r'[\u0590-\u05ff]', msg):
         return 'Hebrew (עברית)'
-    if re.search(r'[Ѐ-ӿ]', msg):
+    if re.search(r'[\u0400-\u04ff]', msg):
         return 'Russian (Русский)'
+    if msg:
+        return 'English'
+    actor = event.get('actor') or {}
+    target = event.get('target') if isinstance(event.get('target'), dict) and event.get('type') not in _SINGLE_SPEAKER_TYPES else None
+    if all(str(s.get('species') or 'HUMAN').upper() != 'HUMAN' for s in (actor, target) if s):
+        return 'English'
     r = random.random()
     if r < MULTILINGUAL_CHANCE / 2.0:
         return 'Hebrew (עברית)'
     return 'Russian (Русский)' if r < MULTILINGUAL_CHANCE else 'English'
+
+
+def _is_about_home(event: dict, interaction_label: str | None, drama_trigger: dict | None) -> bool:
+    if event.get('type') == 'renovation_reaction':
+        return True
+    probes = [
+        event.get('player_message') or '',
+        event.get('interaction') or '',
+        interaction_label or '',
+        json.dumps(drama_trigger, ensure_ascii=False) if drama_trigger else '',
+    ]
+    for sim in (event.get('actor'), event.get('target')):
+        if isinstance(sim, dict):
+            for b in (sim.get('buffs') or []):
+                probes.append(str(b.get('id') or ''))
+    return bool(_HOME_TOPIC_RE.search(' '.join(probes)))
 
 
 def build_scene(
@@ -531,16 +617,13 @@ def build_scene(
     language: str = 'English',
     pair_memory: list[dict] | None = None,
     recent_gossip: list[dict] | None = None,
-    include_bystander: bool = False,
 ) -> dict:
     actor = event['actor']
     target = event.get('target') if isinstance(event.get('target'), dict) else None
-    bystander = event.get('bystander') if (include_bystander and isinstance(event.get('bystander'), dict)) else None
     event_type = event.get('type', 'social')
-    speaker_count = 1 if target is None or event_type in ('player_ask_self', 'inner_thought', 'drama_reaction', 'sim_text') else (3 if bystander is not None else 2)
+    speaker_count = 1 if (target is None or event_type in _SINGLE_SPEAKER_TYPES) else 2
     interaction_label = resolve_stbl(event.get('interaction_stbl'), actor, target)
     venue_label = resolve_stbl(event.get('venue_stbl'), actor, target)
-    lot_traits = [z for z in (event.get('lot_traits') or []) if 'hidden' not in z.lower()]
     drama_trigger = None
     if isinstance(event.get('drama_buff'), dict):
         db = event['drama_buff']
@@ -549,6 +632,30 @@ def build_scene(
             'name': resolve_stbl(db.get('name_stbl'), actor, target),
             'reason': resolve_stbl(db.get('reason_stbl'), actor, target),
         }.items() if v} or None
+    about_home = _is_about_home(event, interaction_label, drama_trigger)
+    lot_traits = [z for z in (event.get('lot_traits') or []) if 'hidden' not in z.lower()] if about_home else []
+    biz = event.get('business') if isinstance(event.get('business'), dict) else None
+    if biz and biz.get('type') == 'RENTAL_UNIT' and not (about_home or biz.get('owed_rent', 0) > 0 or biz.get('is_owned_by_active')):
+        biz = None
+    rel_clean = None
+    if target and isinstance(event.get('relationship'), dict):
+        raw_rel = event['relationship']
+        same_hh = bool(
+            raw_rel.get('same_household')
+            or any(str(c.get('id') or '') == str(target.get('id') or '') and c.get('same_household')
+                   for c in (actor.get('social_connections') or []))
+        )
+        f_score = float(raw_rel.get('friendship') or 0.0)
+        r_score = float(raw_rel.get('romance') or 0.0)
+        actor_first = (str(actor.get('name') or 'Sim').split() or ['Sim'])[0]
+        target_first = (str(target.get('name') or 'Sim').split() or ['Sim'])[0]
+        mb = _merged_bits(raw_rel.get('bits'), raw_rel.get('reverse_bits'), f_score, r_score, same_hh, about_home, actor_first, target_first)
+        rel_clean = {
+            'same_household': same_hh,
+            'friendship': raw_rel.get('friendship'),
+            'romance': raw_rel.get('romance'),
+            **({'bits': mb} if mb else {}),
+        }
     renov = event.get('renovation_delta')
     scene: dict = {
         'event_type': event_type,
@@ -557,17 +664,17 @@ def build_scene(
         'interaction': event.get('interaction'),
         'interaction_label': interaction_label,
         'outcome': event.get('outcome'),
+        'relationship': rel_clean,
         'player_message': event.get('player_message') or None,
         'drama_trigger': drama_trigger,
         'renovation_delta': f'{renov:+d}' if isinstance(renov, int) and renov else None,
-        'venue': event.get('venue'),
-        'venue_label': venue_label,
+        'venue': venue_label or event.get('venue'),
         'lot_name': event.get('lot_name'),
-        'lot_value': event.get('lot_value'),
-        'lot_rooms': event.get('lot_rooms'),
+        'lot_value': event.get('lot_value') if about_home else None,
+        'lot_rooms': event.get('lot_rooms') if about_home else None,
         'weather': re.sub(r'(?i)\bweather_', '', str(event.get('weather') or '')).replace('_', ' ') or None,
         'lot_traits': lot_traits or None,
-        'business': event.get('business'),
+        'business': biz,
         'nearby_sims': [
             f"{n['name']} (" + ', '.join(x for x in (
                 n.get('species') if n.get('species') and n.get('species') != 'HUMAN' else None,
@@ -576,27 +683,12 @@ def build_scene(
             ) if x) + ')'
             for n in (event.get('nearby_sims') or []) if isinstance(n, dict) and n.get('name')
         ] or None,
-        'actor': _clean_sim_for_prompt(actor, target),
-        'target': _clean_sim_for_prompt(target, actor) if target else None,
-        'bystander': _clean_sim_for_prompt(bystander, actor) if bystander else None,
+        'actor': _clean_sim_for_prompt(actor, target, about_home=about_home),
+        'target': _clean_sim_for_prompt(target, actor, about_home=about_home) if target else None,
     }
-    scene = {k: v for k, v in scene.items() if v is not None or k in ('target', 'outcome', 'interaction_label', 'venue_label')}
-    if target and isinstance(event.get('relationship'), dict):
-        raw_rel = event['relationship']
-        same_hh = bool(
-            raw_rel.get('same_household')
-            or any(str(c.get('id') or '') == str(target.get('id') or '') and c.get('same_household')
-                   for c in (actor.get('social_connections') or []))
-        )
-        scene['relationship'] = {
-            'same_household': same_hh,
-            'friendship': raw_rel.get('friendship'),
-            'romance': raw_rel.get('romance'),
-            'bits': _filter_bits(raw_rel.get('bits'), float(raw_rel.get('friendship') or 0.0)),
-            'reverse_bits': _filter_bits(raw_rel.get('reverse_bits'), float(raw_rel.get('friendship') or 0.0)),
-        }
+    scene = {k: v for k, v in scene.items() if v is not None or k in ('target', 'outcome', 'interaction_label')}
     if pair_memory:
-        scene['pair_memory'] = pair_memory[-4:]
+        scene['pair_memory'] = pair_memory
     if recent_gossip:
         scene['recent_gossip'] = recent_gossip[:2]
     return scene
@@ -804,8 +896,37 @@ def _normalize_and_trim_pcm(pcm: bytes, sr: int = 24000) -> bytes:
     return out.tobytes()
 
 
-def _clean_spoken_line(line: str) -> str:
-    return re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', (line.split(':', 1)[1] if ':' in line else line), flags=re.IGNORECASE).strip(' "“”')
+def _strip_outer_quotes(text: str) -> str:
+    s = text.strip(' *')
+    return s[1:-1].strip() if len(s) >= 2 and s[0] in '"“”«' and s[-1] in '"“”»' else s
+
+
+def _match_speaker(prefix: str, speakers: list[dict]) -> dict | None:
+    cand = prefix.strip(' *"“”').lower()
+    if not cand:
+        return None
+    for sim in speakers:
+        full = str(sim.get('name') or '').strip()
+        if full and cand == full.lower():
+            return sim
+    for sim in speakers:
+        first = (str(sim.get('name') or '').split() or [''])[0]
+        if first and cand == first.lower():
+            return sim
+    return None
+
+
+def _split_speaker_line(line: str, speakers: list[dict], default_sim: dict) -> tuple[dict, str]:
+    if ':' in line:
+        head, tail = line.split(':', 1)
+        matched = _match_speaker(head, speakers)
+        if matched is not None:
+            return matched, _strip_outer_quotes(tail)
+    return default_sim, _strip_outer_quotes(line)
+
+
+def _clean_spoken_line(body: str) -> str:
+    return re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', body, flags=re.IGNORECASE).strip(' "“”')
 
 
 def _synthesize_sim_line(spoken: str, voice: str, sim: dict) -> dict:
@@ -815,24 +936,29 @@ def _synthesize_sim_line(spoken: str, voice: str, sim: dict) -> dict:
 
 
 def synthesize_dialogue_openrouter(
-    text: str, actor: dict, target: dict | None, wav_path: Path, bystander: dict | None = None,
+    text: str, actor: dict, target: dict | None, wav_path: Path,
     single_speaker: bool = False, pre_first_future=None,
 ) -> dict:
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    speakers = [actor] if (single_speaker or target is None) else ([actor, target, bystander] if bystander else [actor, target])
+    speakers = [actor] if (single_speaker or target is None) else [actor, target]
     voices: list[str] = []
+    voice_by_obj: dict[int, str] = {}
     for sim in speakers:
-        voices.append(select_openrouter_voice(sim, tuple(voices)))
+        v = select_openrouter_voice(sim, tuple(voices))
+        voices.append(v)
+        voice_by_obj[id(sim)] = v
     tasks = []
     for idx, line in enumerate(lines[:len(speakers)]):
-        spoken = _clean_spoken_line(line)
+        sim, body = _split_speaker_line(line, speakers, speakers[idx])
+        spoken = _clean_spoken_line(body)
         if spoken:
-            tasks.append((idx, spoken, voices[idx], speakers[idx]))
+            tasks.append((idx, spoken, voice_by_obj[id(sim)], sim))
 
     started = time.monotonic()
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
         futures = [
-            (voice, pre_first_future if (idx == 0 and pre_first_future is not None) else pool.submit(_synthesize_sim_line, spoken, voice, sim))
+            (voice, pre_first_future if (idx == 0 and pre_first_future is not None and sim is actor)
+             else pool.submit(_synthesize_sim_line, spoken, voice, sim))
             for idx, spoken, voice, sim in tasks
         ]
         line_results = []
@@ -865,55 +991,43 @@ def synthesize_dialogue_openrouter(
     }
 
 
-def _strip_outer_quotes(text: str) -> str:
-    s = text.strip(' *')
-    return s[1:-1].strip() if len(s) >= 2 and s[0] in '"“”«' and s[-1] in '"“”»' else s
-
-
 def _normalize_dialogue_lines(raw_text: str, event: dict, speaker_count: int = 2) -> str:
     lines = [ln.strip() for ln in raw_text.splitlines() if ln.strip()]
-    actor_name = (event.get('actor') or {}).get('name') or 'Sim'
-    target = event.get('target')
-    target_name = target.get('name') if isinstance(target, dict) else None
-    bystander = event.get('bystander')
-    bystander_name = bystander.get('name') if isinstance(bystander, dict) else None
+    actor = event.get('actor') or {'name': 'Sim'}
+    actor_name = actor.get('name') or 'Sim'
+    target = event.get('target') if isinstance(event.get('target'), dict) else None
+    target_name = (target.get('name') or 'Sim') if target else 'Sim'
     event_type = event.get('type', 'social')
     player_msg = (event.get('player_message') or '').strip()
 
-    if target is None or event_type in ('player_ask_self', 'inner_thought', 'drama_reaction', 'sim_text'):
-        last = lines[-1] if lines else ''
-        return f"{actor_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
+    if speaker_count == 1:
+        known = [actor, target] if target else [actor]
+        if target and lines:
+            body = next((b for s, b in (_split_speaker_line(ln, known, actor) for ln in lines) if s is actor), '')
+            if body:
+                return f'{actor_name}: {body}'
+        _, body = _split_speaker_line(lines[-1] if lines else '', known, actor)
+        return f'{actor_name}: {body}'
+    assert target is not None, 'Expected target Sim for 2-speaker exchange'
+    speakers = [actor, target]
     if event_type == 'player_chat' and player_msg:
-        last = lines[-1] if lines else ''
-        return f"{actor_name}: {player_msg}\n{target_name}: {_strip_outer_quotes(last.split(':', 1)[1] if ':' in last else last)}"
-    defaults = [actor_name, target_name or 'Sim', bystander_name or 'Sim']
+        _, body = _split_speaker_line(lines[-1] if lines else '', speakers, target)
+        return f'{actor_name}: {player_msg}\n{target_name}: {body}'
     out = []
     for idx, ln in enumerate(lines[:speaker_count]):
-        spk, body = ln.split(':', 1) if ':' in ln else (defaults[min(idx, 2)], ln)
-        out.append(f"{spk.strip('* ')}: {_strip_outer_quotes(body)}")
+        sim, body = _split_speaker_line(ln, speakers, speakers[idx])
+        out.append(f"{sim.get('name') or 'Sim'}: {body}")
     return '\n'.join(out)
-
-
-def _should_include_bystander(event: dict) -> bool:
-    bys = event.get('bystander')
-    if event.get('type', 'social') != 'social' or not isinstance(bys, dict):
-        return False
-    if event.get('force_bystander'):
-        return True
-    is_pet = str(bys.get('species') or 'HUMAN').upper() != 'HUMAN'
-    return random.random() < (BYSTANDER_PET_CHANCE if is_pet else BYSTANDER_HUMAN_CHANCE)
 
 
 def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None) -> dict:
     language = choose_scene_language(event)
     actor_name = str(event['actor'].get('name') or '')
-    target = event.get('target')
-    target_name = target.get('name') if isinstance(target, dict) else None
-    use_bystander = _should_include_bystander(event)
-    bystander = event.get('bystander') if use_bystander else None
-    pair_mem = memory_store.get_memory(actor_name, target_name)
-    gossip = memory_store.get_gossip(actor_name, target_name)
-    scene = build_scene(event, language=language, pair_memory=pair_mem, recent_gossip=gossip, include_bystander=use_bystander)
+    target = event.get('target') if isinstance(event.get('target'), dict) else None
+    mem_target = memory_store.event_target_name(event)
+    pair_mem = memory_store.get_memory(actor_name, mem_target)
+    gossip = memory_store.get_gossip(actor_name, mem_target)
+    scene = build_scene(event, language=language, pair_memory=pair_mem, recent_gossip=gossip)
     payload = {
         'model': CHAT_MODEL,
         'messages': [
@@ -923,7 +1037,9 @@ def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None
         'max_tokens': 320,
         'reasoning': {'effort': REASONING_EFFORT},
     }
-    player_spoken = _clean_spoken_line(event.get('player_message') or '') if (tts_dir is not None and event.get('type') == 'player_chat' and target) else ''
+    player_spoken = _clean_spoken_line(event.get('player_message') or '') if (
+        tts_dir is not None and event.get('type') == 'player_chat' and target
+    ) else ''
     with contextlib.ExitStack() as stack:
         pre_fut = None
         if player_spoken:
@@ -951,7 +1067,7 @@ def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None
         cost_usd = float(usage.get('cost') or 0.0)
         if tts_dir is not None:
             out['tts'] = synthesize_dialogue_openrouter(
-                text, event['actor'], target, tts_dir / f"{event['event_id']}.wav", bystander=bystander,
+                text, event['actor'], target, tts_dir / f"{event['event_id']}.wav",
                 single_speaker=(scene['speaker_count'] == 1), pre_first_future=pre_fut)
             cost_usd += out['tts']['tts_cost_usd']
     out['_scene'] = scene
@@ -999,7 +1115,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-directory', type=Path, default=ROOT / '.local' / 'data')
     parser.add_argument('--parent-pid', type=int, help='Exit when this process (the game) exits.')
-    parser.add_argument('--once', type=Path, help='Generate text once from a captured event JSON file.')
+    parser.add_argument('--once', type=Path, help='Generate text once from a captured event JSON file or directory.')
     args = parser.parse_args()
     data = args.data_directory
 
@@ -1038,20 +1154,12 @@ def main():
             f'key remaining=${tracker.key_limit_remaining})',
             flush=True,
         )
+        generated_scenes: dict[str, tuple[dict, dict]] = {}
         last_parent_check = time.monotonic()
         while True:
             if args.parent_pid and time.monotonic() - last_parent_check > 2.0:
                 last_parent_check = time.monotonic()
                 if not _is_pid_running(args.parent_pid):
-                    deployed_ui = DEFAULT_MODS_DIR / 'BanterLab' / 'BanterLabUI.package'
-                    ui_pkg = DEFAULT_GAME_DIR / 'Data' / 'Client' / 'UI.package'
-                    if deployed_ui.exists() and ui_pkg.exists() and ui_pkg.stat().st_mtime > deployed_ui.stat().st_mtime + 1.0:
-                        with contextlib.suppress(Exception):
-                            import build
-                            dist_ui = ROOT / 'dist' / 'BanterLabUI.package'
-                            if build.build_ui_package(dist_ui, ui_pkg):
-                                deployed_ui.write_bytes(dist_ui.read_bytes())
-                                build._ensure_mods_enabled()
                     print('The game exited; companion exiting.', flush=True)
                     return
             batch = []
@@ -1070,15 +1178,17 @@ def main():
                     audio_path = (ev_item.get('tts') or {}).get('audio_file')
                     if audio_path and float(ev_item.get('displayed_at') or 0) >= started_at - 5.0:
                         winsound.PlaySound(audio_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    saved = generated_scenes.pop(str(ev_item.get('event_id') or ''), None)
+                    if saved is not None and ev_item.get('text'):
+                        memories.record(saved[0], saved[1], ev_item['text'])
             candidates = [
                 ev_item for ev_item in batch
-                if ev_item.get('type') in ('social', 'player_chat', 'player_ask_self', 'inner_thought', 'drama_reaction', 'sim_text')
+                if ev_item.get('type') in _GENERATION_EVENT_TYPES
                 and float(ev_item.get('observed_at') or 0) >= started_at - 15.0
             ]
             if not candidates:
                 continue
-            # Prefer explicit player clicks over autonomous socials or background drama reactions.
-            player_cands = [c for c in candidates if c.get('type') in ('player_chat', 'player_ask_self', 'inner_thought')]
+            player_cands = [c for c in candidates if c.get('type') in _PLAYER_PRIORITY_TYPES]
             event = player_cands[-1] if player_cands else candidates[-1]
             try:
                 reply = generate(event, memories, tts_dir=TTS_DIR)
@@ -1092,7 +1202,9 @@ def main():
                 scene = None
             _safe_write_json(reply_file, reply)
             if scene is not None:
-                memories.record(event, scene, reply['text'])
+                generated_scenes[event['event_id']] = (event, scene)
+                while len(generated_scenes) > 16:
+                    del generated_scenes[next(iter(generated_scenes))]
                 _safe_write_json(tracker.summary_path, reply['cost_summary'], indent=2)
             if 'error' in reply:
                 print(json.dumps(reply, ensure_ascii=False), flush=True)
