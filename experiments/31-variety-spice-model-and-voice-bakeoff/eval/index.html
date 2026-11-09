@@ -80,6 +80,8 @@
   </section>
 </main>
 <script>
+// Relative URLs (data.json, rate, audio/) need a trailing slash under the Funnel path /rate-sims-banter.
+if (!location.pathname.endsWith('/')) location.replace(location.pathname + '/' + location.search);
 const state = new Map();  // "section|item|candidate|kind" -> value (latest wins)
 const raterInput = document.getElementById('rater');
 try { raterInput.value = localStorage.getItem('rater') || ''; } catch (e) {}
@@ -93,7 +95,7 @@ const k = (s, i, c, kind) => [s, i, c, kind].join('|');
 async function rate(section, item, candidate, kind, value) {
   state.set(k(section, item, candidate, kind), value);
   render();
-  await fetch('/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+  await fetch('rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ rater: rater(), section, item, candidate, kind, value }) });
 }
 
@@ -137,7 +139,7 @@ function render() {
       const cur = state.get(k('voice', v.id, clip.id, 'stars'));
       const stars = el('span', { class: 'stars' });
       for (let n = 1; n <= 5; n++) stars.append(el('button', { class: 'btn' + (cur === n ? ' on' : ''), onclick: () => rate('voice', v.id, clip.id, 'stars', n) }, String(n)));
-      card.append(el('div', { class: 'clip' }, el('span', { class: 'letter' }, clip.id), el('audio', { controls: '', preload: 'none', src: clip.src }), stars));
+      card.append(el('div', { class: 'clip' }, el('span', { class: 'letter' }, clip.id), el('audio', { controls: '', src: clip.src }), stars));
     }
     vl.append(card);
   }
@@ -172,7 +174,7 @@ for (const b of document.querySelectorAll('nav button')) b.addEventListener('cli
 
 (async () => {
   DATA = await (await fetch('data.json')).json();
-  RATINGS = await (await fetch('/ratings')).json();
+  RATINGS = await (await fetch('ratings')).json();  // Relative, so the page also works under the Funnel path.
   restore();
 })();
 </script>
