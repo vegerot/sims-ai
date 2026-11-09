@@ -1,0 +1,614 @@
+{
+ "type": "social",
+ "outcome": "SUCCESS",
+ "event_id": "1792747988990-1",
+ "observed_at": 1792747988.9909592,
+ "interaction": "mixer_Social_RomanticVenue_AskToSeductiveDance",
+ "interaction_stbl": 438421459,
+ "venue": "venue_karaoke",
+ "venue_stbl": 3332074628,
+ "lot_name": "Planet Honey Pop!",
+ "lot_traits": [
+  "ZoneModifiers_Hidden_BBGameplayEffects",
+  "zoneModifier_lotTrait_Convivial",
+  "zoneModifier_lotTrait_Singles_Hangout"
+ ],
+ "business": null,
+ "actor": {
+  "id": "532857279943344160",
+  "name": "liatt chonen",
+  "age": "YOUNGADULT",
+  "gender": "FEMALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "traits": [
+   "trait_Loner",
+   "trait_LovesOutdoors",
+   "trait_Good",
+   "trait_Cheerful"
+  ],
+  "trait_stbls": [
+   4182741038,
+   930954968,
+   66466717,
+   1394753842
+  ],
+  "extra_traits": [
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "trait_SexualOrientation_WooHooInterests_Female",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_WalkStyleDefault",
+   "trait_GenderOptions_Clothing_WomensWear",
+   "trait_SimPreference_Likes_Music_Pop",
+   "trait_GenderOptions_AttractedTo_NotFemale",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_SleepNaked_Hidden",
+   "trait_GenderOptions_Lactate_Can",
+   "trait_youngAdult",
+   "trait_Hidden_UniversityEnrollment_HasSeenEnrollmentInfo",
+   "trait_Collector",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+   "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+   "trait_SimPreference_Likes_Activities_Gardening",
+   "trait_CivicPolicy_SkillBased_SelfSufficient",
+   "trait_Hidden_Snowboarding_Goofy",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_AfterBathTowel_Hidden",
+   "trait_GenderOptions_Toilet_Sitting",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_Occult_NoOccult",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Innocent_Major",
+   "trait_GenderOptions_AttractedTo_Male",
+   "trait_Hidden_HadWooHoo",
+   "Basemental:Trait_No_GetFamous",
+   "trait_Species_Human",
+   "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+   "trait_Handedness_Left",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_Frame_Feminine",
+   "trait_GenderFemale",
+   "trait_Hidden_isNatureAspiration",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits"
+  ],
+  "aspiration": "Track_Nature_A",
+  "household_funds": 66454,
+  "careers": [
+   {
+    "id": "career_Adult_SexWorkerCareer",
+    "track_id": "SexWorkerCareer_Track1_SexWorkerCareer",
+    "track_stbl": 3052252626,
+    "title_stbl": 3524602236,
+    "level": 1,
+    "at_work": false
+   }
+  ],
+  "skills": [
+   {
+    "id": "statistic_Skill_AdultMajor_Gardening",
+    "stbl": 2243298849,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Photography",
+    "stbl": 1563788065,
+    "level": 3
+   },
+   {
+    "id": "skill_Fitness",
+    "stbl": 656926678,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Romance",
+    "stbl": 1559876043,
+    "level": 1
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Singing",
+    "stbl": 3770158393,
+    "level": 1
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_HomestyleCooking",
+    "stbl": 3133829100,
+    "level": 1
+   }
+  ],
+  "mood": "Mood_Energized",
+  "buffs": [
+   {
+    "id": "buff_Environment_BBGameplayEffects_GoodEnvironmentSmall",
+    "name_stbl": 1899004182,
+    "reason_stbl": 673048548
+   },
+   {
+    "id": "buff_KaraokeMachine_PoorSinging_ActorBuff_TraitsBuff",
+    "name_stbl": 2373385090,
+    "reason_stbl": 1953857753
+   },
+   {
+    "id": "buff_Sentiment_Close_Playful_generic_LT",
+    "name_stbl": 4105666086,
+    "reason_stbl": 37241699
+   },
+   {
+    "id": "buff_LotMods_BaseGame_Convivial_Visible",
+    "name_stbl": 2965669563,
+    "reason_stbl": 2633803656
+   }
+  ],
+  "activities": [],
+  "social_connections": [
+   {
+    "id": "532857279925977109",
+    "name": "yuvi ronen",
+    "same_household": true,
+    "friendship": 100.0,
+    "romance": 89.6,
+    "bits": [
+     "relbit_SocialContext_Casual",
+     "relationshipBits_Mischief_PartnersInCrime",
+     "relationshipBit_Fear_BeingCheatedOn_Tracker",
+     "RomanticCombo_Soulmates",
+     "friendship-good_friends",
+     "SpecialBits_Greeted",
+     "lifeMilestoneBit_FellInLove",
+     "relbit_SocialContext_Romance_Casual",
+     "romantic_FirstKiss",
+     "HaveBeenRomantic",
+     "has_met",
+     "romantic-Significant_Other",
+     "relbit_SocialContext_Fun_Casual",
+     "bit_NoLongerFriends",
+     "romanceTrope_wholesome",
+     "romantic-HaveDoneWooHoo",
+     "romantic-HaveDoneWooHoo_Recently",
+     "TURBODRIVER:WickedWhims_RelBit_HadSex_7Days",
+     "TURBODRIVER:WickedWhims_Relbit_Nudity_ReactionCooldown",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "relBit_RelSat_4_Actor_SatisfiedWith_Target",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic",
+     "sentimentBit_Actor_CloseTo_Target_ST_qualityTime",
+     "sentimentBit_Actor_CloseTo_Target_LT_generic",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Noticed_Hot",
+     "shortTermBits_healedNegativeSentiment",
+     "TURBODRIVER:WickedWhims_RelBit_Memories_MemoryType_Sex_FirstTime",
+     "TURBODRIVER:WickedWhims_RelBit_Sex_Relationships_LastSexPartner",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "313306952509031769",
+    "name": "Tina Peeping",
+    "same_household": false,
+    "friendship": -10.4,
+    "romance": -8.0,
+    "bits": [
+     "RomanticCombo_Acquaintances",
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Good",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "532857280101202308",
+    "name": "Carlos López",
+    "same_household": false,
+    "friendship": 8.5,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Casual",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "has_met",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relbit_SocialContext_Romance_Casual",
+     "relbit_SocialContext_Fun_Casual",
+     "SpecialBits_Greeted",
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh"
+    ],
+    "reverse_bits": [
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_High",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+    ]
+   },
+   {
+    "id": "532857280101132928",
+    "name": "Ian Robles",
+    "same_household": false,
+    "friendship": 5.4,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "SpecialBits_Greeted",
+     "relbit_SocialContext_Casual",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+    ]
+   },
+   {
+    "id": "878508630928261742",
+    "name": "Osamu Okamoto",
+    "same_household": false,
+    "friendship": 4.7,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Casual",
+     "has_met",
+     "TURBODRIVER:WickedWhims_RelBit_HadLewdDreamAbout",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+    ]
+   },
+   {
+    "id": "532857280100698649",
+    "name": "Mortimer Goth",
+    "same_household": false,
+    "friendship": 4.5,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Good",
+     "relbit_SocialContext_Fun_Casual",
+     "relbit_SocialContext_Casual",
+     "has_met",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relbit_SocialContext_Romance_Casual",
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh"
+    ],
+    "reverse_bits": [
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_High"
+    ]
+   },
+   {
+    "id": "532857280100698208",
+    "name": "Bob Pancakes",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relbit_SocialContext_Casual",
+     "SpecialBits_Greeted",
+     "relationshipbit_Compatibility_Good",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+    ]
+   },
+   {
+    "id": "313306952645021041",
+    "name": "Jolene Ravikumar",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relationshipbit_Compatibility_Good",
+     "SpecialBits_Greeted",
+     "relbit_SocialContext_Casual",
+     "relBit_Attraction_4_Actor_AttractedTo_Target"
+    ],
+    "reverse_bits": []
+   }
+  ]
+ },
+ "target": {
+  "id": "532857279925977109",
+  "name": "yuvi ronen",
+  "age": "YOUNGADULT",
+  "gender": "MALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "traits": [
+   "trait_Good",
+   "trait_Geek"
+  ],
+  "trait_stbls": [
+   66466717,
+   3818473410
+  ],
+  "extra_traits": [
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "trait_SexualOrientation_WooHooInterests_Female",
+   "trait_GenderOptions_Frame_Masculine",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_WalkStyleDefault",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "trait_GenderOptions_Toilet_Standing",
+   "trait_Handedness_Right",
+   "trait_GenderOptions_AttractedTo_Female",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Minor",
+   "trait_Quick_Learner",
+   "trait_youngAdult",
+   "trait_Hidden_UniversityEnrollment_HasSeenEnrollmentInfo",
+   "trait_SimPreference_Likes_Activities_VideoGaming",
+   "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+   "trait_GenderOptions_AttractedTo_NotMale",
+   "trait_CivicPolicy_SkillBased_SelfSufficient",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+   "trait_GenderMale",
+   "trait_GenderOptions_Lactate_CanNot",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_Occult_NoOccult",
+   "trait_GenderOptions_Pregnancy_CanImpregnate",
+   "trait_Hidden_HadWooHoo",
+   "Basemental:Trait_No_GetFamous",
+   "trait_Species_Human",
+   "trait_GenderOptions_Clothing_MensWear",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sage_Major",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits"
+  ],
+  "aspiration": "Track_Knowledge_B",
+  "household_funds": 66454,
+  "careers": [
+   {
+    "id": "careers_Adult_Critic",
+    "track_id": "careerTracks_Critic_Basic",
+    "track_stbl": 2480909071,
+    "title_stbl": 2955871035,
+    "level": 2,
+    "at_work": false
+   }
+  ],
+  "skills": [
+   {
+    "id": "statistic_Skill_AdultMajor_VideoGaming",
+    "stbl": 3924981164,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Charisma",
+    "stbl": 2364309712,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMinor_Entrepreneur",
+    "stbl": 3707168815,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Romance",
+    "stbl": 1559876043,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Writing",
+    "stbl": 143749022,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Singing",
+    "stbl": 3770158393,
+    "level": 1
+   }
+  ],
+  "mood": "Mood_Happy",
+  "buffs": [
+   {
+    "id": "buff_Environment_BBGameplayEffects_GoodEnvironmentSmall",
+    "name_stbl": 1899004182,
+    "reason_stbl": 673048548
+   },
+   {
+    "id": "Buff_Trait_Good_GoodVIbes",
+    "name_stbl": 2407348272,
+    "reason_stbl": 2483427880
+   },
+   {
+    "id": "buff_Sentiment_Close_Happy_Primary_generic_LT",
+    "name_stbl": 2186527397,
+    "reason_stbl": 37241699
+   }
+  ],
+  "activities": [
+   {
+    "id": "triviaBox_wooWho_gameSetup_wait",
+    "stbl": 4193877317,
+    "target": "object_triviaBox",
+    "target_stbl": 2579684052,
+    "recipe": null,
+    "recipe_stbl": null
+   }
+  ],
+  "social_connections": [
+   {
+    "id": "532857279943344160",
+    "name": "liatt chonen",
+    "same_household": true,
+    "friendship": 100.0,
+    "romance": 89.6,
+    "bits": [
+     "relbit_SocialContext_Casual",
+     "relationshipBits_Mischief_PartnersInCrime",
+     "relationshipBit_Fear_BeingCheatedOn_Tracker",
+     "RomanticCombo_Soulmates",
+     "friendship-good_friends",
+     "SpecialBits_Greeted",
+     "lifeMilestoneBit_FellInLove",
+     "relbit_SocialContext_Romance_Casual",
+     "romantic_FirstKiss",
+     "HaveBeenRomantic",
+     "has_met",
+     "romantic-Significant_Other",
+     "relbit_SocialContext_Fun_Casual",
+     "bit_NoLongerFriends",
+     "romanceTrope_wholesome",
+     "romantic-HaveDoneWooHoo",
+     "romantic-HaveDoneWooHoo_Recently",
+     "TURBODRIVER:WickedWhims_RelBit_HadSex_7Days",
+     "TURBODRIVER:WickedWhims_Relbit_Nudity_ReactionCooldown",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_RelSat_4_Actor_SatisfiedWith_Target",
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "sentimentBit_Actor_CloseTo_Target_LT_generic",
+     "shortTermBits_healedNegativeSentiment",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Noticed_Hot",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic",
+     "TURBODRIVER:WickedWhims_RelBit_Memories_MemoryType_Sex_FirstTime",
+     "TURBODRIVER:WickedWhims_RelBit_Sex_Relationships_LastSexPartner",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+    ],
+    "reverse_bits": [
+     "sentimentBit_Actor_CloseTo_Target_ST_qualityTime"
+    ]
+   },
+   {
+    "id": "532857280115163812",
+    "name": "Kin-Kin Ngo",
+    "same_household": false,
+    "friendship": 3.0,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Casual",
+     "has_met",
+     "relationshipbit_Compatibility_Bad"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "532857280100774249",
+    "name": "Geeta Rasoya",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relationshipbit_Compatibility_Good",
+     "neighbor",
+     "relBit_Attraction_2_Actor_RepelledBy_Target"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target"
+    ]
+   },
+   {
+    "id": "532857280100698208",
+    "name": "Bob Pancakes",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relationshipbit_Compatibility_Good",
+     "relbit_SocialContext_Casual",
+     "SpecialBits_Greeted"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "532857280101132928",
+    "name": "Ian Robles",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relationshipbit_Compatibility_Bad",
+     "relbit_SocialContext_Casual",
+     "SpecialBits_Greeted"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "532857280101202604",
+    "name": "Elia Cruz",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "SpecialBits_Greeted",
+     "relbit_SocialContext_Casual",
+     "relBit_Attraction_4_Actor_AttractedTo_Target"
+    ],
+    "reverse_bits": [
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_Medium"
+    ]
+   },
+   {
+    "id": "532857280100775948",
+    "name": "Diego Lobo",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relationshipbit_Compatibility_Good"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "532857280100850530",
+    "name": "Alika Kahananui",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "relbit_SocialContext_Casual"
+    ],
+    "reverse_bits": []
+   }
+  ]
+ },
+ "relationship": {
+  "same_household": true,
+  "friendship": 100.0,
+  "romance": 89.64,
+  "bits": [
+   "relbit_SocialContext_Casual",
+   "relationshipBits_Mischief_PartnersInCrime",
+   "relationshipBit_Fear_BeingCheatedOn_Tracker",
+   "RomanticCombo_Soulmates",
+   "friendship-good_friends",
+   "SpecialBits_Greeted",
+   "lifeMilestoneBit_FellInLove",
+   "relbit_SocialContext_Romance_Casual",
+   "romantic_FirstKiss",
+   "HaveBeenRomantic",
+   "has_met",
+   "romantic-Significant_Other",
+   "relbit_SocialContext_Fun_Casual",
+   "bit_NoLongerFriends",
+   "romanceTrope_wholesome",
+   "romantic-HaveDoneWooHoo",
+   "romantic-HaveDoneWooHoo_Recently",
+   "TURBODRIVER:WickedWhims_RelBit_HadSex_7Days",
+   "TURBODRIVER:WickedWhims_Relbit_Nudity_ReactionCooldown",
+   "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+   "relBit_Attraction_SuppressChangeBehavior",
+   "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+   "relBit_RelSat_4_Actor_SatisfiedWith_Target",
+   "sentimentBit_Actor_CloseTo_Target_ST_generic",
+   "sentimentBit_Actor_CloseTo_Target_ST_qualityTime",
+   "sentimentBit_Actor_CloseTo_Target_LT_generic",
+   "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryHigh",
+   "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Noticed_Hot",
+   "shortTermBits_healedNegativeSentiment",
+   "TURBODRIVER:WickedWhims_RelBit_Memories_MemoryType_Sex_FirstTime",
+   "TURBODRIVER:WickedWhims_RelBit_Sex_Relationships_LastSexPartner",
+   "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+  ],
+  "reverse_bits": []
+ },
+ "_language": "English"
+}

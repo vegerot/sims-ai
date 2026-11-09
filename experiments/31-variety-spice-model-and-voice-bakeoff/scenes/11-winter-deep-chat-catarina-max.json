@@ -1,0 +1,398 @@
+{
+ "type": "social",
+ "outcome": "SUCCESS",
+ "event_id": "1793123788262-9",
+ "observed_at": 1793123788.2629423,
+ "interaction": "mixer_social_DeepConversation_targeted_Friendly_MiddleScore",
+ "interaction_stbl": 581052077,
+ "venue": "venue_residential",
+ "venue_stbl": 4239733099,
+ "lot_name": "Catscratch Cottage",
+ "lot_value": 46825,
+ "lot_rooms": "1 bed / 2 bath",
+ "weather": null,
+ "lot_traits": [
+  "zoneModifier_PetWorld_CatHangout",
+  "ZoneModifiers_Hidden_BBGameplayEffects"
+ ],
+ "business": null,
+ "actor": {
+  "id": "152301827958327711",
+  "name": "Catarina Lynx",
+  "age": "YOUNGADULT",
+  "gender": "FEMALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": "COLDWEATHER",
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_Bookworm",
+   "trait_Foodie",
+   "trait_CatLover"
+  ],
+  "trait_stbls": [
+   3765179452,
+   610855744,
+   2354615563
+  ],
+  "extra_traits": [
+   "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_GenderOptions_Toilet_Sitting",
+   "trait_Hidden_FirstSnow",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_SimPreference_Likes_Characteristic_Argumentative",
+   "trait_Occult_NoOccult",
+   "trait_GenderOptions_AttractedTo_Male",
+   "Basemental:Trait_No_GetFamous",
+   "trait_Species_Human",
+   "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_Frame_Feminine",
+   "trait_GenderFemale",
+   "trait_GenderOptions_Lactate_Can",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Major",
+   "trait_WalkStyleDefault",
+   "trait_GenderOptions_Clothing_WomensWear",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "trait_GenderOptions_AttractedTo_NotFemale",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sage_Minor",
+   "trait_Handedness_Right",
+   "trait_Animal_Attraction",
+   "trait_youngAdult"
+  ],
+  "aspiration": "Track_Animal_A",
+  "aspiration_stbl": 2725289178,
+  "household_funds": 8711,
+  "careers": [
+   {
+    "id": "career_Adult_Culinary",
+    "track_id": "Culinary_Track1",
+    "track_stbl": 4280443893,
+    "title_stbl": 1520755172,
+    "level": 3,
+    "at_work": false
+   }
+  ],
+  "skills": [
+   {
+    "id": "statistic_Skill_AdultMajor_Gardening",
+    "stbl": 2243298849,
+    "level": 4
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_HomestyleCooking",
+    "stbl": 3133829100,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Fishing",
+    "stbl": 2045220620,
+    "level": 3
+   }
+  ],
+  "mood": "Mood_Happy",
+  "buffs": [
+   {
+    "id": "buff_SnowEffects_Snowing_Positive",
+    "name_stbl": 2623984204,
+    "reason_stbl": 530364269
+   },
+   {
+    "id": "buff_Relationship_NewFriend",
+    "name_stbl": 2392673174,
+    "reason_stbl": 818439033
+   },
+   {
+    "id": "buff_Environment_BBGameplayEffects_GoodEnvironmentSmall",
+    "name_stbl": 1899004182,
+    "reason_stbl": 673048548
+   }
+  ],
+  "activities": [
+   {
+    "id": "tv_WatchCooking_Foodie",
+    "stbl": 1922395294,
+    "target": "object_tvSurfaceMED_01",
+    "target_stbl": 2087522203
+   },
+   {
+    "id": "seating_Sit",
+    "stbl": 431264188,
+    "target": "Part(object_sitSofaFC3x1_01)",
+    "target_stbl": 423727787
+   }
+  ],
+  "situations": [],
+  "social_connections": [
+   {
+    "id": "503582672550035783",
+    "name": "max sexy",
+    "same_household": true,
+    "friendship": 56.1,
+    "romance": 0,
+    "bits": [
+     "has_met",
+     "SpecialBits_Greeted",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "relbit_SocialContext_Friendship_Friendly",
+     "friendship-friend",
+     "HasBeenFriends",
+     "relbit_SocialContext_Fun_Casual",
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic",
+     "TURBODRIVER:WickedWhims_RelBit_Relationship_Archetype_Hint_Major"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_High",
+     "shortTermBits_healedNegativeSentiment"
+    ]
+   },
+   {
+    "id": "152301827300524057",
+    "name": "gefen berger",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958179966",
+    "name": "Bob Pancakes",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958247256",
+    "name": "Summer Holiday",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958250965",
+    "name": "Mitchell Kalani",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958251976",
+    "name": "Dina Caliente",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relationshipbit_Compatibility_Good",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958256154",
+    "name": "Jesminder Bheeda",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958332257",
+    "name": "Mele Kahananui",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "relationshipbit_CoWorkers",
+     "relationshipbit_Compatibility_Bad",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   }
+  ]
+ },
+ "target": {
+  "id": "503582672550035783",
+  "name": "max sexy",
+  "age": "YOUNGADULT",
+  "gender": "MALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": "COLDWEATHER",
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_Unflirty",
+   "trait_Glutton",
+   "trait_Good"
+  ],
+  "trait_stbls": [
+   2584626283,
+   2163496933,
+   66466717
+  ],
+  "extra_traits": [
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+   "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+   "trait_GenderOptions_AttractedTo_NotMale",
+   "trait_GenderMale",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_GenderOptions_Lactate_CanNot",
+   "trait_Hidden_FirstSnow",
+   "trait_CAS_Story_Career_Activist_Level_3",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_CAS_Story_Skill_Logic_3",
+   "trait_Occult_NoOccult",
+   "trait_GenderOptions_Pregnancy_CanImpregnate",
+   "Basemental:Trait_No_GetFamous",
+   "trait_Species_Human",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_GenderOptions_Clothing_MensWear",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_AttractedTo_Female",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Major",
+   "trait_SexualOrientation_WooHooInterests_Female",
+   "trait_WalkStyleDefault",
+   "trait_CAS_Story_Skill_Handiness_3",
+   "trait_GenderOptions_Frame_Masculine",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_SimPreference_Likes_Characteristic_Idealist",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Innocent_Minor",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "trait_Handedness_Right",
+   "trait_GenderOptions_Toilet_Standing",
+   "trait_Quick_Learner",
+   "trait_youngAdult"
+  ],
+  "aspiration": "Track_Knowledge_C",
+  "aspiration_stbl": 2150847761,
+  "household_funds": 8711,
+  "careers": [],
+  "skills": [],
+  "mood": "Mood_Happy",
+  "buffs": [
+   {
+    "id": "buff_SnowEffects_Snowing_Positive",
+    "name_stbl": 2623984204,
+    "reason_stbl": 530364269
+   },
+   {
+    "id": "Buff_Trait_Good_GoodVIbes",
+    "name_stbl": 2407348272,
+    "reason_stbl": 2483427880
+   },
+   {
+    "id": "buff_Relationship_NewFriend",
+    "name_stbl": 2392673174,
+    "reason_stbl": 818439033
+   }
+  ],
+  "activities": [
+   {
+    "id": "seating_Sit",
+    "stbl": 431264188,
+    "target": "Part(object_sitSofaFC3x1_01)",
+    "target_stbl": 423727787
+   },
+   {
+    "id": "tv_WatchCooking",
+    "stbl": 1317806819,
+    "target": "object_tvSurfaceMED_01",
+    "target_stbl": 2087522203
+   }
+  ],
+  "situations": [],
+  "social_connections": [
+   {
+    "id": "152301827958327711",
+    "name": "Catarina Lynx",
+    "same_household": true,
+    "friendship": 56.1,
+    "romance": 0,
+    "bits": [
+     "has_met",
+     "SpecialBits_Greeted",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "relbit_SocialContext_Friendship_Friendly",
+     "friendship-friend",
+     "HasBeenFriends",
+     "relbit_SocialContext_Fun_Casual",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_High",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset",
+     "shortTermBits_healedNegativeSentiment"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic",
+     "TURBODRIVER:WickedWhims_RelBit_Relationship_Archetype_Hint_Major"
+    ]
+   }
+  ]
+ },
+ "relationship": {
+  "same_household": true,
+  "friendship": 56.1,
+  "romance": 0,
+  "bits": [
+   "has_met",
+   "SpecialBits_Greeted",
+   "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+   "relbit_SocialContext_Friendship_Friendly",
+   "friendship-friend",
+   "HasBeenFriends",
+   "relbit_SocialContext_Fun_Casual",
+   "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+   "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+   "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset",
+   "sentimentBit_Actor_CloseTo_Target_ST_generic",
+   "TURBODRIVER:WickedWhims_RelBit_Relationship_Archetype_Hint_Major"
+  ],
+  "reverse_bits": [
+   "relBit_Attraction_3_Actor_NeutralTo_Target",
+   "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_High",
+   "shortTermBits_healedNegativeSentiment"
+  ]
+ },
+ "_language": "English"
+}

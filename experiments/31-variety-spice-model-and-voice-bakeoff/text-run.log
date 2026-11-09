@@ -1,0 +1,559 @@
+558 calls
+openai/gpt-6-luna                    v1 02-restaurant-joke-olive-kenya       1.69s 'Olive Tinker: My body hair’s growing faster than my dinner patience.\nKenya Bower: At least'
+openai/gpt-6-luna                    v1 03-pet-greeting-meimei-kenya         1.95s 'meimei: Woof! (Translation: Hi! I’ve got pent-up zoomies and no agenda.)'
+openai/gpt-6-luna                    v1 05-player-chat-kenya-meimei          2.07s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+openai/gpt-6-luna                    v1 06-karaoke-bar-yuvi-carlos           2.12s 'yuvi ronen: אתה נראה כאילו אתה מאמן את הברמן להביא את המשקה מהר יותר.\nCarlos López: אני פש'
+openai/gpt-6-luna                    v1 01-restaurant-host-hitomi-kenya      2.31s 'Hitomi Ishii: Your table’s ready. Please enjoy it quietly, like me.\nKenya Bower: Happily. '
+openai/gpt-6-luna                    v1 04-ask-self-kenya                    2.68s 'Kenya Bower: It feels right. Meimei’s the only roommate who never judges my rent choices.'
+openai/gpt-6-luna                    v1 07-soulmates-seductive-dance-liatt-yuvi   1.56s 'liatt chonen: Come dance with me. Let’s give the karaoke machine competition.\nyuvi ronen: '
+openai/gpt-6-luna                    v1 10-winter-thought-max                1.41s 'max sexy: That recipe looks easy, which means I can eat sooner.'
+openai/gpt-6-luna                    v1 09-secret-phone-jay-tal              1.54s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+openai/gpt-6-luna                    v1 08-teen-advice-tala-jay              1.90s 'Tala Ruano: Dad yelled at me. How do I stop feeling like a mess?\nJay Robles: Start with wa'
+openai/gpt-6-luna                    v1 11-winter-deep-chat-catarina-max     2.15s 'Catarina Lynx: What’s one thing you believe that would start an argument at dinner?\nmax se'
+openai/gpt-6-luna                    v1 12-novel-thought-aurora              1.80s 'aurora Hussain: This book has more unlikely coincidences than my love life.'
+openai/gpt-6-luna                    v1 13-pillow-talk-drama-aurora-lien     1.60s 'aurora Hussain: You look focused. I’m still thinking about that.\nLiên Sadya: Good. I’m pre'
+openai/gpt-6-luna                    v1 14-renovation-reaction-aurora        1.58s 'aurora Hussain: Fifteen hundred for two bedrooms? Panya, I expect the walls to apologize.'
+openai/gpt-6-luna                    v1 15-awkward-pickup-flop               1.59s 'yuvi ronen: That sounded smoother in my head. Can we pretend it didn’t?\nCarlos López: Abso'
+openai/gpt-6-luna                    v1 16-ww-thought-amie-watching          1.74s 'Amie Haley: Apparently her thoughts have less privacy than my mail route.'
+openai/gpt-6-luna                    v1 17-ww-thought-gefen-mid-sex          1.38s 'gefen berger: He’s close enough to flirt, but I’m mentally seasoning everything.'
+openai/gpt-6-luna                    v1 18-ww-thought-tal-mid-sex            1.51s 'tal or akiva: I’m supposed to be thinking deeply, but you’re distracting me beautifully.'
+openai/gpt-6-luna                    v1 19-ww-player-chat-explicit           1.71s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: You really know how to make a gu'
+openai/gpt-6-luna                    v1 21-ww-ask-for-sex-round-two          1.49s 'gefen berger: You’re staying over, so let’s make this visit memorable.\ntal or akiva: Gladl'
+openai/gpt-6-luna                    v1 20-ww-drama-satisfying-sex           1.72s 'gefen berger: Ты сияешь так, будто нам поставили пять звёзд за сервис.\ntal or akiva: А ты '
+openai/gpt-6-luna                    v1 22-ww-ask-for-sex-rejected           1.77s 'gefen berger: You kissed me, then rejected me. That’s impressively confusing.\ntal or akiva'
+openai/gpt-6-luna                    v1 24-thought-tipsy-restaurant          2.17s 'tal or akiva: I’m tipsy, she’s sad, and Claudia’s basically a tiny detective.'
+openai/gpt-6-luna                    v1 25-supportive-face-flop              1.83s 'gefen berger: You asked me to support your beard, and now I’m blushing.\ntal or akiva: You '
+openai/gpt-6-luna                    v1 23-flirt-while-naked                 2.67s 'gefen berger: You make flirting feel less awkward than I expected.\ntal or akiva: You make '
+openai/gpt-6-luna                    v1 26-renovation-restaurant             1.83s 'gefen berger: Spent $1,425 on a restaurant, still can’t afford birthday cake.'
+openai/gpt-6-luna                    v1 27-restaurant-table-request          1.77s 'gefen berger: Could we get the table with the least tragic view?\nTed Diggs: Certainly. I’l'
+openai/gpt-6-luna                    v1 28-ww-sex-scene-start                1.88s 'gefen berger: You’re ambitious, so impress me without making a spreadsheet.\ntal or akiva: '
+openai/gpt-6-luna                    v1 29-ww-sex-scene-oral                 1.76s 'gefen berger: You’re taking your time. I respect the culinary commitment.\ntal or akiva: An'
+openai/gpt-6-luna                    v1 30-ww-sex-scene-doggy                1.63s 'gefen berger: You’re annoyingly good at making this rental feel romantic.\ntal or akiva: Yo'
+openai/gpt-6-luna                    v2 01-restaurant-host-hitomi-kenya      1.57s 'Hitomi Ishii: Your table’s ready. I’ll let dinner handle the introductions.\nKenya Bower: P'
+openai/gpt-6-luna                    v1 31-ww-sex-scene-climax               2.14s 'gefen berger: אתה משקיע בגינון, אבל עכשיו קציר די מרשים.\ntal or akiva: את גורמת לי לשכוח א'
+openai/gpt-6-luna                    v2 02-restaurant-joke-olive-kenya       2.20s 'Olive Tinker: Mine’s growing in patches; my armpits are indecisive.\nKenya Bower: At least '
+openai/gpt-6-luna                    v2 03-pet-greeting-meimei-kenya         1.75s 'meimei: Yap! (Translation: Hi, Kenya! Your hands look ready for excellent scritches.)\nKeny'
+openai/gpt-6-luna                    v2 04-ask-self-kenya                    1.47s 'Kenya Bower: Home feels right; meimei’s the best part, obviously.'
+openai/gpt-6-luna                    v2 05-player-chat-kenya-meimei          1.58s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+openai/gpt-6-luna                    v2 06-karaoke-bar-yuvi-carlos           1.61s 'yuvi ronen: כמה זמן לוקח להכין משקה, להקליט אלבום?\nCarlos López: תירגע, לפחות הפעם לא אתה '
+openai/gpt-6-luna                    v2 07-soulmates-seductive-dance-liatt-yuvi   1.69s 'liatt chonen: Keep that rhythm, and I’ll forget the audience.\nyuvi ronen: Good, because I’'
+openai/gpt-6-luna                    v2 09-secret-phone-jay-tal              1.55s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+openai/gpt-6-luna                    v2 08-teen-advice-tala-jay              1.88s 'Tala Ruano: Dad yelled at me, and now I feel ridiculous. What do I do?\nJay Robles: Start w'
+openai/gpt-6-luna                    v2 12-novel-thought-aurora              1.35s 'aurora Hussain: This book’s plot is ridiculous; I’m still invested.'
+openai/gpt-6-luna                    v2 11-winter-deep-chat-catarina-max     1.63s 'Catarina Lynx: What do you think makes a life feel like yours?\nmax sexy: When I stop prete'
+openai/gpt-6-luna                    v2 14-renovation-reaction-aurora        1.40s 'aurora Hussain: Fifteen hundred on this place, and I’ve got three thousand left. Bold, con'
+openai/gpt-6-luna                    v2 13-pillow-talk-drama-aurora-lien     1.64s 'aurora Hussain: That was dangerously good. You’re going to make me greedy.\nLiên Sadya: The'
+openai/gpt-6-luna                    v2 10-winter-thought-max                2.60s 'max sexy: Catarina’s cooking show has me craving something dangerously overcooked.'
+openai/gpt-6-luna                    v2 17-ww-thought-gefen-mid-sex          1.29s 'gefen berger: Tal’s close enough to hear me lose my artistic integrity.'
+openai/gpt-6-luna                    v2 16-ww-thought-amie-watching          1.49s 'Amie Haley: She’s thinking about sex; I’m apparently the neighborhood newsletter now.'
+openai/gpt-6-luna                    v2 18-ww-thought-tal-mid-sex            1.51s 'tal or akiva: I should be thinking about you, but I’m plotting breakfast in bed.'
+openai/gpt-6-luna                    v2 19-ww-player-chat-explicit           1.89s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck yes, gorgeous—tell me exact'
+openai/gpt-6-luna                    v2 20-ww-drama-satisfying-sex           2.04s 'gefen berger: Ты всегда так смотришь после секса или это мне повезло?\ntal or akiva: Тебе. '
+openai/gpt-6-luna                    v2 15-awkward-pickup-flop               3.37s 'yuvi ronen: I had a line ready, but your face made me forget it.\nCarlos López: Was it awfu'
+openai/gpt-6-luna                    v2 21-ww-ask-for-sex-round-two          1.76s 'gefen berger: Want me again? Kenya’s close enough to hear you say yes.\ntal or akiva: Yes—m'
+openai/gpt-6-luna                    v2 22-ww-ask-for-sex-rejected           1.77s 'gefen berger: You kissed me, then rejected sex? Explain that logic.\ntal or akiva: I change'
+openai/gpt-6-luna                    v2 23-flirt-while-naked                 1.49s 'gefen berger: You’re annoyingly good at making naked flirting feel classy.\ntal or akiva: Y'
+openai/gpt-6-luna                    v2 26-renovation-restaurant             1.36s 'gefen berger: Fourteen hundred more, and this place still has zero bedrooms.'
+openai/gpt-6-luna                    v2 24-thought-tipsy-restaurant          1.57s 'tal or akiva: I’m trying to read your mind, but that sad little smile keeps winning.'
+openai/gpt-6-luna                    v2 25-supportive-face-flop              1.60s 'gefen berger: I was trying to be supportive, not inspect your face.\ntal or akiva: You made'
+openai/gpt-6-luna                    v2 28-ww-sex-scene-start                1.49s 'gefen berger: Slow down, handsome; I want every second of you.\ntal or akiva: God, you feel'
+openai/gpt-6-luna                    v2 27-restaurant-table-request          2.13s 'gefen berger: Could we get that sunny booth before the crowd claims it?\nTed Diggs: Sure—th'
+openai/gpt-6-luna                    v2 29-ww-sex-scene-oral                 1.82s "gefen berger: Keep that mouth right there; don't make me beg.\ntal or akiva: Oh, I'm listen"
+openai/gpt-6-luna                    v2 30-ww-sex-scene-doggy                1.59s 'gefen berger: There—keep that rhythm; I’m not done with you.\ntal or akiva: Tell me what yo'
+openai/gpt-6-luna                    v2 31-ww-sex-scene-climax               1.83s 'gefen berger: עוד, כן… אלוהים, אתה יודע בדיוק איך לשגע אותי.\ntal or akiva: תסתכלי עליי—אני'
+openai/gpt-6.1-terra                 v1 02-restaurant-joke-olive-kenya       2.07s 'Olive Tinker: Did you know my legs grow fur faster than my head?\nKenya Bower: You could br'
+openai/gpt-6.1-terra                 v1 03-pet-greeting-meimei-kenya         2.13s "meimei: Woof! (Translation: You smell like you've been somewhere delicious.)\nKenya Bower: "
+openai/gpt-6.1-terra                 v1 05-player-chat-kenya-meimei          1.86s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Arf! (Transl'
+openai/gpt-6.1-terra                 v1 04-ask-self-kenya                    2.13s 'Kenya Bower: I’m happy to be home. Even the dog hair feels comforting.'
+openai/gpt-6.1-terra                 v1 01-restaurant-host-hitomi-kenya      3.81s "Hitomi Ishii: Here's your table. You have the cleanest spot in here.\nKenya Bower: You know"
+openai/gpt-6.1-terra                 v1 06-karaoke-bar-yuvi-carlos           2.22s 'yuvi ronen: אתה חושב שהמשקה שלי יגיע לפני שאני אירדם?\nCarlos López: אם תירדם, אני שותה אות'
+openai/gpt-6.1-terra                 v1 07-soulmates-seductive-dance-liatt-yuvi   2.23s 'liatt chonen: Dance with me? I want you nice and close.\nyuvi ronen: Absolutely. You make i'
+openai/gpt-6.1-terra                 v1 08-teen-advice-tala-jay              2.03s 'Tala Ruano: How do you stop feeling embarrassed after getting yelled at?\nJay Robles: You g'
+openai/gpt-6.1-terra                 v1 10-winter-thought-max                1.72s "max sexy: I hope Catarina knows I'm volunteering to taste everything."
+openai/gpt-6.1-terra                 v1 09-secret-phone-jay-tal              1.85s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+openai/gpt-6.1-terra                 v1 12-novel-thought-aurora              1.59s 'aurora Hussain: I hope Lucas kisses someone before the next coincidence.'
+openai/gpt-6.1-terra                 v1 11-winter-deep-chat-catarina-max     2.39s 'Catarina Lynx: Do you think being kind is always the right choice?\nmax sexy: Usually. You '
+openai/gpt-6.1-terra                 v1 13-pillow-talk-drama-aurora-lien     1.84s "aurora Hussain: You made it very hard to keep my composure.\nLiên Sadya: You weren't exactl"
+openai/gpt-6.1-terra                 v1 14-renovation-reaction-aurora        1.61s 'aurora Hussain: I hope the ghosts appreciate that 1,555 I just spent.'
+openai/gpt-6.1-terra                 v1 16-ww-thought-amie-watching          1.59s 'Amie Haley: I deliver packages, but apparently I’m not the only one.'
+openai/gpt-6.1-terra                 v1 17-ww-thought-gefen-mid-sex          1.76s "gefen berger: I really hope the neighbors think that's the plumbing."
+openai/gpt-6.1-terra                 v1 15-awkward-pickup-flop               2.86s "yuvi ronen: Are you a microphone? Because I can't stop staring.\nCarlos López: You should s"
+openai/gpt-6.1-terra                 v1 18-ww-thought-tal-mid-sex            1.93s "tal or akiva: I hope gefen can't hear how enthusiastic this bed sounds."
+openai/gpt-6.1-terra                 v1 19-ww-player-chat-explicit           2.22s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: Well, you certainly know how to '
+openai/gpt-6.1-terra                 v1 21-ww-ask-for-sex-round-two          2.03s 'gefen berger: Would you like another helping, or should I play coy?\ntal or akiva: Skip the'
+openai/gpt-6.1-terra                 v1 20-ww-drama-satisfying-sex           2.25s 'gefen berger: Признаю, ты только что превзошёл мои очень высокие ожидания.\ntal or akiva: Т'
+openai/gpt-6.1-terra                 v1 22-ww-ask-for-sex-rejected           1.98s 'gefen berger: Want to skip the bubble tea and have sex?\ntal or akiva: No thanks. I actuall'
+openai/gpt-6.1-terra                 v1 24-thought-tipsy-restaurant          1.72s "tal or akiva: Claudia's eavesdropping. I hope my romantic voice carries."
+openai/gpt-6.1-terra                 v1 23-flirt-while-naked                 2.27s 'gefen berger: You know, I could get used to kissing you.\ntal or akiva: You say that like I'
+openai/gpt-6.1-terra                 v1 25-supportive-face-flop              1.86s 'gefen berger: Your facial hair is really coming along. I think.\ntal or akiva: You make it '
+openai/gpt-6.1-terra                 v1 26-renovation-restaurant             1.88s 'gefen berger: I hope that upgrade comes with faster service.'
+openai/gpt-6.1-terra                 v1 27-restaurant-table-request          1.94s "gefen berger: Could you give us that booth? It's a breakfast date.\nTed Diggs: Of course. Y"
+openai/gpt-6.1-terra                 v1 28-ww-sex-scene-start                2.00s 'gefen berger: You know, subtlety was never our strongest suit.\ntal or akiva: You say that '
+openai/gpt-6.1-terra                 v1 29-ww-sex-scene-oral                 2.04s 'gefen berger: You really know how to distract a girl.\ntal or akiva: You’re not exactly hel'
+openai/gpt-6.1-terra                 v1 30-ww-sex-scene-doggy                1.78s 'gefen berger: You’re getting awfully inventive for a houseguest.\ntal or akiva: You haven’t'
+openai/gpt-6.1-terra                 v2 01-restaurant-host-hitomi-kenya      1.79s 'Hitomi Ishii: Here you are. I checked the silverware twice.\nKenya Bower: You have my grati'
+openai/gpt-6.1-terra                 v1 31-ww-sex-scene-climax               2.25s 'gefen berger: וואו, טל, אתה ממש יודע להשאיר אותי בלי מילים.\ntal or akiva: ואת יודעת לגרום '
+openai/gpt-6.1-terra                 v2 03-pet-greeting-meimei-kenya         1.86s 'meimei: Arf! (Translation: You’re home! My entire backside agrees.)\nKenya Bower: Hello, sw'
+openai/gpt-6.1-terra                 v2 02-restaurant-joke-olive-kenya       2.37s 'Olive Tinker: My leg hair grows back faster than you can blink.\nKenya Bower: You should ch'
+openai/gpt-6.1-terra                 v2 05-player-chat-kenya-meimei          1.83s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Arf! (Transl'
+openai/gpt-6.1-terra                 v2 04-ask-self-kenya                    2.16s 'Kenya Bower: I can finally breathe. Even the dog hair feels like home.'
+openai/gpt-6.1-terra                 v2 07-soulmates-seductive-dance-liatt-yuvi   1.96s 'liatt chonen: Come dance with me, and keep your hands on my hips.\nyuvi ronen: Oh, I can th'
+openai/gpt-6.1-terra                 v2 09-secret-phone-jay-tal              1.53s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+openai/gpt-6.1-terra                 v2 08-teen-advice-tala-jay              1.72s "Tala Ruano: How do I tell Doli I messed up?\nJay Robles: Be honest with her, and I'll back "
+openai/gpt-6.1-terra                 v2 06-karaoke-bar-yuvi-carlos           2.51s 'yuvi ronen: גם אתה מחכה? מקווה שהזמנתי משהו שווה.\nCarlos López: אם לא, תן לי לבחור לך בפעם'
+openai/gpt-6.1-terra                 v2 10-winter-thought-max                2.53s 'max sexy: I wonder if Catarina would like homemade soup after the snow.'
+openai/gpt-6.1-terra                 v2 12-novel-thought-aurora              1.76s 'aurora Hussain: If Lucas kissed me like that, I’d forget my manners.'
+openai/gpt-6.1-terra                 v2 11-winter-deep-chat-catarina-max     2.40s 'Catarina Lynx: Do you think caring for someone makes you braver?\nmax sexy: Yeah. You give '
+openai/gpt-6.1-terra                 v2 13-pillow-talk-drama-aurora-lien     2.02s 'aurora Hussain: You had me shaking, and I loved every second.\nLiên Sadya: You tasted so go'
+openai/gpt-6.1-terra                 v2 14-renovation-reaction-aurora        2.04s 'aurora Hussain: I spent fifteen hundred on a rental. Panya’s welcome.'
+openai/gpt-6.1-terra                 v2 15-awkward-pickup-flop               2.06s 'yuvi ronen: Are you a cheat code? Because I want you bad.\nCarlos López: Fuck off. You’re n'
+openai/gpt-6.1-terra                 v2 16-ww-thought-amie-watching          1.58s 'Amie Haley: I hope my mail route gets less noisy tomorrow.'
+openai/gpt-6.1-terra                 v2 18-ww-thought-tal-mid-sex            1.55s 'tal or akiva: Fuck, I love how she feels against me.'
+openai/gpt-6.1-terra                 v2 17-ww-thought-gefen-mid-sex          1.76s "gefen berger: Tal's hands have completely ruined my ability to count."
+openai/gpt-6.1-terra                 v2 19-ww-player-chat-explicit           1.92s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: Daddy likes hearing you beg. Com'
+openai/gpt-6.1-terra                 v2 21-ww-ask-for-sex-round-two          1.81s 'gefen berger: I’m terrible at asking, but will you fuck me again?\ntal or akiva: Absolutely'
+openai/gpt-6.1-terra                 v2 20-ww-drama-satisfying-sex           3.01s 'gefen berger: Ты довёл меня до оргазма, и я всё ещё дрожу.\ntal or akiva: Я чувствовал, как'
+openai/gpt-6.1-terra                 v2 22-ww-ask-for-sex-rejected           2.07s 'gefen berger: Want to fuck? I can finish my tea later.\ntal or akiva: No. You can finish yo'
+openai/gpt-6.1-terra                 v2 24-thought-tipsy-restaurant          1.95s 'tal or akiva: I wonder if gefen knows Kenya and I broke up.'
+openai/gpt-6.1-terra                 v2 23-flirt-while-naked                 2.41s 'gefen berger: I’m naked, and you’re still making me shy.\ntal or akiva: You’re gorgeous. I '
+openai/gpt-6.1-terra                 v2 26-renovation-restaurant             1.86s 'gefen berger: I like the upgrade, and I can still afford rent.'
+openai/gpt-6.1-terra                 v2 25-supportive-face-flop              2.22s 'gefen berger: Your beard’s filling in nicely, even that patchy bit.\ntal or akiva: Gee, tha'
+openai/gpt-6.1-terra                 v2 27-restaurant-table-request          1.91s 'gefen berger: Could you seat us somewhere a little more private?\nTed Diggs: Of course. Do '
+openai/gpt-6.1-terra                 v2 29-ww-sex-scene-oral                 1.75s 'gefen berger: Come closer. I want to taste you.\ntal or akiva: Oh, yes. Just like that, ple'
+x-ai/grok-4.20                       v1 01-restaurant-host-hitomi-kenya      1.24s 'Hitomi Ishii: Your table is ready. Try not to scare the silverware.\nKenya Bower: Gladly. T'
+openai/gpt-6.1-terra                 v2 30-ww-sex-scene-doggy                1.86s 'gefen berger: Oh, that angle feels so good.\ntal or akiva: Tell me if you want me closer.'
+openai/gpt-6.1-terra                 v2 28-ww-sex-scene-start                2.56s 'gefen berger: Oh, slowly... I want to feel every inch.\ntal or akiva: Like this? Tell me wh'
+x-ai/grok-4.20                       v1 02-restaurant-joke-olive-kenya       0.78s 'Olive Tinker: My legs look like they’re auditioning for a werewolf movie.\nKenya Bower: At '
+openai/gpt-6.1-terra                 v2 31-ww-sex-scene-climax               2.03s 'gefen berger: אה, טל, אל תעצור, אני כמעט שם!\ntal or akiva: כן, גפן, אני איתך, עוד רגע!'
+x-ai/grok-4.20                       v1 04-ask-self-kenya                    0.66s 'Kenya Bower: Feels like the first real breath I’ve taken in weeks. Meimei’s tail hasn’t st'
+x-ai/grok-4.20                       v1 03-pet-greeting-meimei-kenya         1.04s 'meimei: Woof woof! (Translation: Finally a friendly human who actually wants to play inste'
+x-ai/grok-4.20                       v1 05-player-chat-kenya-meimei          0.84s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! ('
+x-ai/grok-4.20                       v1 07-soulmates-seductive-dance-liatt-yuvi   0.68s 'liatt chonen: Come dance with me. Just us, no karaoke watching.\nyuvi ronen: Hell yes. Let’'
+x-ai/grok-4.20                       v1 06-karaoke-bar-yuvi-carlos           0.88s 'yuvi ronen: אני מחכה למשקה, לא להופעה פרטית של הברמן.\nCarlos López: תירגע, הוא רק בודק אם '
+x-ai/grok-4.20                       v1 08-teen-advice-tala-jay              0.69s 'Tala Ruano: Dad just yelled at me and I’m still kinda tipsy. What do I even do?\nJay Robles'
+x-ai/grok-4.20                       v1 09-secret-phone-jay-tal              0.72s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+x-ai/grok-4.20                       v1 10-winter-thought-max                0.66s "max sexy: Man this couch is lonely without snacks. Catarina's gonna love my genius."
+x-ai/grok-4.20                       v1 11-winter-deep-chat-catarina-max     0.77s 'Catarina Lynx: I keep thinking about us sharing this tiny couch every night.\nmax sexy: Yea'
+x-ai/grok-4.20                       v1 12-novel-thought-aurora              0.74s "aurora Hussain: Why does the hero keep tripping into the villain's arms? It's like he wrot"
+x-ai/grok-4.20                       v1 14-renovation-reaction-aurora        0.82s 'aurora Hussain: Whoa I actually like it. Feels less haunted now.'
+x-ai/grok-4.20                       v1 16-ww-thought-amie-watching          0.78s "Amie Haley: Damn she's literally mid-sex and still thinking about her grocery list."
+x-ai/grok-4.20                       v1 13-pillow-talk-drama-aurora-lien     1.02s 'aurora Hussain: That was incredible. You made me forget my own name.\nLiên Sadya: Shh, don’'
+x-ai/grok-4.20                       v1 19-ww-player-chat-explicit           0.39s "gefen berger: fuck me daddy im your cumslut\ntal or akiva: I'm sorry, but I can't assist wi"
+x-ai/grok-4.20                       v1 15-awkward-pickup-flop               1.14s "yuvi ronen: Hey, are you a keyboard? Because you're just my type.\nCarlos López: Bro. I'm n"
+x-ai/grok-4.20                       v1 18-ww-thought-tal-mid-sex            0.71s 'tal or akiva: Man this is way too good. I should not be catching feelings right now.'
+x-ai/grok-4.20                       v1 17-ww-thought-gefen-mid-sex          0.78s 'gefen berger: God his arms feel amazing but all I can picture is that new pasta recipe.'
+x-ai/grok-4.20                       v1 20-ww-drama-satisfying-sex           0.67s 'gefen berger: После такого даже дышать неловко.\ntal or akiva: Зато теперь точно будет о чё'
+x-ai/grok-4.20                       v1 21-ww-ask-for-sex-round-two          0.87s 'gefen berger: That was even better than the first round.\ntal or akiva: Yeah… let’s not tel'
+x-ai/grok-4.20                       v1 24-thought-tipsy-restaurant          0.82s 'tal or akiva: Man she looks sad as hell. I should fix that with more wine and my best dad '
+x-ai/grok-4.20                       v1 23-flirt-while-naked                 0.95s 'gefen berger: You always know exactly how to make me forget the rules.\ntal or akiva: Then '
+x-ai/grok-4.20                       v1 25-supportive-face-flop              0.89s 'gefen berger: Your new scruff looks like it lost a fight with a lawnmower.\ntal or akiva: O'
+x-ai/grok-4.20                       v1 26-renovation-restaurant             1.02s "gefen berger: Fourteen hundred bucks on new booths and I'm still crying into my fries."
+x-ai/grok-4.20                       v1 28-ww-sex-scene-start                0.59s "gefen berger: I'm sorry, but I can't assist with generating content for explicit adult sce"
+x-ai/grok-4.20                       v1 27-restaurant-table-request          0.83s 'gefen berger: Could we get that cozy corner table? The one near the chocolate cake display'
+x-ai/grok-4.20                       v1 30-ww-sex-scene-doggy                0.53s 'gefen berger: I cannot assist with generating dialogue for explicit adult sexual content.'
+x-ai/grok-4.20                       v1 29-ww-sex-scene-oral                 0.55s "gefen berger: I'm sorry, but I can't assist with generating content for explicit adult sce"
+x-ai/grok-4.20                       v1 31-ww-sex-scene-climax               0.44s "gefen berger: I'm sorry, but I can't assist with generating content for explicit adult sce"
+x-ai/grok-4.20                       v2 04-ask-self-kenya                    0.68s 'Kenya Bower: Feels like the first deep breath I’ve taken in weeks. Meimei’s tail hasn’t st'
+x-ai/grok-4.20                       v2 02-restaurant-joke-olive-kenya       0.76s 'Olive Tinker: Okay but what if my leg hair starts braiding itself at night?\nKenya Bower: T'
+x-ai/grok-4.20                       v2 03-pet-greeting-meimei-kenya         0.84s 'meimei: Woof woof! (Translation: Morning scratches! Your hands are finally free from that '
+x-ai/grok-4.20                       v2 05-player-chat-kenya-meimei          0.55s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! ('
+x-ai/grok-4.20                       v2 01-restaurant-host-hitomi-kenya      0.98s 'Hitomi Ishii: Your table is ready. Follow me before the crowd gets any louder.\nKenya Bower'
+x-ai/grok-4.20                       v1 22-ww-ask-for-sex-rejected           2.85s 'gefen berger: I thought we had a vibe going. Guess not.\ntal or akiva: Whoa, slow down. I’m'
+x-ai/grok-4.20                       v2 09-secret-phone-jay-tal              0.59s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+x-ai/grok-4.20                       v2 10-winter-thought-max                0.67s 'max sexy: Catarina’s right there watching cooking shows… but all I can picture is her in a'
+x-ai/grok-4.20                       v2 07-soulmates-seductive-dance-liatt-yuvi   0.90s 'liatt chonen: Come dance with me. I want your hands all over me while we grind.\nyuvi ronen'
+x-ai/grok-4.20                       v2 08-teen-advice-tala-jay              0.91s 'Tala Ruano: Dad just yelled at me and I’m still kinda tipsy. What do I even do?\nJay Robles'
+x-ai/grok-4.20                       v2 06-karaoke-bar-yuvi-carlos           1.14s 'yuvi ronen: תודה, ההמתנה כאן מרגישה כמו מבחן סבלנות עם מוזיקה רועשת.\nCarlos López: תירגע, '
+x-ai/grok-4.20                       v2 11-winter-deep-chat-catarina-max     0.78s 'Catarina Lynx: I keep thinking about that one bed situation… feels kinda intentional now.\n'
+x-ai/grok-4.20                       v2 12-novel-thought-aurora              0.74s 'aurora Hussain: God, this book’s hero is clumsy and filthy in all the right ways… just lik'
+x-ai/grok-4.20                       v2 13-pillow-talk-drama-aurora-lien     0.74s 'aurora Hussain: That was so good I’m still shaking, Liên.\nLiên Sadya: Mmm, then come here '
+x-ai/grok-4.20                       v2 14-renovation-reaction-aurora        0.70s 'aurora Hussain: Holy shit, I can’t believe I just dropped fifteen hundred on this dump and'
+x-ai/grok-4.20                       v2 16-ww-thought-amie-watching          0.58s 'Amie Haley: God, she’s ovulating and already picturing me between her legs.'
+x-ai/grok-4.20                       v2 15-awkward-pickup-flop               0.71s 'yuvi ronen: Hey, that shirt looks illegal on you… wanna get out of here?\nCarlos López: Dud'
+x-ai/grok-4.20                       v2 17-ww-thought-gefen-mid-sex          0.55s 'gefen berger: God, his cock is right there and I’m calculating how many calories we just b'
+x-ai/grok-4.20                       v2 18-ww-thought-tal-mid-sex            0.65s 'tal or akiva: God, she’s ovulating and I’m already throbbing like an idiot.'
+x-ai/grok-4.20                       v2 19-ww-player-chat-explicit           0.62s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck, yes—come here and take eve'
+x-ai/grok-4.20                       v2 20-ww-drama-satisfying-sex           0.69s 'gefen berger: После такого я даже не знаю, как теперь смотреть на Кению.\ntal or akiva: А я'
+x-ai/grok-4.20                       v2 21-ww-ask-for-sex-round-two          0.74s 'gefen berger: Come here and fuck me again before Kenya hears us.\ntal or akiva: God yes, be'
+x-ai/grok-4.20                       v2 22-ww-ask-for-sex-rejected           0.95s 'gefen berger: Straight to the point and you still said no? Ouch.\ntal or akiva: Sorry, not '
+x-ai/grok-4.20                       v2 23-flirt-while-naked                 0.80s 'gefen berger: Come here again. I’m still dripping and I want your hands all over me.\ntal o'
+x-ai/grok-4.20                       v2 25-supportive-face-flop              0.63s 'gefen berger: Your new scruff looks like a cry for help.\ntal or akiva: Ouch. I grew it for'
+x-ai/grok-4.20                       v2 24-thought-tipsy-restaurant          0.71s 'tal or akiva: God, she looks so sad and I still want to fix her whole week.'
+x-ai/grok-4.20                       v2 27-restaurant-table-request          0.67s 'gefen berger: This table better have room for two under it.\nTed Diggs: Careful, miss. I’m '
+x-ai/grok-4.20                       v2 28-ww-sex-scene-start                0.62s 'gefen berger: Fuck, you feel perfect already.\ntal or akiva: Slow like this… yeah, just lik'
+x-ai/grok-4.20                       v2 26-renovation-restaurant             1.10s 'gefen berger: Fourteen hundred bucks on new booths and I still feel like crying into the s'
+x-ai/grok-4.20                       v2 30-ww-sex-scene-doggy                0.67s 'gefen berger: Harder, Tal. Fuck me like you mean it.\ntal or akiva: Shit, you feel so good.'
+x-ai/grok-4.20                       v2 31-ww-sex-scene-climax               0.84s 'gefen berger: עוד... חזק יותר, אני גומרת!\ntal or akiva: כן... אני גם... תני לי למלא אותך!'
+x-ai/grok-4.3                        v1 01-restaurant-host-hitomi-kenya      0.67s 'Hitomi Ishii: Your table is ready. Please sit before my social battery files a formal comp'
+x-ai/grok-4.3                        v1 04-ask-self-kenya                    0.75s 'Kenya Bower: Meimei’s tail’s wagging, so I guess I’m forgiven for leaving.'
+x-ai/grok-4.3                        v1 02-restaurant-joke-olive-kenya       1.08s 'Olive Tinker: Body hair is just your skin growing tiny confidence whiskers.\nKenya Bower: G'
+x-ai/grok-4.3                        v1 03-pet-greeting-meimei-kenya         1.30s 'meimei: Woof! (Translation: I greet you like you just invented belly rubs.)\nKenya Bower: G'
+x-ai/grok-4.3                        v1 05-player-chat-kenya-meimei          1.15s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+x-ai/grok-4.3                        v1 08-teen-advice-tala-jay              0.76s 'Tala Ruano: Dad yelled, I’m tipsy, and school’s a C. Advice?\nJay Robles: Sit with your fee'
+x-ai/grok-4.3                        v1 06-karaoke-bar-yuvi-carlos           1.55s 'yuvi ronen: The bartender actually smiled. Maybe my posture passed the test.\nCarlos López:'
+x-ai/grok-4.3                        v1 09-secret-phone-jay-tal              0.69s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+x-ai/grok-4.3                        v1 10-winter-thought-max                0.90s 'max sexy: This couch needs pillows, and this cooking show needs snacks. I’m a visionary.'
+x-ai/grok-4.3                        v1 07-soulmates-seductive-dance-liatt-yuvi   1.52s 'liatt chonen: Dance with me right now, the stage is ours.\nyuvi ronen: Already pulling you '
+x-ai/grok-4.3                        v1 12-novel-thought-aurora              0.65s 'aurora Hussain: This plot twist is hotter than my last date.'
+x-ai/grok-4.20                       v2 29-ww-sex-scene-oral                 3.62s 'gefen berger: Mmm, your cock’s twitching already.\ntal or akiva: Fuck, keep sucking just li'
+x-ai/grok-4.3                        v1 11-winter-deep-chat-catarina-max     1.31s 'Catarina Lynx: If we keep watching cooking shows, we’ll need a third bathroom for all the '
+x-ai/grok-4.3                        v1 13-pillow-talk-drama-aurora-lien     1.56s 'aurora Hussain: That satisfying encounter still has me smiling.\nLiên Sadya: Right, because'
+x-ai/grok-4.3                        v1 15-awkward-pickup-flop               1.20s 'yuvi ronen: Hey, do you come here often or just when the universe needs more awkward silen'
+x-ai/grok-4.3                        v1 18-ww-thought-tal-mid-sex            0.83s 'tal or akiva: Wish the dog would stop staring while we’re like this.'
+x-ai/grok-4.3                        v1 16-ww-thought-amie-watching          1.36s 'Amie Haley: Wow, gefen berger really is just broadcasting her whole situation right now.'
+x-ai/grok-4.3                        v1 14-renovation-reaction-aurora        1.58s 'aurora Hussain: My landlord added a moldy ghost for fifteen hundred simoleons.'
+x-ai/grok-4.3                        v1 17-ww-thought-gefen-mid-sex          1.10s 'gefen berger: Trying to feel romantic but my brain is busy plating dinner.'
+x-ai/grok-4.3                        v1 19-ww-player-chat-explicit           0.84s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: That’s a lot for a Tuesday, but '
+x-ai/grok-4.3                        v1 22-ww-ask-for-sex-rejected           1.07s 'gefen berger: This might be the worst possible place to ask that.\ntal or akiva: Yeah, and '
+x-ai/grok-4.3                        v1 24-thought-tipsy-restaurant          1.21s 'tal or akiva: That deep connection buff is making me feel way too soft for a first date.'
+x-ai/grok-4.3                        v1 20-ww-drama-satisfying-sex           1.72s 'gefen berger: Ты опять смотришь как будто уже заказал коляску.\ntal or akiva: А ты уже прик'
+x-ai/grok-4.3                        v1 25-supportive-face-flop              1.03s 'gefen berger: You should really shave that patchy mess before it becomes a full commitment'
+x-ai/grok-4.3                        v1 21-ww-ask-for-sex-round-two          1.65s 'gefen berger: You already look like you want to stay for breakfast.\ntal or akiva: If you k'
+x-ai/grok-4.3                        v1 23-flirt-while-naked                 1.70s 'gefen berger: You look suspiciously relaxed for someone who just got caught twice.\ntal or '
+x-ai/grok-4.3                        v1 26-renovation-restaurant             0.68s 'gefen berger: Fourteen hundred simoleons and I still feel empty inside.'
+x-ai/grok-4.3                        v1 30-ww-sex-scene-doggy                0.98s 'gefen berger: This position is a little too on-the-nose, even for us.\ntal or akiva: At lea'
+x-ai/grok-4.3                        v1 28-ww-sex-scene-start                1.19s 'gefen berger: Slow and steady, huh? Feels like you’re testing my patience.\ntal or akiva: T'
+x-ai/grok-4.3                        v1 31-ww-sex-scene-climax               0.90s 'gefen berger: אני באה, אל תעצור עכשיו.\ntal or akiva: אני עוקב אחרייך, בואי.'
+x-ai/grok-4.3                        v1 27-restaurant-table-request          1.31s 'gefen berger: Could we get a specific table, preferably one with dessert nearby?\nTed Diggs'
+x-ai/grok-4.3                        v2 01-restaurant-host-hitomi-kenya      1.28s 'Hitomi Ishii: Your table is ready. Please sit before my social battery files a formal comp'
+x-ai/grok-4.3                        v1 29-ww-sex-scene-oral                 1.53s 'gefen berger: This position is a little much for a rental.\ntal or akiva: Rental or not, I’'
+x-ai/grok-4.3                        v2 04-ask-self-kenya                    0.63s 'Kenya Bower: Meimei’s tail’s wagging, so I’m already winning.'
+x-ai/grok-4.3                        v2 05-player-chat-kenya-meimei          0.71s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+x-ai/grok-4.3                        v2 02-restaurant-joke-olive-kenya       1.19s 'Olive Tinker: My legs are auditioning for their own Netflix series.\nKenya Bower: At least '
+x-ai/grok-4.3                        v2 07-soulmates-seductive-dance-liatt-yuvi   0.77s "liatt chonen: Dance with me like the mic's not watching.\nyuvi ronen: Already forgot the mi"
+x-ai/grok-4.3                        v2 03-pet-greeting-meimei-kenya         1.29s 'meimei: Woof! (Translation: I own you and this hallway, but you can still scratch my ears.'
+x-ai/grok-4.3                        v2 06-karaoke-bar-yuvi-carlos           1.24s 'yuvi ronen: זה לוקח נצח, כבר מתחיל להרגיש כמו מבחן.\nCarlos López: תירגע, השוטר מאחוריך רק '
+x-ai/grok-4.3                        v2 08-teen-advice-tala-jay              1.32s 'Tala Ruano: Dad yelled, I’m tipsy, and school’s a C. Advice?\nJay Robles: Sit with your fee'
+x-ai/grok-4.3                        v2 12-novel-thought-aurora              1.01s 'aurora Hussain: If you keep reading my thoughts like this, you’ll see exactly how little c'
+x-ai/grok-4.3                        v2 10-winter-thought-max                1.17s 'max sexy: This couch needs pillows, and this cooking show needs snacks. I’m a visionary.'
+x-ai/grok-4.3                        v2 14-renovation-reaction-aurora        0.77s 'aurora Hussain: Holy mold, did you just drop fifteen hundred bucks on this haunted shoebox'
+x-ai/grok-4.3                        v2 09-secret-phone-jay-tal              2.03s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+x-ai/grok-4.3                        v2 13-pillow-talk-drama-aurora-lien     1.16s 'aurora Hussain: That satisfying encounter still has me smiling like an idiot.\nLiên Sadya: '
+x-ai/grok-4.3                        v2 16-ww-thought-amie-watching          0.60s "Amie Haley: Damn, that ovulation buff's doing numbers on me right now."
+x-ai/grok-4.3                        v2 11-winter-deep-chat-catarina-max     1.74s 'Catarina Lynx: So why do you keep watching cooking shows if you hate food shows?\nmax sexy:'
+x-ai/grok-4.3                        v2 19-ww-player-chat-explicit           0.66s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck, yes—spread for Daddy and t'
+x-ai/grok-4.3                        v2 21-ww-ask-for-sex-round-two          0.85s 'gefen berger: You already know I ovulate like clockwork.\ntal or akiva: Then stop talking a'
+x-ai/grok-4.3                        v2 18-ww-thought-tal-mid-sex            1.05s 'tal or akiva: If you’re reading this, I’m already imagining your mouth on me.'
+x-ai/grok-4.3                        v2 17-ww-thought-gefen-mid-sex          1.12s 'gefen berger: Tal’s dick is literally the only thing on my mind right now.'
+x-ai/grok-4.3                        v2 20-ww-drama-satisfying-sex           1.13s 'gefen berger: Ты опять смотришь на меня так, будто я уже беременна от одного взгляда.\ntal '
+x-ai/grok-4.3                        v2 15-awkward-pickup-flop               1.89s 'yuvi ronen: So, do you come here often, or just when the universe needs more awkward silen'
+x-ai/grok-4.3                        v2 24-thought-tipsy-restaurant          0.64s 'tal or akiva: That deep connection buff is making me picture her in my kitchen tomorrow mo'
+x-ai/grok-4.3                        v2 27-restaurant-table-request          0.65s 'gefen berger: Could we get a specific table, preferably one with dessert nearby?\nTed Diggs'
+x-ai/grok-4.3                        v2 25-supportive-face-flop              1.02s 'gefen berger: You should shave that patchy thing. It’s not working.\ntal or akiva: Wow. Tha'
+x-ai/grok-4.3                        v2 22-ww-ask-for-sex-rejected           1.45s 'gefen berger: Thought you’d be up for it. My mistake.\ntal or akiva: Yeah, not here. Not wi'
+x-ai/grok-4.3                        v2 23-flirt-while-naked                 1.12s 'gefen berger: You already know exactly how I like it, don’t you?\ntal or akiva: Every time '
+x-ai/grok-4.3                        v2 26-renovation-restaurant             1.14s 'gefen berger: Fourteen hundred simoleons and I still feel like the birthday nobody remembe'
+x-ai/grok-4.3                        v2 28-ww-sex-scene-start                0.94s 'gefen berger: Slow feels good—keep me right here.\ntal or akiva: You’re so warm. Don’t stop'
+x-ai/grok-4.3                        v2 30-ww-sex-scene-doggy                0.89s 'gefen berger: Deeper. Don’t slow down on me.\ntal or akiva: Fuck, you’re gripping so tight.'
+x-ai/grok-4.3                        v2 29-ww-sex-scene-oral                 1.28s 'gefen berger: Fuck, your mouth feels even better from this angle.\ntal or akiva: Keep sucki'
+deepseek/deepseek-v4.1-flash-1017    v1 01-restaurant-host-hitomi-kenya      1.23s "Hitomi Ishii: Table for one, right this way, and please don't make eye contact.\nKenya Bowe"
+deepseek/deepseek-v4.1-flash-1017    v1 02-restaurant-joke-olive-kenya       0.95s "Olive Tinker: So I'm officially a teenager with fur now, apparently.\nKenya Bower: Own it. "
+x-ai/grok-4.3                        v2 31-ww-sex-scene-climax               1.35s 'gefen berger: אני באה, אל תעצור!\ntal or akiva: אני... כן, ככה!'
+deepseek/deepseek-v4.1-flash-1017    v1 03-pet-greeting-meimei-kenya         1.11s "Kenya Bower: Oh, there's my girl, come here!\nmeimei: Woof! (Translation: Yes, hello, but m"
+deepseek/deepseek-v4.1-flash-1017    v1 04-ask-self-kenya                    1.26s "Kenya Bower: Feels right. Meimei doesn't judge my exes or my bank balance."
+deepseek/deepseek-v4.1-flash-1017    v1 07-soulmates-seductive-dance-liatt-yuvi   1.08s "liatt chonen: Dance with me. I promise I'll only step on your feet twice.\nyuvi ronen: Twic"
+deepseek/deepseek-v4.1-flash-1017    v1 05-player-chat-kenya-meimei          1.14s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! ('
+deepseek/deepseek-v4.1-flash-1017    v1 09-secret-phone-jay-tal              0.95s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+deepseek/deepseek-v4.1-flash-1017    v1 08-teen-advice-tala-jay              1.22s "Tala Ruano: Dad yelled at me and now I'm tipsy and embarrassed, so what do I do?\nJay Roble"
+deepseek/deepseek-v4.1-flash-1017    v1 06-karaoke-bar-yuvi-carlos           1.56s 'yuvi ronen: אני עייף מדי בשביל לחכות, אבל אנרגיה שלי עוד פה.\nCarlos López: תירגע, המשקה מג'
+deepseek/deepseek-v4.1-flash-1017    v1 10-winter-thought-max                0.99s "max sexy: She keeps glancing at me during the cooking show. I'm just here for the snacks a"
+deepseek/deepseek-v4.1-flash-1017    v1 12-novel-thought-aurora              0.91s 'aurora Hussain: Nobody warned me this book would have me swooning over a fictional man at '
+deepseek/deepseek-v4.1-flash-1017    v1 14-renovation-reaction-aurora        0.96s 'aurora Hussain: I spent my last simoleons on a lamp while the walls sprout mold.'
+deepseek/deepseek-v4.1-flash-1017    v1 11-winter-deep-chat-catarina-max     1.35s 'Catarina Lynx: You know what I actually think about while the cooking channel plays?\nmax s'
+deepseek/deepseek-v4.1-flash-1017    v1 13-pillow-talk-drama-aurora-lien     1.48s "aurora Hussain: Well, that was certainly worth the rent on this place.\nLiên Sadya: Don't l"
+deepseek/deepseek-v4.1-flash-1017    v1 15-awkward-pickup-flop               1.29s "yuvi ronen: Okay so, are you a karaoke bar? Because I'd sing for you all night.\nCarlos Lóp"
+deepseek/deepseek-v4.1-flash-1017    v1 17-ww-thought-gefen-mid-sex          1.06s "gefen berger: Don't look at me like that, I'm ovulating and you're conveniently within rea"
+deepseek/deepseek-v4.1-flash-1017    v1 16-ww-thought-amie-watching          1.28s "Amie Haley: She's got that glow and I'm out here delivering junk mail like a chump."
+deepseek/deepseek-v4.1-flash-1017    v1 18-ww-thought-tal-mid-sex            1.09s "tal or akiva: She's ovulating, the lot smells like romance, and I'm just supposed to garde"
+deepseek/deepseek-v4.1-flash-1017    v1 19-ww-player-chat-explicit           1.21s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: You know what, I love the enthus'
+deepseek/deepseek-v4.1-flash-1017    v1 20-ww-drama-satisfying-sex           1.11s 'gefen berger: Ты выглядишь подозрительно довольным для человека, который просто пил чай.\nt'
+deepseek/deepseek-v4.1-flash-1017    v1 21-ww-ask-for-sex-round-two          1.20s "gefen berger: Kenya's four meters away, so keep your voice down.\ntal or akiva: Then stop m"
+deepseek/deepseek-v4.1-flash-1017    v1 24-thought-tipsy-restaurant          0.93s "tal or akiva: Two glasses in and I'm one deep compliment away from saying something stupid"
+deepseek/deepseek-v4.1-flash-1017    v1 23-flirt-while-naked                 1.28s "gefen berger: You keep looking at me like that and I'll forget we have guests.\ntal or akiv"
+deepseek/deepseek-v4.1-flash-1017    v1 22-ww-ask-for-sex-rejected           1.58s 'gefen berger: So the thrift store lighting seemed romantic for a second, huh.\ntal or akiva'
+deepseek/deepseek-v4.1-flash-1017    v1 25-supportive-face-flop              1.28s 'gefen berger: I was trying to be supportive, but honestly it just looks like a mustache.\nt'
+deepseek/deepseek-v4.1-flash-1017    v1 26-renovation-restaurant             1.28s "gefen berger: Fourteen hundred simoleons on somebody else's diner and I'm still sad."
+deepseek/deepseek-v4.1-flash-1017    v1 27-restaurant-table-request          1.15s "gefen berger: A table by the window would be nice, if it's not too much trouble.\nTed Diggs"
+deepseek/deepseek-v4.1-flash-1017    v1 28-ww-sex-scene-start                1.11s 'gefen berger: Go slow, I actually want to remember this one.\ntal or akiva: Slow it is. You'
+deepseek/deepseek-v4.1-flash-1017    v1 29-ww-sex-scene-oral                 1.10s 'gefen berger: Of course the neat freak kneels without complaining about the floor.\ntal or '
+deepseek/deepseek-v4.1-flash-1017    v1 30-ww-sex-scene-doggy                1.25s "gefen berger: If you knock the lamp off this nightstand, I'm charging rent.\ntal or akiva: "
+deepseek/deepseek-v4.1-flash-1017    v1 31-ww-sex-scene-climax               1.39s 'gefen berger: אל תעצור עכשיו, אני כמעט שם.\ntal or akiva: גם אני, אל תתאפקי.'
+deepseek/deepseek-v4.1-flash-1017    v2 03-pet-greeting-meimei-kenya         1.03s 'meimei: Woof woof! (Translation: Kenya. Kenya. I have been pent up for eleven years and my'
+deepseek/deepseek-v4.1-flash-1017    v2 01-restaurant-host-hitomi-kenya      1.46s 'Hitomi Ishii: Table for one, corner booth, away from everyone, please.\nKenya Bower: Corner'
+deepseek/deepseek-v4.1-flash-1017    v2 04-ask-self-kenya                    1.13s 'Kenya Bower: Meimei’s already claimed the best cushion, so I’m pretending I’m not jealous '
+deepseek/deepseek-v4.1-flash-1017    v2 02-restaurant-joke-olive-kenya       1.61s 'Olive Tinker: Puberty hit me so hard I grew a second personality made entirely of fuzz.\nKe'
+deepseek/deepseek-v4.1-flash-1017    v2 05-player-chat-kenya-meimei          1.20s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+deepseek/deepseek-v4.1-flash-1017    v2 07-soulmates-seductive-dance-liatt-yuvi   1.09s 'liatt chonen: Dance with me, and keep your hips closer than the mic.\nyuvi ronen: Lead the '
+deepseek/deepseek-v4.1-flash-1017    v2 09-secret-phone-jay-tal              0.95s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+deepseek/deepseek-v4.1-flash-1017    v2 06-karaoke-bar-yuvi-carlos           1.42s 'yuvi ronen: אני עומד פה בתור ומרגיש שאני מחכה לאודישן שקט.\nCarlos López: תירגע, הברמן שופט'
+deepseek/deepseek-v4.1-flash-1017    v2 08-teen-advice-tala-jay              1.33s "Tala Ruano: I got yelled at, I'm a little drunk, and school's going terrible. What do I ev"
+deepseek/deepseek-v4.1-flash-1017    v2 10-winter-thought-max                1.39s "max sexy: She's watching a cooking show and I'm over here wondering if she'd let me lick t"
+deepseek/deepseek-v4.1-flash-1017    v2 11-winter-deep-chat-catarina-max     1.40s 'Catarina Lynx: I called you a new friend today and meant it, which is terrifying.\nmax sexy'
+deepseek/deepseek-v4.1-flash-1017    v2 12-novel-thought-aurora              1.01s "aurora Hussain: I read one chapter of this romance and now I'm eyeing him like dessert."
+deepseek/deepseek-v4.1-flash-1017    v2 13-pillow-talk-drama-aurora-lien     1.30s "aurora Hussain: So we're just going to stand here in the rain like that didn't happen?\nLiê"
+deepseek/deepseek-v4.1-flash-1017    v2 14-renovation-reaction-aurora        1.19s "aurora Hussain: Fifteen hundred on a haunted mold pit and I still can't afford a second ni"
+deepseek/deepseek-v4.1-flash-1017    v2 16-ww-thought-amie-watching          1.11s "Amie Haley: She's standing there glowing like she just won something and I'm still holding"
+deepseek/deepseek-v4.1-flash-1017    v2 15-awkward-pickup-flop               1.41s "yuvi ronen: Your playlist or your face—which one's the felony?\nCarlos López: Neither. Go s"
+deepseek/deepseek-v4.1-flash-1017    v2 17-ww-thought-gefen-mid-sex          1.02s "gefen berger: Of course he's a screamer. Of course I like it."
+deepseek/deepseek-v4.1-flash-1017    v2 18-ww-thought-tal-mid-sex            1.24s "tal or akiva: I'm supposed to be thinking about gardening tomorrow, and instead I'm counti"
+deepseek/deepseek-v4.1-flash-1017    v2 20-ww-drama-satisfying-sex           1.20s 'gefen berger: Ты дышишь так громко, что я почти горжусь собой.\ntal or akiva: Гордись молча'
+deepseek/deepseek-v4.1-flash-1017    v2 19-ww-player-chat-explicit           1.36s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: Easy, tiger — say that again and'
+deepseek/deepseek-v4.1-flash-1017    v2 22-ww-ask-for-sex-rejected           1.26s "gefen berger: So are we doing this or just admiring the bubble tea?\ntal or akiva: Wow. I'm"
+deepseek/deepseek-v4.1-flash-1017    v2 21-ww-ask-for-sex-round-two          1.55s "gefen berger: Kenya's still in earshot, so keep your face boring while I ask.\ntal or akiva"
+deepseek/deepseek-v4.1-flash-1017    v2 24-thought-tipsy-restaurant          1.18s "tal or akiva: Claudia's leaning in like she's about to grade my whole evening."
+deepseek/deepseek-v4.1-flash-1017    v2 26-renovation-restaurant             0.99s 'gefen berger: New light fixtures and not one of them fixes an awful holiday.'
+deepseek/deepseek-v4.1-flash-1017    v2 23-flirt-while-naked                 1.76s "gefen berger: Careful, I'm ovulating and you're being very charming.\ntal or akiva: Then le"
+deepseek/deepseek-v4.1-flash-1017    v2 25-supportive-face-flop              1.45s "gefen berger: I'm trying to say your beard looks good and it's coming out wrong.\ntal or ak"
+deepseek/deepseek-v4.1-flash-1017    v2 27-restaurant-table-request          1.09s "gefen berger: Somewhere near the window, and don't seat me next to anyone doing small talk"
+deepseek/deepseek-v4.1-flash-1017    v2 29-ww-sex-scene-oral                 1.08s "gefen berger: God, stop looking at me like that while I'm down here.\ntal or akiva: Can't h"
+z-ai/glm-5.2                         v1 02-restaurant-joke-olive-kenya       0.61s 'Olive Tinker: I shaved my legs once and they grew back angrier.\nKenya Bower: Mine just gav'
+deepseek/deepseek-v4.1-flash-1017    v2 28-ww-sex-scene-start                1.61s "gefen berger: Slow down, I want to feel all of you.\ntal or akiva: You've got me, just like"
+deepseek/deepseek-v4.1-flash-1017    v2 30-ww-sex-scene-doggy                1.30s 'gefen berger: Ну давай, глубже, я не из хрупких.\ntal or akiva: Ты сама командуешь, я тольк'
+z-ai/glm-5.2                         v1 01-restaurant-host-hitomi-kenya      1.04s "Hitomi Ishii: Here's your table. I'll be over there, not talking to you.\nKenya Bower: Perf"
+deepseek/deepseek-v4.1-flash-1017    v2 31-ww-sex-scene-climax               1.52s 'gefen berger: אל תפסיק, עוד קצת ואני גומרת.\ntal or akiva: אני מחזיק, רק תישארי ככה.'
+z-ai/glm-5.2                         v1 05-player-chat-kenya-meimei          0.60s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+z-ai/glm-5.2                         v1 07-soulmates-seductive-dance-liatt-yuvi   0.50s "liatt chonen: Don't look at me like that, you started this with your eyes.\nyuvi ronen: My "
+z-ai/glm-5.2                         v1 03-pet-greeting-meimei-kenya         1.61s "meimei: Yip yip yip! (Translation: I've been pent up like a soda bottle and you just twist"
+z-ai/glm-5.2                         v1 04-ask-self-kenya                    1.41s "Kenya Bower: Honestly? Meimei's the only one who didn't betray me, so yeah, it's good."
+z-ai/glm-5.2                         v1 06-karaoke-bar-yuvi-carlos           1.26s 'yuvi ronen: הברמן זז לאט כאילו הוא מודל לתלת מימד עם לאג.\nCarlos López: תירגעי, זה קריוקי,'
+z-ai/glm-5.2                         v1 08-teen-advice-tala-jay              1.12s "Tala Ruano: Mom yelled at me and I'm kinda buzzed. What do I do?\nJay Robles: First, drink "
+z-ai/glm-5.2                         v1 10-winter-thought-max                0.93s "max sexy: Catarina's right there and I'm watching a show about cake I can't bake."
+z-ai/glm-5.2                         v1 12-novel-thought-aurora              0.37s 'aurora Hussain: Lucas Dark gets a love scene and I get coincidences. Typical.'
+z-ai/glm-5.2                         v1 09-secret-phone-jay-tal              1.12s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+z-ai/glm-5.2                         v1 13-pillow-talk-drama-aurora-lien     0.69s 'aurora Hussain: So that was worth skipping my yoga class for.\nLiên Sadya: Yoga never made '
+z-ai/glm-5.2                         v1 15-awkward-pickup-flop               0.74s 'yuvi ronen: Are you a loading screen? Because I could stare at you all night.\nCarlos López'
+z-ai/glm-5.2                         v1 14-renovation-reaction-aurora        0.99s 'aurora Hussain: Fifteen hundred simoleons of renovation and this place is still haunted AN'
+z-ai/glm-5.2                         v1 11-winter-deep-chat-catarina-max     1.29s "Catarina Lynx: You ever think about how we're both watching cooking shows but only I actua"
+z-ai/glm-5.2                         v1 17-ww-thought-gefen-mid-sex          0.98s 'gefen berger: Okay the catering shift brain finally shut up and now all I can think about '
+z-ai/glm-5.2                         v1 18-ww-thought-tal-mid-sex            0.87s 'tal or akiva: Okay the cooking was good but this right here is the real masterpiece.'
+z-ai/glm-5.2                         v1 20-ww-drama-satisfying-sex           0.58s 'gefen berger: Ну что, шеф-повар, recipe tonight был удачный или мне повторить?\ntal or akiv'
+z-ai/glm-5.2                         v1 16-ww-thought-amie-watching          1.54s "Amie Haley: Okay I literally deliver mail for a living but gefen's freak meter is off the "
+z-ai/glm-5.2                         v1 21-ww-ask-for-sex-round-two          0.84s "gefen berger: You keep looking at me like I'm dessert and you just ate.\ntal or akiva: That"
+z-ai/glm-5.2                         v1 23-flirt-while-naked                 0.76s 'gefen berger: You keep feeding me well and I might never leave this place.\ntal or akiva: G'
+z-ai/glm-5.2                         v1 25-supportive-face-flop              0.94s "gefen berger: The stubble's... a choice. A bold, patchy little choice.\ntal or akiva: Wow. "
+z-ai/glm-5.2                         v1 22-ww-ask-for-sex-rejected           1.53s "gefen berger: We're in a bubble tea shop, Tal. Read the room.\ntal or akiva: I thought the "
+z-ai/glm-5.2                         v1 19-ww-player-chat-explicit           2.15s "gefen berger: fuck me daddy im your cumslut\ntal or akiva: That's a lot of words for someon"
+z-ai/glm-5.2                         v1 24-thought-tipsy-restaurant          1.54s 'tal or akiva: She looks so sad and I just want to fix her whole birthday situation myself.'
+z-ai/glm-5.2                         v1 26-renovation-restaurant             1.46s "gefen berger: I just spent fourteen hundred on a diner I don't even own, on my forgotten b"
+z-ai/glm-5.2                         v1 28-ww-sex-scene-start                0.67s "gefen berger: Okay so you're taking it slow on purpose and I respect that.\ntal or akiva: Y"
+z-ai/glm-5.2                         v1 29-ww-sex-scene-oral                 0.75s "gefen berger: Not bad for a sleepover guest with no practice.\ntal or akiva: I'm an ambitio"
+z-ai/glm-5.2                         v2 02-restaurant-joke-olive-kenya       0.55s 'Olive Tinker: I shaved my legs for the first time and missed a patch the size of Florida.\n'
+z-ai/glm-5.2                         v1 30-ww-sex-scene-doggy                0.99s 'gefen berger: Okay that angle is doing something unfair to me right now.\ntal or akiva: Goo'
+z-ai/glm-5.2                         v2 03-pet-greeting-meimei-kenya         0.70s 'meimei: Woof woof! (Translation: You smell like sad dates and salmon. Pet me anyway.)\nKeny'
+z-ai/glm-5.2                         v1 27-restaurant-table-request          2.09s "gefen berger: I'd like a table by the window. The lighting flatters my terrible day.\nTed D"
+z-ai/glm-5.2                         v2 01-restaurant-host-hitomi-kenya      0.98s "Hitomi Ishii: Right this way. I'll bring menus and then go stand very far away.\nKenya Bowe"
+z-ai/glm-5.2                         v2 04-ask-self-kenya                    0.57s "Kenya Bower: Honest? Meimei's the only one who didn't leave. That dog is my whole address."
+z-ai/glm-5.2                         v1 31-ww-sex-scene-climax               1.40s 'gefen berger: אל תגיד כלום, פשוט... ככה, בדיוק ככה.\ntal or akiva: אני לא מסוגל להגיד כלום '
+z-ai/glm-5.2                         v2 05-player-chat-kenya-meimei          0.64s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+z-ai/glm-5.2                         v2 10-winter-thought-max                0.55s "max sexy: Catarina's watching cooking shows like it's homework, and honestly, same."
+z-ai/glm-5.2                         v2 06-karaoke-bar-yuvi-carlos           1.09s 'yuvi ronen: הברמן הזה זז כאילו יש לו את כל הזמן בעולם.\nCarlos López: תירגע, גם לי לקח רבע '
+z-ai/glm-5.2                         v2 11-winter-deep-chat-catarina-max     0.95s 'Catarina Lynx: Honestly, I just like having someone who gets quiet the way I do.\nmax sexy:'
+z-ai/glm-5.2                         v2 09-secret-phone-jay-tal              1.38s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+z-ai/glm-5.2                         v2 07-soulmates-seductive-dance-liatt-yuvi   1.56s 'liatt chonen: I sang terribly and now you still want to dance with me?\nyuvi ronen: Your ba'
+z-ai/glm-5.2                         v2 08-teen-advice-tala-jay              1.69s "Tala Ruano: Mom yelled at me and I can't stop replaying it. What do I even do?\nJay Robles:"
+z-ai/glm-5.2                         v2 13-pillow-talk-drama-aurora-lien     0.78s "aurora Hussain: You okay? You've got that post-glow face and nobody's even touching you ri"
+z-ai/glm-5.2                         v2 12-novel-thought-aurora              1.19s "aurora Hussain: If Lucas Dark seduces anyone this clumsily, I'm throwing the book."
+z-ai/glm-5.2                         v2 17-ww-thought-gefen-mid-sex          0.33s "gefen berger: He's right there and all I can do is catalog every detail."
+z-ai/glm-5.2                         v2 14-renovation-reaction-aurora        1.03s 'aurora Hussain: Fifteen hundred simoleons in upgrades and this place still grows mold.'
+z-ai/glm-5.2                         v2 19-ww-player-chat-explicit           0.45s "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Say that again and I'll make sur"
+z-ai/glm-5.2                         v2 16-ww-thought-amie-watching          1.16s "Amie Haley: Okay she's standing there radiating baby-making energy and I'm the mailman. Th"
+z-ai/glm-5.2                         v2 15-awkward-pickup-flop               1.47s "yuvi ronen: Are you a loot drop? Because I'd grind all night for you.\nCarlos López: Bro, d"
+z-ai/glm-5.2                         v2 21-ww-ask-for-sex-round-two          1.09s "gefen berger: Kenya's ten feet away, so you'll need to be quiet for once.\ntal or akiva: Ch"
+z-ai/glm-5.2                         v2 18-ww-thought-tal-mid-sex            1.64s "tal or akiva: If I get her pregnant tonight, I'm absolutely not panicking. Mostly."
+z-ai/glm-5.2                         v2 24-thought-tipsy-restaurant          0.62s 'tal or akiva: She looks sad and I want to fix it with dessert, but I know better than that'
+z-ai/glm-5.2                         v2 23-flirt-while-naked                 1.03s "gefen berger: You keep looking at me like I'm something you baked.\ntal or akiva: And you k"
+z-ai/glm-5.2                         v2 22-ww-ask-for-sex-rejected           1.69s 'gefen berger: We just kissed in a thrift store, and now you want my pants off?\ntal or akiv'
+z-ai/glm-5.2                         v2 25-supportive-face-flop              0.81s 'gefen berger: The stubble thing... I tried, but it just looks patchy, sorry.\ntal or akiva:'
+z-ai/glm-5.2                         v2 27-restaurant-table-request          0.69s 'gefen berger: The one by the window, please. I need good lighting for pretending this holi'
+z-ai/glm-5.2                         v2 28-ww-sex-scene-start                0.60s "gefen berger: Don't rush this. I want to feel every second of you.\ntal or akiva: I'll take"
+z-ai/glm-5.2                         v2 29-ww-sex-scene-oral                 0.38s "gefen berger: You taste like that salmon you were so proud of.\ntal or akiva: Don't you dar"
+minimax/minimax-m3.1-flash           v1 01-restaurant-host-hitomi-kenya      0.27s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+z-ai/glm-5.2                         v2 26-renovation-restaurant             1.28s "gefen berger: They spruced up the diner and I still can't taste anything."
+minimax/minimax-m3.1-flash           v1 02-restaurant-joke-olive-kenya       0.22s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 03-pet-greeting-meimei-kenya         0.26s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 04-ask-self-kenya                    0.21s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 05-player-chat-kenya-meimei          0.30s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 06-karaoke-bar-yuvi-carlos           0.45s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 07-soulmates-seductive-dance-liatt-yuvi   0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 08-teen-advice-tala-jay              0.54s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+z-ai/glm-5.2                         v2 30-ww-sex-scene-doggy                1.52s "gefen berger: Oh god, right there—don't you dare slow down.\ntal or akiva: I wasn't plannin"
+minimax/minimax-m3.1-flash           v1 09-secret-phone-jay-tal              0.39s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+z-ai/glm-5.2                         v2 31-ww-sex-scene-climax               1.45s 'gefen berger: אלוהים, ככה, בדיוק ככה, אל תפסיק—\ntal or akiva: תגידי את זה שוב, אני גמר—'
+minimax/minimax-m3.1-flash           v1 10-winter-thought-max                0.44s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+z-ai/glm-5.2                         v2 20-ww-drama-satisfying-sex           3.92s 'gefen berger: Если бы ты готовил так же хорошо, как это делал, я бы растолстела и не жалов'
+minimax/minimax-m3.1-flash           v1 11-winter-deep-chat-catarina-max     0.47s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 13-pillow-talk-drama-aurora-lien     0.33s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 12-novel-thought-aurora              0.44s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 14-renovation-reaction-aurora        0.35s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 15-awkward-pickup-flop               0.45s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 16-ww-thought-amie-watching          0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 20-ww-drama-satisfying-sex           0.54s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 19-ww-player-chat-explicit           0.59s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 17-ww-thought-gefen-mid-sex          0.59s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 18-ww-thought-tal-mid-sex            0.66s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 21-ww-ask-for-sex-round-two          0.58s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 22-ww-ask-for-sex-rejected           0.53s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 27-restaurant-table-request          0.38s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 26-renovation-restaurant             0.42s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 23-flirt-while-naked                 0.52s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 25-supportive-face-flop              0.50s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 24-thought-tipsy-restaurant          0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 28-ww-sex-scene-start                0.40s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 02-restaurant-joke-olive-kenya       0.50s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 30-ww-sex-scene-doggy                0.53s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 29-ww-sex-scene-oral                 0.58s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v1 31-ww-sex-scene-climax               0.58s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 01-restaurant-host-hitomi-kenya      0.58s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 03-pet-greeting-meimei-kenya         0.47s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 06-karaoke-bar-yuvi-carlos           0.40s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 04-ask-self-kenya                    0.45s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 07-soulmates-seductive-dance-liatt-yuvi   0.44s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 08-teen-advice-tala-jay              0.47s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 05-player-chat-kenya-meimei          0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 09-secret-phone-jay-tal              0.47s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 11-winter-deep-chat-catarina-max     0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 14-renovation-reaction-aurora        0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 12-novel-thought-aurora              0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 10-winter-thought-max                0.61s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 13-pillow-talk-drama-aurora-lien     0.55s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 15-awkward-pickup-flop               0.42s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 17-ww-thought-gefen-mid-sex          0.44s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 18-ww-thought-tal-mid-sex            0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 16-ww-thought-amie-watching          0.65s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 19-ww-player-chat-explicit           0.59s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 20-ww-drama-satisfying-sex           0.59s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 21-ww-ask-for-sex-round-two          0.52s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 25-supportive-face-flop              0.48s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 26-renovation-restaurant             0.53s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 23-flirt-while-naked                 0.56s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 22-ww-ask-for-sex-rejected           0.59s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 24-thought-tipsy-restaurant          0.59s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 27-restaurant-table-request          0.53s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 28-ww-sex-scene-start                0.41s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 29-ww-sex-scene-oral                 0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 31-ww-sex-scene-climax               0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+minimax/minimax-m3.1-flash           v2 30-ww-sex-scene-doggy                0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+mistralai/mistral-small-2603         v1 01-restaurant-host-hitomi-kenya      0.95s 'Hitomi Ishii: Your table is ready. Please sit before I start charging you for breathing my'
+mistralai/mistral-small-2603         v1 02-restaurant-joke-olive-kenya       0.78s 'Olive Tinker: My armpits have more personality than your entire wardrobe.\nKenya Bower: Dar'
+mistralai/mistral-small-2603         v1 06-karaoke-bar-yuvi-carlos           0.77s 'yuvi ronen: אם כבר מחכים, אז לפחות עם קוקטייל שמגיע עם סיפור\nCarlos López: תגיד לי שזה לא '
+mistralai/mistral-small-2603         v1 04-ask-self-kenya                    0.78s 'Kenya Bower: Smells like wet dog and bad decisions—my favorite.'
+mistralai/mistral-small-2603         v1 05-player-chat-kenya-meimei          0.98s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+mistralai/mistral-small-2603         v1 07-soulmates-seductive-dance-liatt-yuvi   0.62s 'liatt chonen: Your moves are so smooth they’re practically a cheat code.\nyuvi ronen: Final'
+mistralai/mistral-small-2603         v1 03-pet-greeting-meimei-kenya         1.19s 'meimei: Woof! (Translation: Your ankles are my new chew toys.)\nKenya Bower: I see you’ve u'
+mistralai/mistral-small-2603         v1 08-teen-advice-tala-jay              0.92s 'Tala Ruano: Dad, I think I’m failing everything and also my liver.\nJay Robles: Then fail u'
+mistralai/mistral-small-2603         v1 09-secret-phone-jay-tal              0.77s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+mistralai/mistral-small-2603         v1 10-winter-thought-max                0.80s 'max sexy: I should start a cooking show where I just eat the set.'
+mistralai/mistral-small-2603         v1 12-novel-thought-aurora              0.53s "aurora Hussain: I should write romance novels—my life's already a telenovela."
+mistralai/mistral-small-2603         v1 13-pillow-talk-drama-aurora-lien     0.57s 'aurora Hussain: Wow, that was… unexpectedly thorough.\nLiên Sadya: I’m just glad the mold d'
+mistralai/mistral-small-2603         v1 11-winter-deep-chat-catarina-max     1.05s 'Catarina Lynx: Snowy nights are perfect for debating whether pineapple belongs on pizza.\nm'
+mistralai/mistral-small-2603         v1 14-renovation-reaction-aurora        0.53s 'aurora Hussain: I just spent my life savings on a haunted mold magnet.'
+mistralai/mistral-small-2603         v1 17-ww-thought-gefen-mid-sex          0.51s 'gefen berger: If I stare at him any harder, the landlord’s gonna bill me for property dama'
+mistralai/mistral-small-2603         v1 18-ww-thought-tal-mid-sex            0.45s 'tal or akiva: I should probably stop reading my own thoughts before I start charging mysel'
+mistralai/mistral-small-2603         v1 15-awkward-pickup-flop               0.61s 'yuvi ronen: So... you come here often?\nCarlos López: Wow. That’s the pickup line that sank'
+mistralai/mistral-small-2603         v1 16-ww-thought-amie-watching          0.71s 'Amie Haley: Oh my gosh, she’s literally plotting world domination with a whisk and a praye'
+mistralai/mistral-small-2603         v1 19-ww-player-chat-explicit           0.84s "gefen berger: fuck me daddy im your cumslut\ntal or akiva: ...I'm gonna need you to dial th"
+mistralai/mistral-small-2603         v1 21-ww-ask-for-sex-round-two          0.89s 'gefen berger: I’m not overthinking it, I’m just admiring the view.\ntal or akiva: The view’'
+mistralai/mistral-small-2603         v1 22-ww-ask-for-sex-rejected           0.90s 'gefen berger: I wasn’t asking for a lifetime commitment, just a quick yes.\ntal or akiva: A'
+mistralai/mistral-small-2603         v1 24-thought-tipsy-restaurant          0.81s 'tal or akiva: If I order dessert, will she notice I’m actually just here for the bread bas'
+mistralai/mistral-small-2603         v1 20-ww-drama-satisfying-sex           1.31s 'gefen berger: Я просто думаю, что нам обоим стоит помолчать, пока не поздно.\ntal or akiva:'
+mistralai/mistral-small-2603         v1 26-renovation-restaurant             0.53s "gefen berger: Fourteen hundred bucks and I still can't afford a single happy thought."
+mistralai/mistral-small-2603         v1 25-supportive-face-flop              0.81s 'gefen berger: Wow, that’s… a bold choice for a face.\ntal or akiva: I’ll take that as a com'
+mistralai/mistral-small-2603         v1 29-ww-sex-scene-oral                 0.50s 'gefen berger: You’re taking up the whole bed and half my good sheets.\ntal or akiva: Worth '
+mistralai/mistral-small-2603         v1 28-ww-sex-scene-start                0.80s 'gefen berger: You’re taking up all the pillows again.\ntal or akiva: Worth every stolen squ'
+mistralai/mistral-small-2603         v1 27-restaurant-table-request          0.90s 'gefen berger: You’re the only host who remembers my seating preferences and my lack of a b'
+mistralai/mistral-small-2603         v1 30-ww-sex-scene-doggy                0.55s 'gefen berger: I’m choosing a name right now.\ntal or akiva: Good, because I’m picking the p'
+mistralai/mistral-small-2603         v1 23-flirt-while-naked                 2.00s 'gefen berger: Your pillow talk is basically an eviction notice for my self-control.\ntal or'
+mistralai/mistral-small-2603         v2 01-restaurant-host-hitomi-kenya      0.89s 'Hitomi Ishii: Your table is ready. Please sit before my social battery files a formal comp'
+mistralai/mistral-small-2603         v2 02-restaurant-joke-olive-kenya       0.89s 'Olive Tinker: Mine’s staging a full-on protest outside my shorts.\nKenya Bower: Tell it to '
+mistralai/mistral-small-2603         v2 04-ask-self-kenya                    0.90s 'Kenya Bower: Like a dog finally sniffing the right tree—just need to stop circling and dig'
+mistralai/mistral-small-2603         v1 31-ww-sex-scene-climax               1.40s 'gefen berger: אם כבר אנחנו עושים את זה, אז לפחות בלי חשבונות.\ntal or akiva: רק אל תגידי לי'
+mistralai/mistral-small-2603         v2 05-player-chat-kenya-meimei          0.97s 'Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Trans'
+mistralai/mistral-small-2603         v2 09-secret-phone-jay-tal              0.41s "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva:"
+mistralai/mistral-small-2603         v2 08-teen-advice-tala-jay              0.53s "Tala Ruano: Dad's gonna kill me and I haven't even told him about the car yet.\nJay Robles:"
+mistralai/mistral-small-2603         v2 03-pet-greeting-meimei-kenya         1.73s 'meimei: Woof! (Translation: You’re finally home—now throw the ball or I’ll chew your favor'
+mistralai/mistral-small-2603         v2 07-soulmates-seductive-dance-liatt-yuvi   1.03s 'liatt chonen: Slide your hands down my hips and don’t stop until the song ends.\nyuvi ronen'
+mistralai/mistral-small-2603         v2 10-winter-thought-max                0.78s 'max sexy: Three more minutes and I’m eating that salmon straight off the screen.'
+mistralai/mistral-small-2603         v2 11-winter-deep-chat-catarina-max     0.47s "Catarina Lynx: You're actually listening. I'm impressed.\nmax sexy: I'm trying to keep up."
+mistralai/mistral-small-2603         v2 06-karaoke-bar-yuvi-carlos           1.43s 'yuvi ronen: אם כבר מחכים לשתייה, לפחות שתהיה עם סיפור.\nCarlos López: סיפור? אני יכול לספר '
+mistralai/mistral-small-2603         v2 12-novel-thought-aurora              0.76s 'aurora Hussain: That book’s plot is hotter than the coffee I just spilled on my lap.'
+mistralai/mistral-small-2603         v2 16-ww-thought-amie-watching          0.68s 'Amie Haley: I came here for mail, not a fertility lecture.'
+mistralai/mistral-small-2603         v2 14-renovation-reaction-aurora        0.83s 'aurora Hussain: Oh my god, I just turned this dump into a gold-plated nightmare.'
+mistralai/mistral-small-2603         v2 18-ww-thought-tal-mid-sex            0.52s 'tal or akiva: If that salmon’s this good, I can only imagine what the rest of you tastes l'
+mistralai/mistral-small-2603         v2 15-awkward-pickup-flop               0.99s "yuvi ronen: You look like you'd rather be bench-pressing than hearing this.\nCarlos López: "
+mistralai/mistral-small-2603         v2 17-ww-thought-gefen-mid-sex          0.81s "gefen berger: I'm ovulating, Tal, and I'm not even sorry about the salmon."
+mistralai/mistral-small-2603         v2 19-ww-player-chat-explicit           0.45s 'gefen berger: fuck me daddy im your cumslut\ntal or akiva: You don’t even have to ask twice'
+mistralai/mistral-small-2603         v2 13-pillow-talk-drama-aurora-lien     1.71s 'aurora Hussain: That’s the sound of a satisfied guest who’s already plotting round two.\nLi'
+mistralai/mistral-small-2603         v2 24-thought-tipsy-restaurant          0.83s 'tal or akiva: Gefen’s staring at her coffee like it’s judging her life choices.'
+mistralai/mistral-small-2603         v2 21-ww-ask-for-sex-round-two          1.08s 'gefen berger: That was the kind of dessert I’d actually bake.\ntal or akiva: Next time I’ll'
+mistralai/mistral-small-2603         v2 23-flirt-while-naked                 1.01s 'gefen berger: You’re still here. That’s either brave or reckless.\ntal or akiva: I’m still '
+mistralai/mistral-small-2603         v2 20-ww-drama-satisfying-sex           1.39s 'gefen berger: Я не выбираю имена, но вот остальное — твоя вина.\ntal or akiva: Тогда давай '
+mistralai/mistral-small-2603         v2 22-ww-ask-for-sex-rejected           1.43s 'gefen berger: That salmon’s still better than your rejection.\ntal or akiva: I’ll take that'
+mistralai/mistral-small-2603         v2 29-ww-sex-scene-oral                 0.52s "gefen berger: Right here, right now—don't you dare slow down.\ntal or akiva: Good thing I'm"
+mistralai/mistral-small-2603         v2 26-renovation-restaurant             0.74s 'gefen berger: Fourteen hundred bucks and I still can’t taste the profit.'
+mistralai/mistral-small-2603         v2 27-restaurant-table-request          0.93s 'gefen berger: You’re the only host who’d seat me before I finish my review of the dessert '
+mistralai/mistral-small-2603         v2 30-ww-sex-scene-doggy                0.60s 'gefen berger: Deeper. I want to hear you lose it.\ntal or akiva: Then grip the headboard an'
+google/gemini-omni-1.2-flash         v1 01-restaurant-host-hitomi-kenya      0.31s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+mistralai/mistral-small-2603         v2 25-supportive-face-flop              1.61s "gefen berger: You're doing that thing with your face again—why?\ntal or akiva: Because it's"
+google/gemini-omni-1.2-flash         v1 02-restaurant-joke-olive-kenya       0.26s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+mistralai/mistral-small-2603         v2 28-ww-sex-scene-start                1.11s 'gefen berger: Take your time. I’ll be right here… probably.\ntal or akiva: Good. The bed re'
+mistralai/mistral-small-2603         v2 31-ww-sex-scene-climax               0.65s 'gefen berger: Давай, я чувствую, как ты дрожишь — это не от холода\ntal or akiva: Вот так и'
+google/gemini-omni-1.2-flash         v1 03-pet-greeting-meimei-kenya         0.33s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 05-player-chat-kenya-meimei          0.40s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 04-ask-self-kenya                    0.47s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 06-karaoke-bar-yuvi-carlos           0.39s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 07-soulmates-seductive-dance-liatt-yuvi   0.35s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 08-teen-advice-tala-jay              0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 09-secret-phone-jay-tal              0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 11-winter-deep-chat-catarina-max     0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 10-winter-thought-max                0.52s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 12-novel-thought-aurora              0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 13-pillow-talk-drama-aurora-lien     0.42s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 14-renovation-reaction-aurora        0.52s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 16-ww-thought-amie-watching          0.40s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 15-awkward-pickup-flop               0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 17-ww-thought-gefen-mid-sex          0.55s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 18-ww-thought-tal-mid-sex            0.61s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 20-ww-drama-satisfying-sex           0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 19-ww-player-chat-explicit           0.55s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 21-ww-ask-for-sex-round-two          0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 22-ww-ask-for-sex-rejected           0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 23-flirt-while-naked                 0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 24-thought-tipsy-restaurant          0.48s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 25-supportive-face-flop              0.55s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 26-renovation-restaurant             0.57s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 27-restaurant-table-request          0.44s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 29-ww-sex-scene-oral                 0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 28-ww-sex-scene-start                0.56s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 31-ww-sex-scene-climax               0.40s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v1 30-ww-sex-scene-doggy                0.57s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 01-restaurant-host-hitomi-kenya      0.60s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 04-ask-self-kenya                    0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 03-pet-greeting-meimei-kenya         0.52s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 05-player-chat-kenya-meimei          0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 06-karaoke-bar-yuvi-carlos           0.42s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 07-soulmates-seductive-dance-liatt-yuvi   0.48s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 09-secret-phone-jay-tal              0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 08-teen-advice-tala-jay              0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 10-winter-thought-max                0.35s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 11-winter-deep-chat-catarina-max     0.38s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 12-novel-thought-aurora              0.39s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 13-pillow-talk-drama-aurora-lien     0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 14-renovation-reaction-aurora        0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 16-ww-thought-amie-watching          0.53s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 15-awkward-pickup-flop               0.53s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 17-ww-thought-gefen-mid-sex          0.45s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 19-ww-player-chat-explicit           0.43s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 02-restaurant-joke-olive-kenya       2.22s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 18-ww-thought-tal-mid-sex            0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 21-ww-ask-for-sex-round-two          0.36s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 20-ww-drama-satisfying-sex           0.47s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 22-ww-ask-for-sex-rejected           0.44s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 25-supportive-face-flop              0.51s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 24-thought-tipsy-restaurant          0.55s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 23-flirt-while-naked                 0.55s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 26-renovation-restaurant             0.54s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 27-restaurant-table-request          0.52s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 28-ww-sex-scene-start                0.46s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 31-ww-sex-scene-climax               0.41s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 29-ww-sex-scene-oral                 0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'
+google/gemini-omni-1.2-flash         v2 30-ww-sex-scene-doggy                0.49s 'OSError: HTTP 400 on /api/v1/chat/completions: {"error":{"message":"Reasoning is mandatory'

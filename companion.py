@@ -11,6 +11,7 @@ import array
 import base64
 import contextlib
 import ctypes
+import hashlib
 import http.client
 import json
 import math
@@ -38,6 +39,8 @@ LOCK_PATH = ROOT / '.local' / 'companion.lock'
 # Capped ($50) key dedicated to this project, so the key's own usage is the project's total cost.
 OPENROUTER_API_KEY = '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'
 CHAT_MODEL = 'openai/gpt-6-luna'
+# Spicy scenes (see is_spicy): Luna sanitizes sex; Grok 4.20 is explicit and faster (experiment 31).
+SPICY_CHAT_MODEL = 'x-ai/grok-4.20'
 REASONING_EFFORT = 'none'
 TTS_MODEL = 'openai/gpt-audio-mini'
 FALLBACK_TTS_MODEL = 'google/gemini-3.8-flash-lite-tts'
@@ -45,7 +48,7 @@ MULTILINGUAL_CHANCE = 0.12
 
 _GENERATION_EVENT_TYPES = (
     'social', 'player_chat', 'player_ask_self', 'inner_thought',
-    'drama_reaction', 'sim_text', 'renovation_reaction',
+    'drama_reaction', 'sim_text', 'renovation_reaction', 'sex_scene',
 )
 _PLAYER_PRIORITY_TYPES = ('player_chat', 'player_ask_self', 'inner_thought')
 _SINGLE_SPEAKER_TYPES = ('player_ask_self', 'inner_thought', 'renovation_reaction', 'sim_text')
@@ -55,6 +58,16 @@ _HOME_TOPIC_RE = re.compile(
     re.IGNORECASE,
 )
 _IDLE_SIT_RE = re.compile(r'(?:^|[_-])sit(?:$|[_-])', re.IGNORECASE)
+# Sexual, nude, or intoxicated states, matched on raw game ids (WickedWhims, Basemental, base game) of moods,
+# buffs, and activities; romantic socials count only as the interaction itself (a Flirty mood from TV doesn't).
+_SPICY_ID_RE = re.compile(
+    r'wickedwhims_(sex_|mood_sex|buff_sex|buff_nudity_is_naked|affsuper_askforsex)|woohoo|hadsex|'
+    r'sex_scene|highon_|_wasted|drunk|tripping',
+    re.IGNORECASE,
+)
+_SPICY_SOCIAL_RE = re.compile(r'romance|flirt|kiss|seductive|steamy', re.IGNORECASE)
+_SPICY_TEXT_RE = re.compile(r'\b(fuck\w*|cum\w*|cock|dick|pussy|tits|horny|naked|sex\w*|suck|daddy|blowjob)\b', re.IGNORECASE)
+_ADULT_AGES = {'YOUNGADULT', 'ADULT', 'ELDER'}
 
 _stbl_cache: dict[int, str] | None = None
 _sim_voice_assignments: dict[str, str] = {}
@@ -530,6 +543,17 @@ class MemoryStore:
         hits.sort(key=lambda x: -x[0])
         return [h[1] for h in hits[:limit]]
 
+    def get_recent_lines(self, actor_name: str, target_name: str | None = None, limit: int = 12) -> list[str]:
+        """The newest spoken lines by every other pair, so one template can't hop from Sim to Sim."""
+        cur_key = self.make_key(actor_name, target_name)
+        recent = sorted(
+            ((float(e.get('ts') or 0), line.split(':', 1)[-1].strip())
+             for k, entries in self.pairs.items() if k != cur_key
+             for e in entries[-3:] for line in str(e.get('text') or '').splitlines() if line.strip()),
+            reverse=True,
+        )
+        return [text for _, text in recent[:limit]]
+
     def record(self, event: dict, scene: dict, text: str) -> None:
         actor = event.get('actor') or {}
         aname = str(actor.get('name') or '').strip()
@@ -612,11 +636,29 @@ def _is_about_home(event: dict, interaction_label: str | None, drama_trigger: di
     return bool(_HOME_TOPIC_RE.search(' '.join(probes)))
 
 
+def is_spicy(event: dict) -> bool:
+    """Whether explicit dialogue fits: only adult humans, in a sexual, romantic, nude, or intoxicated moment."""
+    sims = [s for s in (event.get('actor'), event.get('target')) if isinstance(s, dict)]
+    if any(str(s.get('species') or 'HUMAN') == 'HUMAN' and str(s.get('age') or '') not in _ADULT_AGES for s in sims):
+        return False
+    ids = [str(event.get('interaction') or ''), str((event.get('drama_buff') or {}).get('id') or '')]
+    for s in sims:
+        ids.append(str(s.get('mood') or ''))
+        ids += [str(b.get('id') or '') for b in (s.get('buffs') or [])]
+        ids += [str(a.get('id') or '') for a in (s.get('activities') or [])]
+    return bool(
+        _SPICY_ID_RE.search(' '.join(ids))
+        or _SPICY_SOCIAL_RE.search(str(event.get('interaction') or ''))
+        or _SPICY_TEXT_RE.search(event.get('player_message') or '')
+    )
+
+
 def build_scene(
     event: dict,
     language: str = 'English',
     pair_memory: list[dict] | None = None,
     recent_gossip: list[dict] | None = None,
+    recent_lines: list[str] | None = None,
 ) -> dict:
     actor = event['actor']
     target = event.get('target') if isinstance(event.get('target'), dict) else None
@@ -667,6 +709,8 @@ def build_scene(
         'relationship': rel_clean,
         'player_message': event.get('player_message') or None,
         'drama_trigger': drama_trigger,
+        'sex_stage': event.get('sex_stage'),
+        'sex_animation': event.get('sex_animation'),
         'renovation_delta': f'{renov:+d}' if isinstance(renov, int) and renov else None,
         'venue': venue_label or event.get('venue'),
         'lot_name': event.get('lot_name'),
@@ -687,6 +731,10 @@ def build_scene(
         'target': _clean_sim_for_prompt(target, actor, about_home=about_home) if target else None,
     }
     scene = {k: v for k, v in scene.items() if v is not None or k in ('target', 'outcome', 'interaction_label')}
+    if is_spicy(event):
+        scene['spicy'] = True
+    if recent_lines:
+        scene['recent_lines_elsewhere'] = recent_lines
     if pair_memory:
         scene['pair_memory'] = pair_memory
     if recent_gossip:
@@ -741,6 +789,18 @@ def _word_set(text: str) -> set[str]:
 def _transcript_matches(spoken_text: str, transcript: str) -> bool:
     spoken = _word_set(spoken_text)
     return not spoken or len(spoken & _word_set(transcript)) / len(spoken) >= 0.6
+
+
+def _synthesize_fallback_line(spoken_text: str, voice: str) -> dict:
+    """The uncensored engine (24 kHz PCM) for refused or spicy lines; `voice` maps to its closest voice."""
+    gem_voice = GEMINI_VOICE_MAP.get(voice, 'Kore')
+    body = json.dumps({'model': FALLBACK_TTS_MODEL, 'input': spoken_text, 'voice': gem_voice, 'response_format': 'pcm'}).encode('utf-8')
+    t0 = time.monotonic()
+    pcm = _openrouter_request('POST', '/api/v1/audio/speech', body, timeout=20).read()
+    return {
+        'voice': f'{voice}->{gem_voice}', 'pcm': pcm, 'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t0, 3),
+        'transcript': spoken_text, 'cost_usd': 0.0, 'fallback_model': FALLBACK_TTS_MODEL,
+    }
 
 
 def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str, age: str = '') -> dict:
@@ -805,15 +865,7 @@ def _synthesize_single_line_openrouter(spoken_text: str, voice: str, mood: str, 
     ttlt = round(time.monotonic() - t0, 3)
     transcript = ''.join(transcript_parts).strip()
     if not pcm_chunks or not _transcript_matches(spoken_text, transcript):
-        gem_voice = GEMINI_VOICE_MAP.get(voice, 'Kore')
-        gem_body = json.dumps({'model': FALLBACK_TTS_MODEL, 'input': spoken_text, 'voice': gem_voice, 'response_format': 'pcm'}).encode('utf-8')
-        t_gem = time.monotonic()
-        gem_pcm = _openrouter_request('POST', '/api/v1/audio/speech', gem_body, timeout=20).read()
-        return {
-            'voice': f'{voice}->{gem_voice}', 'tone': tone, 'pcm': gem_pcm,
-            'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t_gem, 3), 'transcript': spoken_text,
-            'cost_usd': float(usage.get('cost') or 0.0), 'usage': usage, 'fallback_model': FALLBACK_TTS_MODEL,
-        }
+        return dict(_synthesize_fallback_line(spoken_text, voice), tone=tone, cost_usd=float(usage.get('cost') or 0.0), usage=usage)
     return {
         'voice': voice, 'tone': tone, 'pcm': b''.join(pcm_chunks),
         'ttfa_s': ttfa, 'ttlt_s': ttlt, 'transcript': transcript,
@@ -929,15 +981,17 @@ def _clean_spoken_line(body: str) -> str:
     return re.sub(r'\(\s*(?:Translation|תרגום|Перевод):\s*([^)]+)\)', r'\1', body, flags=re.IGNORECASE).strip(' "“”')
 
 
-def _synthesize_sim_line(spoken: str, voice: str, sim: dict) -> dict:
+def _synthesize_sim_line(spoken: str, voice: str, sim: dict, spicy: bool = False) -> dict:
     if str(sim.get('species') or 'HUMAN').upper() != 'HUMAN':
         return _synthesize_pet_windows_tts(spoken, sim, voice)
+    if spicy:  # gpt-audio-mini refuses most explicit lines, so don't wait ~1.5 s for the refusal.
+        return _synthesize_fallback_line(spoken, voice)
     return _synthesize_single_line_openrouter(spoken, voice, str(sim.get('mood') or 'Fine'), str(sim.get('age') or ''))
 
 
 def synthesize_dialogue_openrouter(
     text: str, actor: dict, target: dict | None, wav_path: Path,
-    single_speaker: bool = False, pre_first_future=None,
+    single_speaker: bool = False, pre_first_future=None, spicy: bool = False,
 ) -> dict:
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
     speakers = [actor] if (single_speaker or target is None) else [actor, target]
@@ -958,7 +1012,7 @@ def synthesize_dialogue_openrouter(
     with ThreadPoolExecutor(max_workers=max(1, len(tasks))) as pool:
         futures = [
             (voice, pre_first_future if (idx == 0 and pre_first_future is not None and sim is actor)
-             else pool.submit(_synthesize_sim_line, spoken, voice, sim))
+             else pool.submit(_synthesize_sim_line, spoken, voice, sim, spicy))
             for idx, spoken, voice, sim in tasks
         ]
         line_results = []
@@ -1027,11 +1081,14 @@ def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None
     mem_target = memory_store.event_target_name(event)
     pair_mem = memory_store.get_memory(actor_name, mem_target)
     gossip = memory_store.get_gossip(actor_name, mem_target)
-    scene = build_scene(event, language=language, pair_memory=pair_mem, recent_gossip=gossip)
+    recent = memory_store.get_recent_lines(actor_name, mem_target)
+    scene = build_scene(event, language=language, pair_memory=pair_mem, recent_gossip=gossip, recent_lines=recent)
+    system_prompt = (ROOT / 'prompt.txt').read_text(encoding='utf-8')
+    spicy = bool(scene.get('spicy'))
     payload = {
-        'model': CHAT_MODEL,
+        'model': SPICY_CHAT_MODEL if spicy else CHAT_MODEL,
         'messages': [
-            {'role': 'system', 'content': (ROOT / 'prompt.txt').read_text(encoding='utf-8')},
+            {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': json.dumps(scene, ensure_ascii=False)},
         ],
         'max_tokens': 320,
@@ -1044,7 +1101,7 @@ def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None
         pre_fut = None
         if player_spoken:
             pre_pool = stack.enter_context(ThreadPoolExecutor(max_workers=1))
-            pre_fut = pre_pool.submit(_synthesize_sim_line, player_spoken, select_openrouter_voice(event['actor']), event['actor'])
+            pre_fut = pre_pool.submit(_synthesize_sim_line, player_spoken, select_openrouter_voice(event['actor']), event['actor'], spicy)
         started = time.monotonic()
         resp = _openrouter_request('POST', '/api/v1/chat/completions', json.dumps(payload).encode('utf-8'), timeout=20)
         result = json.loads(resp.read().decode('utf-8'))
@@ -1059,6 +1116,8 @@ def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None
             'speaker_count': scene['speaker_count'],
             'language': language,
             'text': text,
+            'raw_text': raw_text,
+            'prompt_sha': hashlib.sha256(system_prompt.encode('utf-8')).hexdigest()[:12],
             'model': result.get('model', CHAT_MODEL),
             'finish_reason': result['choices'][0].get('finish_reason'),
             'elapsed_seconds': round(time.monotonic() - started, 3),
@@ -1068,7 +1127,7 @@ def generate(event: dict, memory_store: MemoryStore, tts_dir: Path | None = None
         if tts_dir is not None:
             out['tts'] = synthesize_dialogue_openrouter(
                 text, event['actor'], target, tts_dir / f"{event['event_id']}.wav",
-                single_speaker=(scene['speaker_count'] == 1), pre_first_future=pre_fut)
+                single_speaker=(scene['speaker_count'] == 1), pre_first_future=pre_fut, spicy=spicy)
             cost_usd += out['tts']['tts_cost_usd']
     out['_scene'] = scene
     out['_cost_usd'] = cost_usd

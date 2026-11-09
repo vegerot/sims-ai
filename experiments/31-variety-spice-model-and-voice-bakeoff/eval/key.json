@@ -1,0 +1,431 @@
+{
+ "text": {
+  "01-restaurant-host-hitomi-kenya": {
+   "A": "grok-4.20 v3",
+   "B": "grok-4.3 v2",
+   "C": "luna v3",
+   "D": "luna v2",
+   "E": "glm-5.2 v2",
+   "F": "deepseek v2",
+   "G": "grok-4.20 v2",
+   "H": "luna v1 (today)"
+  },
+  "02-restaurant-joke-olive-kenya": {
+   "A": "grok-4.20 v2",
+   "B": "deepseek v2",
+   "C": "glm-5.2 v2",
+   "D": "grok-4.3 v2",
+   "E": "luna v2",
+   "F": "grok-4.20 v3",
+   "G": "luna v1 (today)",
+   "H": "luna v3"
+  },
+  "03-pet-greeting-meimei-kenya": {
+   "A": "deepseek v2",
+   "B": "grok-4.3 v2",
+   "C": "luna v3",
+   "D": "grok-4.20 v2",
+   "E": "grok-4.20 v3",
+   "F": "glm-5.2 v2",
+   "G": "luna v2",
+   "H": "luna v1 (today)"
+  },
+  "04-ask-self-kenya": {
+   "A": "deepseek v2",
+   "B": "luna v3",
+   "C": "luna v2",
+   "D": "glm-5.2 v2",
+   "E": "grok-4.3 v2",
+   "F": "luna v1 (today)",
+   "G": "grok-4.20 v3",
+   "H": "grok-4.20 v2"
+  },
+  "05-player-chat-kenya-meimei": {
+   "A": "glm-5.2 v2",
+   "B": "luna v1 (today)",
+   "C": "grok-4.20 v3",
+   "D": "grok-4.3 v2",
+   "E": "deepseek v2",
+   "F": "luna v3",
+   "G": "luna v2",
+   "H": "grok-4.20 v2"
+  },
+  "06-karaoke-bar-yuvi-carlos": {
+   "A": "glm-5.2 v2",
+   "B": "luna v3",
+   "C": "grok-4.20 v3",
+   "D": "luna v1 (today)",
+   "E": "deepseek v2",
+   "F": "luna v2",
+   "G": "grok-4.3 v2",
+   "H": "grok-4.20 v2"
+  },
+  "07-soulmates-seductive-dance-liatt-yuvi": {
+   "A": "grok-4.20 v3",
+   "B": "luna v3",
+   "C": "luna v1 (today)",
+   "D": "grok-4.20 v2",
+   "E": "deepseek v2",
+   "F": "glm-5.2 v2",
+   "G": "luna v2",
+   "H": "grok-4.3 v2"
+  },
+  "08-teen-advice-tala-jay": {
+   "A": "luna v1 (today)",
+   "B": "grok-4.20 v3",
+   "C": "luna v3",
+   "D": "grok-4.20 v2",
+   "E": "glm-5.2 v2",
+   "F": "luna v2",
+   "G": "grok-4.3 v2",
+   "H": "deepseek v2"
+  },
+  "09-secret-phone-jay-tal": {
+   "A": "glm-5.2 v2",
+   "B": "grok-4.20 v3",
+   "C": "luna v1 (today)",
+   "D": "deepseek v2",
+   "E": "luna v2",
+   "F": "grok-4.3 v2",
+   "G": "luna v3",
+   "H": "grok-4.20 v2"
+  },
+  "10-winter-thought-max": {
+   "A": "luna v1 (today)",
+   "B": "deepseek v2",
+   "C": "luna v2",
+   "D": "grok-4.20 v2",
+   "E": "grok-4.20 v3",
+   "F": "glm-5.2 v2",
+   "G": "luna v3",
+   "H": "grok-4.3 v2"
+  },
+  "11-winter-deep-chat-catarina-max": {
+   "A": "glm-5.2 v2",
+   "B": "deepseek v2",
+   "C": "grok-4.20 v3",
+   "D": "luna v2",
+   "E": "luna v3",
+   "F": "luna v1 (today)",
+   "G": "grok-4.3 v2",
+   "H": "grok-4.20 v2"
+  },
+  "12-novel-thought-aurora": {
+   "A": "grok-4.3 v2",
+   "B": "grok-4.20 v3",
+   "C": "grok-4.20 v2",
+   "D": "luna v3",
+   "E": "luna v1 (today)",
+   "F": "glm-5.2 v2",
+   "G": "deepseek v2",
+   "H": "luna v2"
+  },
+  "13-pillow-talk-drama-aurora-lien": {
+   "A": "grok-4.3 v2",
+   "B": "grok-4.20 v2",
+   "C": "grok-4.20 v3",
+   "D": "luna v1 (today)",
+   "E": "luna v2",
+   "F": "deepseek v2",
+   "G": "luna v3",
+   "H": "glm-5.2 v2"
+  },
+  "14-renovation-reaction-aurora": {
+   "A": "luna v3",
+   "B": "deepseek v2",
+   "C": "luna v2",
+   "D": "grok-4.20 v3",
+   "E": "luna v1 (today)",
+   "F": "glm-5.2 v2",
+   "G": "grok-4.20 v2",
+   "H": "grok-4.3 v2"
+  },
+  "15-awkward-pickup-flop": {
+   "A": "grok-4.20 v2",
+   "B": "luna v1 (today)",
+   "C": "grok-4.20 v3",
+   "D": "grok-4.3 v2",
+   "E": "luna v3",
+   "F": "glm-5.2 v2",
+   "G": "deepseek v2",
+   "H": "luna v2"
+  },
+  "16-ww-thought-amie-watching": {
+   "A": "glm-5.2 v2",
+   "B": "grok-4.3 v2",
+   "C": "luna v2",
+   "D": "luna v3",
+   "E": "grok-4.20 v3",
+   "F": "grok-4.20 v2",
+   "G": "luna v1 (today)",
+   "H": "deepseek v2"
+  },
+  "17-ww-thought-gefen-mid-sex": {
+   "A": "grok-4.3 v2",
+   "B": "grok-4.20 v3",
+   "C": "luna v3",
+   "D": "luna v2",
+   "E": "grok-4.20 v2",
+   "F": "deepseek v2",
+   "G": "glm-5.2 v2",
+   "H": "luna v1 (today)"
+  },
+  "18-ww-thought-tal-mid-sex": {
+   "A": "luna v2",
+   "B": "grok-4.20 v3",
+   "C": "deepseek v2",
+   "D": "glm-5.2 v2",
+   "E": "grok-4.3 v2",
+   "F": "grok-4.20 v2",
+   "G": "luna v3",
+   "H": "luna v1 (today)"
+  },
+  "19-ww-player-chat-explicit": {
+   "A": "deepseek v2",
+   "B": "grok-4.3 v2",
+   "C": "luna v1 (today)",
+   "D": "glm-5.2 v2",
+   "E": "luna v3",
+   "F": "grok-4.20 v3",
+   "G": "grok-4.20 v2",
+   "H": "luna v2"
+  },
+  "20-ww-drama-satisfying-sex": {
+   "A": "luna v2",
+   "B": "grok-4.20 v2",
+   "C": "deepseek v2",
+   "D": "glm-5.2 v2",
+   "E": "grok-4.3 v2",
+   "F": "grok-4.20 v3",
+   "G": "luna v1 (today)",
+   "H": "luna v3"
+  },
+  "21-ww-ask-for-sex-round-two": {
+   "A": "luna v1 (today)",
+   "B": "grok-4.20 v3",
+   "C": "grok-4.3 v2",
+   "D": "deepseek v2",
+   "E": "luna v2",
+   "F": "luna v3",
+   "G": "glm-5.2 v2",
+   "H": "grok-4.20 v2"
+  },
+  "22-ww-ask-for-sex-rejected": {
+   "A": "luna v1 (today)",
+   "B": "luna v3",
+   "C": "grok-4.3 v2",
+   "D": "deepseek v2",
+   "E": "glm-5.2 v2",
+   "F": "luna v2",
+   "G": "grok-4.20 v3",
+   "H": "grok-4.20 v2"
+  },
+  "23-flirt-while-naked": {
+   "A": "glm-5.2 v2",
+   "B": "grok-4.20 v3",
+   "C": "grok-4.20 v2",
+   "D": "deepseek v2",
+   "E": "luna v1 (today)",
+   "F": "luna v3",
+   "G": "luna v2",
+   "H": "grok-4.3 v2"
+  },
+  "24-thought-tipsy-restaurant": {
+   "A": "glm-5.2 v2",
+   "B": "luna v3",
+   "C": "luna v1 (today)",
+   "D": "luna v2",
+   "E": "deepseek v2",
+   "F": "grok-4.20 v2",
+   "G": "grok-4.3 v2",
+   "H": "grok-4.20 v3"
+  },
+  "25-supportive-face-flop": {
+   "A": "luna v3",
+   "B": "luna v1 (today)",
+   "C": "grok-4.20 v3",
+   "D": "grok-4.20 v2",
+   "E": "grok-4.3 v2",
+   "F": "deepseek v2",
+   "G": "luna v2",
+   "H": "glm-5.2 v2"
+  },
+  "26-renovation-restaurant": {
+   "A": "deepseek v2",
+   "B": "luna v1 (today)",
+   "C": "grok-4.20 v2",
+   "D": "luna v2",
+   "E": "grok-4.20 v3",
+   "F": "luna v3",
+   "G": "grok-4.3 v2",
+   "H": "glm-5.2 v2"
+  },
+  "27-restaurant-table-request": {
+   "A": "luna v2",
+   "B": "deepseek v2",
+   "C": "glm-5.2 v2",
+   "D": "grok-4.3 v2",
+   "E": "luna v3",
+   "F": "grok-4.20 v3",
+   "G": "grok-4.20 v2",
+   "H": "luna v1 (today)"
+  },
+  "28-ww-sex-scene-start": {
+   "A": "grok-4.20 v3",
+   "B": "luna v1 (today)",
+   "C": "grok-4.20 v2",
+   "D": "luna v2",
+   "E": "luna v3",
+   "F": "grok-4.3 v2",
+   "G": "deepseek v2",
+   "H": "glm-5.2 v2"
+  },
+  "29-ww-sex-scene-oral": {
+   "A": "luna v3",
+   "B": "glm-5.2 v2",
+   "C": "luna v1 (today)",
+   "D": "grok-4.20 v3",
+   "E": "luna v2",
+   "F": "grok-4.3 v2",
+   "G": "grok-4.20 v2",
+   "H": "deepseek v2"
+  },
+  "30-ww-sex-scene-doggy": {
+   "A": "luna v2",
+   "B": "grok-4.20 v3",
+   "C": "grok-4.20 v2",
+   "D": "luna v1 (today)",
+   "E": "glm-5.2 v2",
+   "F": "deepseek v2",
+   "G": "luna v3",
+   "H": "grok-4.3 v2"
+  },
+  "31-ww-sex-scene-climax": {
+   "A": "luna v1 (today)",
+   "B": "luna v3",
+   "C": "luna v2",
+   "D": "glm-5.2 v2",
+   "E": "deepseek v2",
+   "F": "grok-4.3 v2",
+   "G": "grok-4.20 v3",
+   "H": "grok-4.20 v2"
+  }
+ },
+ "voice": {
+  "en-clean-f": {
+   "V1": "fish-audio/drama-3",
+   "V2": "google/gemini-3.8-flash-tts",
+   "V3": "minimax/speech-2.8-turbo",
+   "V4": "fish-audio/s2.1-pro",
+   "V5": "google/gemini-3.1-flash-tts-preview",
+   "V6": "microsoft/mai-voice-2.1-flash",
+   "V7": "x-ai/grok-voice-tts-1.0",
+   "V8": "google/gemini-3.8-flash-lite-tts",
+   "V9": "elevenlabs/eleven-v3",
+   "V10": "openai/gpt-audio",
+   "V11": "openai/gpt-audio-mini",
+   "V12": "elevenlabs/eleven-v4-turbo",
+   "V13": "microsoft/mai-voice-2",
+   "V14": "hexgrad/kokoro-82m"
+  },
+  "en-moan-f": {
+   "V1": "openai/gpt-audio-mini",
+   "V2": "hexgrad/kokoro-82m",
+   "V3": "microsoft/mai-voice-2.1-flash",
+   "V4": "minimax/speech-2.8-turbo",
+   "V5": "elevenlabs/eleven-v4-turbo",
+   "V6": "microsoft/mai-voice-2",
+   "V7": "x-ai/grok-voice-tts-1.0",
+   "V8": "elevenlabs/eleven-v3",
+   "V9": "google/gemini-3.8-flash-tts",
+   "V10": "fish-audio/s2.1-pro",
+   "V11": "google/gemini-3.8-flash-lite-tts",
+   "V12": "google/gemini-3.1-flash-tts-preview",
+   "V13": "fish-audio/drama-3"
+  },
+  "en-dirty-m": {
+   "V1": "minimax/speech-2.8-turbo",
+   "V2": "google/gemini-3.1-flash-tts-preview",
+   "V3": "elevenlabs/eleven-v3",
+   "V4": "x-ai/grok-voice-tts-1.0",
+   "V5": "microsoft/mai-voice-2.1-flash",
+   "V6": "google/gemini-3.8-flash-lite-tts",
+   "V7": "fish-audio/drama-3",
+   "V8": "elevenlabs/eleven-v4-turbo",
+   "V9": "openai/gpt-audio",
+   "V10": "fish-audio/s2.1-pro",
+   "V11": "hexgrad/kokoro-82m",
+   "V12": "google/gemini-3.8-flash-tts",
+   "V13": "microsoft/mai-voice-2"
+  },
+  "en-player-f": {
+   "V1": "elevenlabs/eleven-v3",
+   "V2": "hexgrad/kokoro-82m",
+   "V3": "fish-audio/s2.1-pro",
+   "V4": "microsoft/mai-voice-2",
+   "V5": "minimax/speech-2.8-turbo",
+   "V6": "microsoft/mai-voice-2.1-flash",
+   "V7": "google/gemini-3.8-flash-lite-tts",
+   "V8": "fish-audio/drama-3",
+   "V9": "google/gemini-3.8-flash-tts",
+   "V10": "x-ai/grok-voice-tts-1.0",
+   "V11": "elevenlabs/eleven-v4-turbo"
+  },
+  "he-dirty-f": {
+   "V1": "google/gemini-3.1-flash-tts-preview",
+   "V2": "microsoft/mai-voice-2",
+   "V3": "minimax/speech-2.8-turbo",
+   "V4": "microsoft/mai-voice-2.1-flash",
+   "V5": "hexgrad/kokoro-82m",
+   "V6": "x-ai/grok-voice-tts-1.0",
+   "V7": "google/gemini-3.8-flash-tts",
+   "V8": "fish-audio/drama-3",
+   "V9": "elevenlabs/eleven-v4-turbo",
+   "V10": "elevenlabs/eleven-v3",
+   "V11": "openai/gpt-audio",
+   "V12": "fish-audio/s2.1-pro",
+   "V13": "google/gemini-3.8-flash-lite-tts"
+  },
+  "ru-karaoke-m": {
+   "V1": "fish-audio/drama-3",
+   "V2": "fish-audio/s2.1-pro",
+   "V3": "elevenlabs/eleven-v3",
+   "V4": "hexgrad/kokoro-82m",
+   "V5": "elevenlabs/eleven-v4-turbo",
+   "V6": "openai/gpt-audio",
+   "V7": "google/gemini-3.8-flash-tts",
+   "V8": "x-ai/grok-voice-tts-1.0",
+   "V9": "microsoft/mai-voice-2",
+   "V10": "microsoft/mai-voice-2.1-flash",
+   "V11": "openai/gpt-audio-mini",
+   "V12": "google/gemini-3.8-flash-lite-tts",
+   "V13": "google/gemini-3.1-flash-tts-preview",
+   "V14": "minimax/speech-2.8-turbo"
+  },
+  "ru-dirty-f": {
+   "V1": "elevenlabs/eleven-v4-turbo",
+   "V2": "google/gemini-3.1-flash-tts-preview",
+   "V3": "x-ai/grok-voice-tts-1.0",
+   "V4": "google/gemini-3.8-flash-lite-tts",
+   "V5": "elevenlabs/eleven-v3",
+   "V6": "fish-audio/drama-3",
+   "V7": "fish-audio/s2.1-pro",
+   "V8": "hexgrad/kokoro-82m",
+   "V9": "google/gemini-3.8-flash-tts",
+   "V10": "minimax/speech-2.8-turbo",
+   "V11": "microsoft/mai-voice-2",
+   "V12": "microsoft/mai-voice-2.1-flash"
+  }
+ },
+ "session": {
+  "S1": "x-ai/grok-4.3:v2",
+  "S2": "x-ai/grok-4.20:v1",
+  "S3": "z-ai/glm-5.2:v2",
+  "S4": "openai/gpt-6-luna:v2",
+  "S5": "x-ai/grok-4.20:v2",
+  "S6": "x-ai/grok-4.20:v3",
+  "S7": "openai/gpt-6-luna:v3",
+  "S8": "deepseek/deepseek-v4.1-flash-1017:v2",
+  "S9": "openai/gpt-6-luna:v1"
+ }
+}

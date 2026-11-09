@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banter Blind Taste</title>
+<style>
+  :root {
+    --bg: #f7f5f2; --card: #ffffff; --ink: #1d1b19; --muted: #6b665f; --line: #e4dfd8;
+    --accent: #c2410c; --accent-soft: #fde7da; --good: #15803d; --bad: #b91c1c; --chip: #efebe5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161412; --card: #201d1a; --ink: #f1ede7; --muted: #a39d94; --line: #34302b;
+      --accent: #fb923c; --accent-soft: #3b2417; --good: #4ade80; --bad: #f87171; --chip: #2a2622;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161412; --card: #201d1a; --ink: #f1ede7; --muted: #a39d94; --line: #34302b;
+    --accent: #fb923c; --accent-soft: #3b2417; --good: #4ade80; --bad: #f87171; --chip: #2a2622;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); padding: 12px 16px; }
+  .bar { max-width: 860px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  h1 { font-size: 18px; margin: 0 auto 0 0; }
+  input[type=text] { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); width: 9em; }
+  nav { display: flex; gap: 6px; }
+  nav button, .btn { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+  nav button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  main { max-width: 860px; margin: 0 auto; padding: 16px; }
+  .intro { color: var(--muted); margin: 0 0 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+  .meta { font-size: 13px; color: var(--muted); margin-bottom: 6px; overflow-wrap: anywhere; }
+  .said { font-style: italic; margin: 0 0 8px; }
+  .spicy { display: inline-block; font-size: 12px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 0 8px; margin-left: 6px; }
+  .cand { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; padding: 8px 0; border-top: 1px solid var(--line); }
+  .letter { font-weight: 700; color: var(--muted); }
+  .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .acts { display: flex; gap: 6px; }
+  .btn.on-best { background: var(--good); border-color: var(--good); color: #fff; }
+  .btn.on-bad { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .clip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+  .clip audio { height: 34px; max-width: 100%; flex: 1 1 220px; }
+  .stars { display: flex; gap: 4px; }
+  .stars .btn { padding: 4px 10px; }
+  .stars .btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .session-lines { margin: 0; padding-left: 20px; font-size: 15px; }
+  .session-lines li { white-space: pre-wrap; margin-bottom: 6px; overflow-wrap: anywhere; }
+  .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 10px; }
+  .progress { font-size: 13px; color: var(--muted); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>🍷 Banter blind taste</h1>
+    <label>Rater <input id="rater" type="text" placeholder="your name"></label>
+    <nav>
+      <button data-tab="text" aria-pressed="true">Lines</button>
+      <button data-tab="voice" aria-pressed="false">Voices</button>
+      <button data-tab="session" aria-pressed="false">Variety</button>
+    </nav>
+    <span class="progress" id="progress"></span>
+  </div>
+</header>
+<main>
+  <section id="text">
+    <p class="intro">Each card is a real moment from your save. The letters are hidden models and prompts, shuffled per card. Pick the <b>⭐ best</b> line, and mark any <b>👎 bad</b> ones (tame, cringe, wrong person, wrong language). Skip whatever you like.</p>
+    <div id="text-list"></div>
+  </section>
+  <section id="voice" hidden>
+    <p class="intro">Same line, different voice engines (hidden). Rate how good each one sounds for a Sim: 1 = unusable, 5 = perfect. Headphones recommended 🎧</p>
+    <div id="voice-list"></div>
+  </section>
+  <section id="session" hidden>
+    <p class="intro">Each card is 16 exchanges in a row from one simulated evening. Does it get repetitive? Rate <b>variety</b> and <b>fun</b>, 1–5.</p>
+    <div id="session-list"></div>
+  </section>
+</main>
+<script>
+const state = new Map();  // "section|item|candidate|kind" -> value (latest wins)
+const raterInput = document.getElementById('rater');
+try { raterInput.value = localStorage.getItem('rater') || ''; } catch (e) {}
+raterInput.addEventListener('change', () => {
+  try { localStorage.setItem('rater', raterInput.value.trim()); } catch (e) {}
+  restore();
+});
+const rater = () => raterInput.value.trim() || 'anonymous';
+const k = (s, i, c, kind) => [s, i, c, kind].join('|');
+
+async function rate(section, item, candidate, kind, value) {
+  state.set(k(section, item, candidate, kind), value);
+  render();
+  await fetch('/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rater: rater(), section, item, candidate, kind, value }) });
+}
+
+let DATA, RATINGS = [];
+async function restore() {
+  state.clear();
+  for (const r of RATINGS) if (r.rater === rater()) state.set(k(r.section, r.item, r.candidate, r.kind), r.value);
+  render();
+}
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [a, v] of Object.entries(attrs)) a === 'onclick' ? e.addEventListener('click', v) : e.setAttribute(a, v);
+  for (const kid of kids) e.append(kid);
+  return e;
+}
+
+function render() {
+  const tl = document.getElementById('text-list'); tl.replaceChildren();
+  for (const s of DATA.text) {
+    const best = state.get(k('text', s.id, '*', 'best'));
+    const card = el('div', { class: 'card' },
+      el('div', { class: 'meta' }, s.summary), );
+    if (s.spicy) card.firstChild.append(el('span', { class: 'spicy' }, '🌶 spicy'));
+    if (s.player_message) card.append(el('p', { class: 'said' }, `She typed: “${s.player_message}”`));
+    for (const c of s.candidates) {
+      const bad = state.get(k('text', s.id, c.id, 'bad')) === 1;
+      card.append(el('div', { class: 'cand' },
+        el('span', { class: 'letter' }, c.id),
+        el('span', { class: 'txt' }, c.text),
+        el('span', { class: 'acts' },
+          el('button', { class: 'btn' + (best === c.id ? ' on-best' : ''), title: 'Best line', onclick: () => rate('text', s.id, '*', 'best', best === c.id ? null : c.id) }, '⭐'),
+          el('button', { class: 'btn' + (bad ? ' on-bad' : ''), title: 'Bad line', onclick: () => rate('text', s.id, c.id, 'bad', bad ? 0 : 1) }, '👎'))));
+    }
+    tl.append(card);
+  }
+  const vl = document.getElementById('voice-list'); vl.replaceChildren();
+  for (const v of DATA.voice) {
+    const card = el('div', { class: 'card' }, el('div', { class: 'meta' }, v.id), el('p', { class: 'said' }, `“${v.text}”`));
+    for (const clip of v.clips) {
+      const cur = state.get(k('voice', v.id, clip.id, 'stars'));
+      const stars = el('span', { class: 'stars' });
+      for (let n = 1; n <= 5; n++) stars.append(el('button', { class: 'btn' + (cur === n ? ' on' : ''), onclick: () => rate('voice', v.id, clip.id, 'stars', n) }, String(n)));
+      card.append(el('div', { class: 'clip' }, el('span', { class: 'letter' }, clip.id), el('audio', { controls: '', preload: 'none', src: clip.src }), stars));
+    }
+    vl.append(card);
+  }
+  const sl = document.getElementById('session-list'); sl.replaceChildren();
+  for (const s of DATA.session) {
+    const card = el('div', { class: 'card' }, el('div', { class: 'meta' }, `Evening ${s.id}`));
+    const ol = el('ol', { class: 'session-lines' });
+    for (const line of s.lines) ol.append(el('li', {}, line));
+    card.append(ol);
+    const row = el('div', { class: 'row' });
+    for (const kind of ['variety', 'fun']) {
+      const cur = state.get(k('session', s.id, '*', kind));
+      const stars = el('span', { class: 'stars' }, el('b', {}, kind + ' '));
+      for (let n = 1; n <= 5; n++) stars.append(el('button', { class: 'btn' + (cur === n ? ' on' : ''), onclick: () => rate('session', s.id, '*', kind, n) }, String(n)));
+      row.append(stars);
+    }
+    card.append(row);
+    sl.append(card);
+  }
+  const doneText = DATA.text.filter(s => state.get(k('text', s.id, '*', 'best'))).length;
+  const doneVoice = DATA.voice.reduce((n, v) => n + v.clips.filter(c => state.get(k('voice', v.id, c.id, 'stars'))).length, 0);
+  const allVoice = DATA.voice.reduce((n, v) => n + v.clips.length, 0);
+  const doneSess = DATA.session.filter(s => state.get(k('session', s.id, '*', 'variety'))).length;
+  document.getElementById('progress').textContent = `${doneText}/${DATA.text.length} lines · ${doneVoice}/${allVoice} clips · ${doneSess}/${DATA.session.length} evenings`;
+}
+
+for (const b of document.querySelectorAll('nav button')) b.addEventListener('click', () => {
+  for (const o of document.querySelectorAll('nav button')) o.setAttribute('aria-pressed', o === b);
+  for (const s of document.querySelectorAll('main section')) s.hidden = s.id !== b.dataset.tab;
+  window.scrollTo(0, 0);
+});
+
+(async () => {
+  DATA = await (await fetch('data.json')).json();
+  RATINGS = await (await fetch('/ratings')).json();
+  restore();
+})();
+</script>
+</body>
+</html>

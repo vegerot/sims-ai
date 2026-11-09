@@ -1,0 +1,74 @@
+{
+  "experiment": "31-variety-spice-model-and-voice-bakeoff",
+  "date": "2026-11-08",
+  "question": "Why is dialogue repetitive and tame in WickedWhims scenes, and which prompt, text model, and voice engine fix it without adding latency?",
+  "evidence_status": "Harness runs against OpenRouter on 31 frozen scenes (27 real events from her saves + 4 synthesized sex_scene events). Not yet verified in the real game. Human blind ratings pending (eval/serve.py).",
+  "baseline_from_live_data": {
+    "source": ".local/data/memories.json (299 lines, 57 pairs, 2026-10-21..11-06) and events.jsonl (Nov 6 session)",
+    "mood_list_template_rate": "20/299 (6.7%) e.g. 'I'm furious, awkward, and somehow still noticing how attractive you are.'",
+    "somehow_still_twist_rate": "15/299 (5.0%)",
+    "prop_fixation": "karaoke x18 lines across 12 pairs, loveseat x12, rent x14",
+    "anti_repetition_window": "pair_memory = same pair's last 4 exchanges (2 for solo); nothing crossed pairs",
+    "ww_sanitizing": "mood=Sex, activity=Sex on bed, yet inner thought 'I'm trying to think romantic thoughts, but my brain's plating dinner.'; typed 'fuck me daddy im your cumslut' -> 'Only if you keep that confidence when I start blushing.' and gpt-audio-mini refused to voice it (nova->Aoede)",
+    "ww_gap": "WickedWhims sex animations are not is_social, so the mod never spoke during sex unless the player clicked"
+  },
+  "prompts": {
+    "v1": "prompt-v1.txt (production before this experiment)",
+    "v2": "prompt-v2.txt: spicy section, no mood recital, varied line shapes, recent_lines_elsewhere, sex_scene mode",
+    "v3": "prompt-v3.txt = v2 + first two words must differ from recent/pair lines; swearing is not a template"
+  },
+  "text_grid": {
+    "calls": 558, "cost_usd": 0.33, "summary_file": "text-summary.json",
+    "headline": {
+      "x-ai/grok-4.20 v2": "p50 0.71 s, p90 0.98 s, explicit on 10/19 spicy scenes",
+      "openai/gpt-6-luna v1": "p50 1.77 s, explicit 1/19",
+      "openai/gpt-6-luna v2": "p50 1.61 s, explicit 2/19 (but answers the explicit player line explicitly)",
+      "openai/gpt-6.1-terra v2": "p50 1.95 s, explicit 7/19, moderated",
+      "x-ai/grok-4.3 v2": "p50 1.12 s, explicit 4/19, swaps who does what in the oral scene",
+      "mistralai/mistral-small-2603": "answered in Russian when asked for Hebrew",
+      "minimax/minimax-m3.1-flash, google/gemini-omni-1.2-flash": "rejected: reasoning cannot be disabled"
+    },
+    "grok_v1_refusals": "Grok 4.20 with the old prompt refused 15 times in a session ('can't assist generating adult explicit content'); the spicy instructions are what unlock it"
+  },
+  "session_simulation": {
+    "method": "all 31 scenes x 3 passes in order with memory recording (run_session.py); summary_file session-summary.json",
+    "repeated_first_two_words": {"luna v1": "33%", "luna v2": "31%", "luna v3": "29%", "grok-4.20 v2": "64%", "grok-4.20 v3": "45%", "grok-4.3 v2": "74%", "glm-5.2 v2": "32%", "deepseek v2": "25%"},
+    "setup_punchline_two_sentence_shape": {"luna v1": "36%", "luna v3": "14%", "grok-4.20 v3": "25%"},
+    "note": "Replaying the same scenes 3x inflates repetition equally for every model; the single-sample grid never reproduced the live mood-list rate (0 everywhere), so the remaining judgment is human (Variety tab)."
+  },
+  "tts_bakeoff": {
+    "lines": "10 (4 clean, 6 explicit; English, Hebrew, Russian)", "summary_file": "tts-summary.json",
+    "verbatim_check": "google/gemini-3.8-flash transcription vs. the line (60% word overlap)",
+    "all_10_verbatim": {
+      "x-ai/grok-voice-tts-1.0": "p50 0.55 s, PCM 24 kHz mono (drop-in)",
+      "minimax/speech-2.8-turbo": "p50 0.85 s, MP3 only (no stdlib decoder) -> unusable",
+      "elevenlabs/eleven-v4-turbo": "p50 0.88 s, PCM 44.1 kHz (needs resampling)",
+      "fish-audio/drama-3": "p50 0.88 s, PCM 44.1 kHz",
+      "fish-audio/s2.1-pro": "p50 1.02 s, PCM 44.1 kHz",
+      "elevenlabs/eleven-v3": "p50 1.54 s",
+      "google/gemini-3.8-flash-lite-tts": "p50 2.00 s, PCM 24 kHz (current fallback)",
+      "google/gemini-3.8-flash-tts": "p50 2.56 s"
+    },
+    "refuse_explicit": {"openai/gpt-audio-mini": "refused 4/6 explicit (p50 1.63 s)", "openai/gpt-audio": "refused 4/6 explicit"},
+    "no_hebrew": ["microsoft/mai-voice-2", "microsoft/mai-voice-2.1-flash", "hexgrad/kokoro-82m"]
+  },
+  "shipped_provisionally": [
+    "prompt.txt = prompt-v3.txt",
+    "is_spicy(event): adult humans only; WickedWhims sex/nudity/satisfaction, woohoo, intoxication buffs or activities; romance/flirt/kiss socials; explicit player_message",
+    "spicy scenes -> x-ai/grok-4.20 text and straight to FALLBACK_TTS_MODEL (no gpt-audio-mini refusal round-trip); others -> openai/gpt-6-luna + gpt-audio-mini",
+    "MemoryStore.get_recent_lines: newest 12 lines from other pairs as recent_lines_elsewhere",
+    "Mod: automatic sex_scene exchanges polled from WickedWhims get_active_sex_instances() (start, animation change >= 25 s apart, CLIMAX once); adults only; one recorded error disables it",
+    "Mod: Page-1 'Loved That Line' / 'Bad Line' ratings logged to events.jsonl",
+    "events.jsonl is never trimmed; replies log raw_text and prompt_sha"
+  ],
+  "measured_offline_generate": {
+    "19 explicit player chat": "grok-4.20 chat 1.11 s, Gemini voices 2.17 s",
+    "29 oral sex_scene": "grok-4.20 chat 0.57 s, Gemini voices 2.32 s",
+    "11 winter deep chat": "luna chat 1.89 s, OpenAI voices 1.56 s"
+  },
+  "pending": [
+    "Blind human ratings: lines, voices, session variety (eval/serve.py -> human-ratings.jsonl)",
+    "Live in-game verification of sex_scene polling, ratings pie items, and the spicy routing",
+    "Tell the model each Sim's WickedWhims role (who gives, who receives)"
+  ]
+}

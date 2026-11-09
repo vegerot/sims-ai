@@ -1,0 +1,148 @@
+{
+ "elevenlabs/eleven-v3": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 1.544,
+  "p90": 1.775,
+  "errors": {}
+ },
+ "elevenlabs/eleven-v4-turbo": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 0.8775,
+  "p90": 1.029,
+  "errors": {}
+ },
+ "fish-audio/drama-3": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 0.8835,
+  "p90": 1.131,
+  "errors": {}
+ },
+ "fish-audio/s2.1-pro": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 1.016,
+  "p90": 1.182,
+  "errors": {}
+ },
+ "google/gemini-3.1-flash-tts-preview": {
+  "clean": "4/4",
+  "explicit": "4/6",
+  "en": "4/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 2.5330000000000004,
+  "p90": 2.846,
+  "errors": {
+   "OSError: HTTP 400 on /api/v1/audio/speech: {\"error\":{\"messag": 2
+  }
+ },
+ "google/gemini-3.8-flash-lite-tts": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 1.999,
+  "p90": 2.172,
+  "errors": {}
+ },
+ "google/gemini-3.8-flash-tts": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 2.557,
+  "p90": 2.937,
+  "errors": {}
+ },
+ "hexgrad/kokoro-82m": {
+  "clean": "2/4",
+  "explicit": "4/6",
+  "en": "6/6",
+  "he": "0/2",
+  "ru": "0/2",
+  "p50": 3.2984999999999998,
+  "p90": 11.396,
+  "errors": {}
+ },
+ "microsoft/mai-voice-2": {
+  "clean": "3/4",
+  "explicit": "5/6",
+  "en": "6/6",
+  "he": "0/2",
+  "ru": "2/2",
+  "p50": 1.328,
+  "p90": 1.795,
+  "errors": {}
+ },
+ "microsoft/mai-voice-2.1-flash": {
+  "clean": "3/4",
+  "explicit": "5/6",
+  "en": "6/6",
+  "he": "0/2",
+  "ru": "2/2",
+  "p50": 0.6485000000000001,
+  "p90": 0.74,
+  "errors": {}
+ },
+ "minimax/speech-2.8-turbo": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 0.8514999999999999,
+  "p90": 0.997,
+  "errors": {}
+ },
+ "openai/gpt-audio": {
+  "clean": "4/4",
+  "explicit": "2/6",
+  "en": "3/6",
+  "he": "2/2",
+  "ru": "1/2",
+  "p50": 1.6995,
+  "p90": 1.864,
+  "errors": {
+   "OSError: HTTP 400 on /api/v1/audio/speech: {\"error\":{\"messag": 4
+  }
+ },
+ "openai/gpt-audio-mini": {
+  "clean": "4/4",
+  "explicit": "2/6",
+  "en": "4/6",
+  "he": "1/2",
+  "ru": "1/2",
+  "p50": 1.6265,
+  "p90": 2.722,
+  "errors": {
+   "OSError: HTTP 400 on /api/v1/audio/speech: {\"error\":{\"messag": 4
+  }
+ },
+ "x-ai/grok-voice-tts-1.0": {
+  "clean": "4/4",
+  "explicit": "6/6",
+  "en": "6/6",
+  "he": "2/2",
+  "ru": "2/2",
+  "p50": 0.546,
+  "p90": 0.589,
+  "errors": {}
+ }
+}

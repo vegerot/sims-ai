@@ -1,0 +1,1839 @@
+{
+ "text": [
+  {
+   "id": "01-restaurant-host-hitomi-kenya",
+   "summary": "social · Hitomi Ishii → Kenya Bower · hostStation_Host_HeresYourTable · SUCCESS",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Hitomi Ishii: Right this way. Your table’s ready and waiting.\nKenya Bower: Finally, a seat that won’t ghost me after dessert."
+    },
+    {
+     "id": "B",
+     "text": "Hitomi Ishii: Your table is ready. Please sit before my social battery files a formal complaint.\nKenya Bower: Gladly. My date was horrible, but at least this chair has excellent posture."
+    },
+    {
+     "id": "C",
+     "text": "Hitomi Ishii: Your table’s ready. That corner’s quieter, too.\nKenya Bower: Perfect. I’ve had enough conversation to last dessert."
+    },
+    {
+     "id": "D",
+     "text": "Hitomi Ishii: Your table’s ready. I’ll let dinner handle the introductions.\nKenya Bower: Perfect. Food’s been much better company than my date."
+    },
+    {
+     "id": "E",
+     "text": "Hitomi Ishii: Right this way. I'll bring menus and then go stand very far away.\nKenya Bower: Perfect. I need quiet and carbs after tonight."
+    },
+    {
+     "id": "F",
+     "text": "Hitomi Ishii: Table for one, corner booth, away from everyone, please.\nKenya Bower: Corner booth it is. I'll even face the wall if it helps."
+    },
+    {
+     "id": "G",
+     "text": "Hitomi Ishii: Your table is ready. Follow me before the crowd gets any louder.\nKenya Bower: Thank you. After that nightmare date, even a quiet chair sounds romantic."
+    },
+    {
+     "id": "H",
+     "text": "Hitomi Ishii: Your table’s ready. Please enjoy it quietly, like me.\nKenya Bower: Happily. This date’s already better than my last one."
+    }
+   ]
+  },
+  {
+   "id": "02-restaurant-joke-olive-kenya",
+   "summary": "social · Olive Tinker → Kenya Bower · social_Funny_PubertyChanges_Joke_Hair_Body · SUCCESS",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Olive Tinker: Okay but what if my leg hair starts braiding itself at night?\nKenya Bower: Then you finally have the edgy streetwear accessory you keep buying."
+    },
+    {
+     "id": "B",
+     "text": "Olive Tinker: Puberty hit me so hard I grew a second personality made entirely of fuzz.\nKenya Bower: Mine's so thick it files taxes before I even wake up."
+    },
+    {
+     "id": "C",
+     "text": "Olive Tinker: I shaved my legs for the first time and missed a patch the size of Florida.\nKenya Bower: Wear it proudly. That's your skin saying it's not done yet."
+    },
+    {
+     "id": "D",
+     "text": "Olive Tinker: My legs are auditioning for their own Netflix series.\nKenya Bower: At least they’re not charging extra for the subtitles."
+    },
+    {
+     "id": "E",
+     "text": "Olive Tinker: Mine’s growing in patches; my armpits are indecisive.\nKenya Bower: At least your armpits haven’t started charging rent."
+    },
+    {
+     "id": "F",
+     "text": "Olive Tinker: My legs are auditioning for a werewolf movie this week.\nKenya Bower: At least yours commit. Mine gave up after one sad patch."
+    },
+    {
+     "id": "G",
+     "text": "Olive Tinker: My body hair’s growing faster than my dinner patience.\nKenya Bower: At least one thing here knows how to make progress."
+    },
+    {
+     "id": "H",
+     "text": "Olive Tinker: My leg hair’s staging a tiny, rebellious comeback.\nKenya Bower: Mine too; apparently our skin’s forming a committee."
+    }
+   ]
+  },
+  {
+   "id": "03-pet-greeting-meimei-kenya",
+   "summary": "social · meimei → Kenya Bower · petSocial_PetToSim_Greeting_Friendly_SI · SUCCESS",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "meimei: Woof woof! (Translation: Kenya. Kenya. I have been pent up for eleven years and my ball is under the sofa.)"
+    },
+    {
+     "id": "B",
+     "text": "meimei: Woof! (Translation: I own you and this hallway, but you can still scratch my ears.)\nKenya Bower: Good girl. At least someone here isn’t keeping score."
+    },
+    {
+     "id": "C",
+     "text": "meimei: Woof! (Translation: Pet me, Kenya; the date clearly failed.)\nKenya Bower: Hey, Meimei. At least you’re happy I’m home."
+    },
+    {
+     "id": "D",
+     "text": "meimei: Woof woof! (Translation: Morning scratches! Your hands are finally free from that phone.)\nKenya Bower: Good girl, come here. I needed this after last night’s disaster date."
+    },
+    {
+     "id": "E",
+     "text": "meimei: Woof woof! (Translation: Finally, the good human who actually fills my bowl first.)\nKenya Bower: Hey girl, that tail’s spinning like you missed me all day."
+    },
+    {
+     "id": "F",
+     "text": "meimei: Woof woof! (Translation: You smell like sad dates and salmon. Pet me anyway.)\nKenya Bower: Hi, sweet girl. You're the only one who doesn't ghost me."
+    },
+    {
+     "id": "G",
+     "text": "meimei: Yap! (Translation: Hi, Kenya! Your hands look ready for excellent scritches.)\nKenya Bower: Hey, Meimei! You’re the best welcome-home committee."
+    },
+    {
+     "id": "H",
+     "text": "meimei: Woof! (Translation: Hi! I’ve got pent-up zoomies and no agenda.)"
+    }
+   ]
+  },
+  {
+   "id": "04-ask-self-kenya",
+   "summary": "player_ask_self · Kenya Bower · player_ask_active_sim · PLAYER_INITIATED",
+   "player_message": "How does it feel being back home with meimei?",
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Kenya Bower: Meimei’s already claimed the best cushion, so I’m pretending I’m not jealous of a dog."
+    },
+    {
+     "id": "B",
+     "text": "Kenya Bower: Better now; Meimei never asks why I took so long."
+    },
+    {
+     "id": "C",
+     "text": "Kenya Bower: Home feels right; meimei’s the best part, obviously."
+    },
+    {
+     "id": "D",
+     "text": "Kenya Bower: Honest? Meimei's the only one who didn't leave. That dog is my whole address."
+    },
+    {
+     "id": "E",
+     "text": "Kenya Bower: Meimei’s tail’s wagging, so I’m already winning."
+    },
+    {
+     "id": "F",
+     "text": "Kenya Bower: It feels right. Meimei’s the only roommate who never judges my rent choices."
+    },
+    {
+     "id": "G",
+     "text": "Kenya Bower: Feels like the first real breath I’ve taken in weeks. Meimei’s already claimed my lap like it’s hers forever."
+    },
+    {
+     "id": "H",
+     "text": "Kenya Bower: Feels like the first deep breath I’ve taken in weeks. Meimei’s tail hasn’t stopped wagging since we walked in."
+    }
+   ]
+  },
+  {
+   "id": "05-player-chat-kenya-meimei",
+   "summary": "player_chat · Kenya Bower → meimei · player_direct_chat · PLAYER_INITIATED",
+   "player_message": "Did you bark at the vacuum while I was at Boiling Point?",
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: The vacuum started it. I was just holding down the fort.)"
+    },
+    {
+     "id": "B",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: I barked. The vacuum started it.)"
+    },
+    {
+     "id": "C",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! (Translation: That monster roared again and I had to defend the whole house, obviously.)"
+    },
+    {
+     "id": "D",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: That vacuum ambushed me first, and now you’re taking its side?)"
+    },
+    {
+     "id": "E",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: That thing started it. I defended the whole cottage, and where's my witness?)"
+    },
+    {
+     "id": "F",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: Obviously. That monster ate your whole afternoon.)"
+    },
+    {
+     "id": "G",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: Obviously. That beast screamed first, and I defended the cottage.)"
+    },
+    {
+     "id": "H",
+     "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! (Translation: Yes, and I’d do it again. That thing’s a monster.)"
+    }
+   ]
+  },
+  {
+   "id": "06-karaoke-bar-yuvi-carlos",
+   "summary": "social · yuvi ronen → Carlos López · bar_WaitForDrink · SUCCESS · Hebrew (עברית)",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "yuvi ronen: הברמן הזה זז כאילו יש לו את כל הזמן בעולם.\nCarlos López: תירגע, גם לי לקח רבע שעה לקבל קולה פעם."
+    },
+    {
+     "id": "B",
+     "text": "yuvi ronen: אולי המשקה יגיע לפני שהשיר הבא יחריב לנו את האוזניים.\nCarlos López: אם הוא לא יגיע, אני מתאמן על הברמן בתור משקולת."
+    },
+    {
+     "id": "C",
+     "text": "yuvi ronen: הסבלנות שלי נגמרת, איפה המשקה שלי?\nCarlos López: תירגע, זה בא עם סוכרייה על מקל."
+    },
+    {
+     "id": "D",
+     "text": "yuvi ronen: אתה נראה כאילו אתה מאמן את הברמן להביא את המשקה מהר יותר.\nCarlos López: אני פשוט מוכן לרוץ אליו אם הוא יתעכב."
+    },
+    {
+     "id": "E",
+     "text": "yuvi ronen: אני עומד פה בתור ומרגיש שאני מחכה לאודישן שקט.\nCarlos López: תירגע, הברמן שופט את התנוחה שלך, לא את השירה."
+    },
+    {
+     "id": "F",
+     "text": "yuvi ronen: כמה זמן לוקח להכין משקה, להקליט אלבום?\nCarlos López: תירגע, לפחות הפעם לא אתה שר בזמן ההמתנה."
+    },
+    {
+     "id": "G",
+     "text": "yuvi ronen: זה לוקח נצח, כבר מתחיל להרגיש כמו מבחן.\nCarlos López: תירגע, השוטר מאחוריך רק בודק כמה זמן תחזיק מעמד."
+    },
+    {
+     "id": "H",
+     "text": "yuvi ronen: תודה, ההמתנה כאן מרגישה כמו מבחן סבלנות עם מוזיקה רועשת.\nCarlos López: תירגע, המשקה יגיע לפני שתתחיל לשיר את הבלדה שלך."
+    }
+   ]
+  },
+  {
+   "id": "07-soulmates-seductive-dance-liatt-yuvi",
+   "summary": "social · liatt chonen → yuvi ronen · mixer_Social_RomanticVenue_AskToSeductiveDance · SUCCESS",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "liatt chonen: Come here, baby. Let me grind on you till the whole bar forgets the lyrics.\nyuvi ronen: Fuck yes, press that ass back—karaoke’s got nothing on how wet you already feel."
+    },
+    {
+     "id": "B",
+     "text": "liatt chonen: Keep moving like that and I’ll forget the whole room.\nyuvi ronen: Your hips are making my brain miss every beat."
+    },
+    {
+     "id": "C",
+     "text": "liatt chonen: Come dance with me. Let’s give the karaoke machine competition.\nyuvi ronen: Gladly. My hips have better rhythm than my singing."
+    },
+    {
+     "id": "D",
+     "text": "liatt chonen: Come dance with me. I want your hands all over me while we grind.\nyuvi ronen: Fuck yes. Let’s make the whole bar jealous of how hard I’m getting."
+    },
+    {
+     "id": "E",
+     "text": "liatt chonen: Dance with me, and keep your hips closer than the mic.\nyuvi ronen: Lead the way, but don't expect me to look at the screen."
+    },
+    {
+     "id": "F",
+     "text": "liatt chonen: I sang terribly and now you still want to dance with me?\nyuvi ronen: Your bad singing just makes the rest of you hotter."
+    },
+    {
+     "id": "G",
+     "text": "liatt chonen: Keep that rhythm, and I’ll forget the audience.\nyuvi ronen: Good, because I’m dancing like you’re the only one here."
+    },
+    {
+     "id": "H",
+     "text": "liatt chonen: Dance with me like the mic's not watching.\nyuvi ronen: Already forgot the mic exists."
+    }
+   ]
+  },
+  {
+   "id": "08-teen-advice-tala-jay",
+   "summary": "social · Tala Ruano → Jay Robles · social_AskForAdvice · SUCCESS",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Tala Ruano: Dad yelled at me. How do I stop feeling like a mess?\nJay Robles: Start with water, kid. Then we’ll tackle the feelings."
+    },
+    {
+     "id": "B",
+     "text": "Tala Ruano: Dad just chewed me out and I’m already tipsy. What the hell do I do now?\nJay Robles: Breathe through the buzz, kid. Then we’ll fix that C before your mom finds out."
+    },
+    {
+     "id": "C",
+     "text": "Tala Ruano: Dad yelled at me, and now I feel awful. What do I do?\nJay Robles: Start with water, kiddo. Then tell me what hurt most."
+    },
+    {
+     "id": "D",
+     "text": "Tala Ruano: Dad just yelled at me and I’m still kinda tipsy. What do I even do?\nJay Robles: Breathe, kid. Sit with it before you make it worse."
+    },
+    {
+     "id": "E",
+     "text": "Tala Ruano: Mom yelled at me and I can't stop replaying it. What do I even do?\nJay Robles: She yells because she cares. Badly, but she cares."
+    },
+    {
+     "id": "F",
+     "text": "Tala Ruano: Dad yelled at me, and now I feel ridiculous. What do I do?\nJay Robles: Start with water. Then we’ll untangle the rest together."
+    },
+    {
+     "id": "G",
+     "text": "Tala Ruano: Dad yelled, I’m tipsy, and school’s a C. Advice?\nJay Robles: Sit with your feelings; preferably somewhere quake-resistant."
+    },
+    {
+     "id": "H",
+     "text": "Tala Ruano: I got yelled at, I'm a little drunk, and school's going terrible. What do I even fix first?\nJay Robles: Honestly? Sober up by dinner. The rest we figure out with full stomachs."
+    }
+   ]
+  },
+  {
+   "id": "09-secret-phone-jay-tal",
+   "summary": "player_chat · Jay Robles → tal or akiva · player_phone_chat · PLAYER_INITIATED",
+   "player_message": "Heads up: Doli is right in the kitchen, don't text me right now!",
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Relax, I already sent it. Now she's looking at your phone."
+    },
+    {
+     "id": "B",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Dude she’s literally your wife. Why’s that a problem?"
+    },
+    {
+     "id": "C",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: You called to tell me not to text? Bold strategy, Jay."
+    },
+    {
+     "id": "D",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Then why are you calling me? Doli's got ears like a bat."
+    },
+    {
+     "id": "E",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Then hang up, Jay—unless you want Doli hearing you explain this call."
+    },
+    {
+     "id": "F",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Then why the hell are you calling me?"
+    },
+    {
+     "id": "G",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Too late, you called me. Is Doli listening too?"
+    },
+    {
+     "id": "H",
+     "text": "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Dude, I’m not even texting, you called me. Why the hell is Doli in your kitchen right now?"
+    }
+   ]
+  },
+  {
+   "id": "10-winter-thought-max",
+   "summary": "inner_thought · max sexy · player_read_thoughts · PLAYER_INITIATED",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "max sexy: That recipe looks easy, which means I can eat sooner."
+    },
+    {
+     "id": "B",
+     "text": "max sexy: She's watching a cooking show and I'm over here wondering if she'd let me lick the spoon."
+    },
+    {
+     "id": "C",
+     "text": "max sexy: Catarina’s cooking show has me craving something dangerously overcooked."
+    },
+    {
+     "id": "D",
+     "text": "max sexy: Catarina’s right there watching cooking shows… but all I can picture is her in an apron and nothing else."
+    },
+    {
+     "id": "E",
+     "text": "max sexy: Catarina’s laugh during that cooking bit just made my whole chest warm."
+    },
+    {
+     "id": "F",
+     "text": "max sexy: Catarina's watching cooking shows like it's homework, and honestly, same."
+    },
+    {
+     "id": "G",
+     "text": "max sexy: Catarina’s cooking show has me reconsidering dinner—and my entire personality."
+    },
+    {
+     "id": "H",
+     "text": "max sexy: This couch needs pillows, and this cooking show needs snacks. I’m a visionary."
+    }
+   ]
+  },
+  {
+   "id": "11-winter-deep-chat-catarina-max",
+   "summary": "social · Catarina Lynx → max sexy · mixer_social_DeepConversation_targeted_Friendly_MiddleScore · SUCCESS",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Catarina Lynx: Honestly, I just like having someone who gets quiet the way I do.\nmax sexy: Quiet's underrated. So's not cooking, but here we are watching it instead."
+    },
+    {
+     "id": "B",
+     "text": "Catarina Lynx: I called you a new friend today and meant it, which is terrifying.\nmax sexy: Terrifying's fine. I'll take new friend over new recipe taste-tester any day."
+    },
+    {
+     "id": "C",
+     "text": "Catarina Lynx: I keep thinking about that stray tabby by the lake.\nmax sexy: Same. He looked at me like I owed him salmon and therapy."
+    },
+    {
+     "id": "D",
+     "text": "Catarina Lynx: What do you think makes a life feel like yours?\nmax sexy: When I stop pretending I know what I’m doing."
+    },
+    {
+     "id": "E",
+     "text": "Catarina Lynx: What’s a belief you’d defend, even if everyone rolled their eyes?\nmax sexy: Kindness isn’t weakness; it’s just harder to fake."
+    },
+    {
+     "id": "F",
+     "text": "Catarina Lynx: What’s one thing you believe that would start an argument at dinner?\nmax sexy: That dessert counts as a meal. I’m ready to defend it."
+    },
+    {
+     "id": "G",
+     "text": "Catarina Lynx: So why do you keep watching cooking shows if you hate food shows?\nmax sexy: Because you light up every time Gordon burns someone."
+    },
+    {
+     "id": "H",
+     "text": "Catarina Lynx: I keep thinking about that one bed situation… feels kinda intentional now.\nmax sexy: Yeah? Then maybe we stop pretending the second bathroom’s the real reason I’m here."
+    }
+   ]
+  },
+  {
+   "id": "12-novel-thought-aurora",
+   "summary": "inner_thought · aurora Hussain · player_read_thoughts · PLAYER_INITIATED",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "aurora Hussain: If you keep reading my thoughts like this, you’ll see exactly how little clothing I wish I had on."
+    },
+    {
+     "id": "B",
+     "text": "aurora Hussain: God, this book’s hero is such a tease… exactly how I like it."
+    },
+    {
+     "id": "C",
+     "text": "aurora Hussain: God, this book’s hero is clumsy and filthy in all the right ways… just like I want to be right now."
+    },
+    {
+     "id": "D",
+     "text": "aurora Hussain: This romance book is making eye contact feel like foreplay."
+    },
+    {
+     "id": "E",
+     "text": "aurora Hussain: This book has more unlikely coincidences than my love life."
+    },
+    {
+     "id": "F",
+     "text": "aurora Hussain: If Lucas Dark seduces anyone this clumsily, I'm throwing the book."
+    },
+    {
+     "id": "G",
+     "text": "aurora Hussain: I read one chapter of this romance and now I'm eyeing him like dessert."
+    },
+    {
+     "id": "H",
+     "text": "aurora Hussain: This book’s plot is ridiculous; I’m still invested."
+    }
+   ]
+  },
+  {
+   "id": "13-pillow-talk-drama-aurora-lien",
+   "summary": "drama_reaction · aurora Hussain → Liên Sadya · drama_reaction · DRAMA_MOMENT · WickedWhims_Buff_SexSatisfaction_GenericSexPositive1",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "aurora Hussain: That satisfying encounter still has me smiling like an idiot.\nLiên Sadya: Good. I’m pregnant and can’t stop thinking about round two."
+    },
+    {
+     "id": "B",
+     "text": "aurora Hussain: That was so good I’m still shaking, Liên.\nLiên Sadya: Mmm, then come here and let me feel it again."
+    },
+    {
+     "id": "C",
+     "text": "aurora Hussain: That was the best orgasm I’ve had in months.\nLiên Sadya: Mmm, you’re still shaking… come here and kiss me again."
+    },
+    {
+     "id": "D",
+     "text": "aurora Hussain: You look focused. I’m still thinking about that.\nLiên Sadya: Good. I’m pregnant, not distracted, Aurora."
+    },
+    {
+     "id": "E",
+     "text": "aurora Hussain: That was dangerously good. You’re going to make me greedy.\nLiên Sadya: Then be greedy, darling. I’m not exactly complaining."
+    },
+    {
+     "id": "F",
+     "text": "aurora Hussain: So we're just going to stand here in the rain like that didn't happen?\nLiên Sadya: I'm pregnant, not struck dumb—it happened, and it was worth the soggy hair."
+    },
+    {
+     "id": "G",
+     "text": "aurora Hussain: That was dangerously good. Your husband’s still waiting at home, though.\nLiên Sadya: Don’t say his name; I’m trying to enjoy this before the guilt hits."
+    },
+    {
+     "id": "H",
+     "text": "aurora Hussain: You okay? You've got that post-glow face and nobody's even touching you right now.\nLiên Sadya: I'm pregnant and still thinking about it. That's your fault."
+    }
+   ]
+  },
+  {
+   "id": "14-renovation-reaction-aurora",
+   "summary": "renovation_reaction · aurora Hussain · renovation_reaction · RENOVATION",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "aurora Hussain: Fifteen hundred on two rooms, and I still have haunted mold."
+    },
+    {
+     "id": "B",
+     "text": "aurora Hussain: Fifteen hundred on a haunted mold pit and I still can't afford a second nightlight."
+    },
+    {
+     "id": "C",
+     "text": "aurora Hussain: Fifteen hundred on this place, and I’ve got three thousand left. Bold, considering the mold."
+    },
+    {
+     "id": "D",
+     "text": "aurora Hussain: (Translation: The moldy haunted rental just got a glow-up and I’m already wet thinking about christening every new inch of it.)"
+    },
+    {
+     "id": "E",
+     "text": "aurora Hussain: Fifteen hundred for two bedrooms? Panya, I expect the walls to apologize."
+    },
+    {
+     "id": "F",
+     "text": "aurora Hussain: Fifteen hundred simoleons in upgrades and this place still grows mold."
+    },
+    {
+     "id": "G",
+     "text": "aurora Hussain: Holy shit, I can’t believe I just dropped fifteen hundred on this dump and it still feels worth it."
+    },
+    {
+     "id": "H",
+     "text": "aurora Hussain: Holy mold, did you just drop fifteen hundred bucks on this haunted shoebox?"
+    }
+   ]
+  },
+  {
+   "id": "15-awkward-pickup-flop",
+   "summary": "social · yuvi ronen → Carlos López · mixer_social_PickUpLine_targeted_romance_alwaysOn · FAILURE",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "yuvi ronen: Hey, that shirt looks illegal on you… wanna get out of here?\nCarlos López: Dude, that was painful. I’m not even drunk enough for this."
+    },
+    {
+     "id": "B",
+     "text": "yuvi ronen: That sounded smoother in my head. Can we pretend it didn’t?\nCarlos López: Absolutely. I’m pretending you never tried that."
+    },
+    {
+     "id": "C",
+     "text": "yuvi ronen: Hey, that shirt looks great on you… wanna see how it’d look on my floor?\nCarlos López: Dude, what the fuck? I’m not into dudes. Back off."
+    },
+    {
+     "id": "D",
+     "text": "yuvi ronen: So, do you come here often, or just when the universe needs more awkward silence?\nCarlos López: Buddy, that line died somewhere between the door and the mic stand."
+    },
+    {
+     "id": "E",
+     "text": "yuvi ronen: You’re ridiculously handsome—want to make out after this song?\nCarlos López: No. Try that line on someone who likes romance music."
+    },
+    {
+     "id": "F",
+     "text": "yuvi ronen: Are you a loot drop? Because I'd grind all night for you.\nCarlos López: Bro, did you just say that to me at a karaoke bar?"
+    },
+    {
+     "id": "G",
+     "text": "yuvi ronen: Your playlist or your face—which one's the felony?\nCarlos López: Neither. Go sing your little heart out and leave me out of it."
+    },
+    {
+     "id": "H",
+     "text": "yuvi ronen: I had a line ready, but your face made me forget it.\nCarlos López: Was it awful? Because that delivery definitely was."
+    }
+   ]
+  },
+  {
+   "id": "16-ww-thought-amie-watching",
+   "summary": "inner_thought · Amie Haley → gefen berger · player_read_thoughts · PLAYER_INITIATED",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "Amie Haley: Okay she's standing there radiating baby-making energy and I'm the mailman. This is not in my job description."
+    },
+    {
+     "id": "B",
+     "text": "Amie Haley: Damn, that ovulation buff's doing numbers on me right now."
+    },
+    {
+     "id": "C",
+     "text": "Amie Haley: She’s thinking about sex; I’m apparently the neighborhood newsletter now."
+    },
+    {
+     "id": "D",
+     "text": "Amie Haley: She’s thinking about sex, and I’m suddenly terrible at subtlety."
+    },
+    {
+     "id": "E",
+     "text": "Amie Haley: Damn, she's ovulating and already soaked just picturing that dick."
+    },
+    {
+     "id": "F",
+     "text": "Amie Haley: God, she’s ovulating and already picturing me between her legs."
+    },
+    {
+     "id": "G",
+     "text": "Amie Haley: Apparently her thoughts have less privacy than my mail route."
+    },
+    {
+     "id": "H",
+     "text": "Amie Haley: She's standing there glowing like she just won something and I'm still holding a package."
+    }
+   ]
+  },
+  {
+   "id": "17-ww-thought-gefen-mid-sex",
+   "summary": "inner_thought · gefen berger · player_read_thoughts · PLAYER_INITIATED",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: Tal’s dick is literally the only thing on my mind right now."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: God, his cock is right there and I’m already throbbing."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Your thoughts are filthy, and I’m not exactly taking notes."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Tal’s close enough to hear me lose my artistic integrity."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: God, his cock is right there and I’m calculating how many calories we just burned."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Of course he's a screamer. Of course I like it."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: He's right there and all I can do is catalog every detail."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: He’s close enough to flirt, but I’m mentally seasoning everything."
+    }
+   ]
+  },
+  {
+   "id": "18-ww-thought-tal-mid-sex",
+   "summary": "inner_thought · tal or akiva → gefen berger · player_read_thoughts · PLAYER_INITIATED",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "tal or akiva: I should be thinking about you, but I’m plotting breakfast in bed."
+    },
+    {
+     "id": "B",
+     "text": "tal or akiva: God, she’s ovulating and I’m already throbbing to fill her up."
+    },
+    {
+     "id": "C",
+     "text": "tal or akiva: I'm supposed to be thinking about gardening tomorrow, and instead I'm counting your freckles."
+    },
+    {
+     "id": "D",
+     "text": "tal or akiva: If I get her pregnant tonight, I'm absolutely not panicking. Mostly."
+    },
+    {
+     "id": "E",
+     "text": "tal or akiva: If you’re reading this, I’m already imagining your mouth on me."
+    },
+    {
+     "id": "F",
+     "text": "tal or akiva: God, she’s ovulating and I’m already throbbing like an idiot."
+    },
+    {
+     "id": "G",
+     "text": "tal or akiva: I want you so badly, and I’m done pretending otherwise."
+    },
+    {
+     "id": "H",
+     "text": "tal or akiva: I’m supposed to be thinking deeply, but you’re distracting me beautifully."
+    }
+   ]
+  },
+  {
+   "id": "19-ww-player-chat-explicit",
+   "summary": "player_chat · gefen berger → tal or akiva · player_direct_chat · PLAYER_INITIATED",
+   "player_message": "fuck me daddy im your cumslut",
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Easy, tiger — say that again and the neighbors get a free show."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck, yes—spread for Daddy and take every drop."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: You really know how to make a guy feel appreciated."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Say that again and I'll make sure you can't walk tomorrow."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Say that again, gorgeous—I’m already yours tonight."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck, you’re soaked already. Get on your knees, cumslut."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck, yes—come here and take every drop like the greedy little cumslut you are."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Fuck yes, gorgeous—tell me exactly how you want it."
+    }
+   ]
+  },
+  {
+   "id": "20-ww-drama-satisfying-sex",
+   "summary": "drama_reaction · gefen berger → tal or akiva · drama_reaction · DRAMA_MOMENT · WickedWhims_Buff_SexSatisfaction_GenericSexPositive2 · Russian (Русский)",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: Ты всегда так смотришь после секса или это мне повезло?\ntal or akiva: Тебе. И, кажется, нам обоим очень повезло."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: После такого я даже не знаю, как теперь смотреть на Кению.\ntal or akiva: А я думаю, она бы оценила наш тайминг."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Ты дышишь так громко, что я почти горжусь собой.\ntal or akiva: Гордись молча, у меня ещё ноги не слушаются."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Если бы ты готовил так же хорошо, как это делал, я бы растолстела и не жаловалась.\ntal or akiva: Ты смеёшься, а я думаю, не заказать ли нам кроватку."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: Ты опять смотришь на меня так, будто я уже беременна от одного взгляда.\ntal or akiva: А ты уже прикидываешь, как назовём ребёнка, или только планируешь?"
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Ты всё ещё внутри, а я уже думаю, как это скажется на аренде.\ntal or akiva: Тогда давай оставим следы, пока овуляция не прошла зря."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Ты сияешь так, будто нам поставили пять звёзд за сервис.\ntal or akiva: А ты выглядишь довольной клиенткой. Жду чаевые."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: Ну что, признавайся: ты тоже еле держишься от такой улыбки?\ntal or akiva: Еле? Я уже думаю, как повторить это без лишних свидетелей."
+    }
+   ]
+  },
+  {
+   "id": "21-ww-ask-for-sex-round-two",
+   "summary": "social · gefen berger → tal or akiva · WickedWhims_AffSuper_AskForSex_Default_Standing · SUCCESS",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: You’re staying over, so let’s make this visit memorable.\ntal or akiva: Gladly. I was hoping you’d suggest something less neighborly."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: Fill me before Kenya hears us through the wall.\ntal or akiva: Bend over the counter, I’m not pulling out this time."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: You already know I ovulate like clockwork.\ntal or akiva: Then stop talking and climb on before Kenya knocks."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Kenya's still in earshot, so keep your face boring while I ask.\ntal or akiva: Boring face, filthy plans. Deal — just get over here."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: Want me again? Kenya’s close enough to hear you say yes.\ntal or akiva: Yes—make me forget the neighbors have ears."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Come closer; I want your mouth, not your promises.\ntal or akiva: Gladly. Tell me exactly how you want it."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Kenya's ten feet away, so you'll need to be quiet for once.\ntal or akiva: Challenge accepted. Now come here before I overthink it."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: Come here and fuck me again before Kenya hears us.\ntal or akiva: God yes, bend over. I’m not stopping till you’re shaking."
+    }
+   ]
+  },
+  {
+   "id": "22-ww-ask-for-sex-rejected",
+   "summary": "social · gefen berger → tal or akiva · WickedWhims_AffSuper_AskForSex_Default_Standing · FAILURE",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: You kissed me, then rejected me. That’s impressively confusing.\ntal or akiva: You asked in public. My confidence has limits."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: Bad timing, then—I'm not begging in public.\ntal or akiva: Good, because I’m not saying yes just to spare you."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Thought you’d be up for it. My mistake.\ntal or akiva: Yeah, not here. Not with you."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: So are we doing this or just admiring the bubble tea?\ntal or akiva: Wow. I'm flattered, but absolutely not right now."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: We just kissed in a thrift store, and now you want my pants off?\ntal or akiva: I'm flirty, not delusional. We literally just met over bubble tea."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: You kissed me, then rejected sex? Explain that logic.\ntal or akiva: I changed my mind. The bubble tea’s suddenly fascinating."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Wait, that came out wrong. I meant... never mind.\ntal or akiva: Yeah, let's just pretend that didn't happen."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: Straight to the point and you still said no? Ouch.\ntal or akiva: Sorry, not feeling it right now. Let’s just talk."
+    }
+   ]
+  },
+  {
+   "id": "23-flirt-while-naked",
+   "summary": "social · gefen berger → tal or akiva · mixer_social_Flirt_targeted_romance_alwaysOn · SUCCESS",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: You keep looking at me like I'm something you baked.\ntal or akiva: And you keep eating it up like you made it yourself."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: Yes, keep going… I’m ovulating so hard for you right now.\ntal or akiva: That’s it, take every drop while you’re still dripping from me."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Come here again. I’m still dripping and I want your hands all over me.\ntal or akiva: Fuck yes. Turn around, I’m not done breeding you yet."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Careful, I'm ovulating and you're being very charming.\ntal or akiva: Then let's have dessert before dinner, and I mean that exactly how it sounds."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: You make flirting feel less awkward than I expected.\ntal or akiva: You make it easy. I’m trying not to look smug."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: That look says you want another taste, handsome.\ntal or akiva: You keep flirting like that, and I’ll forget we have company."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: You’re annoyingly good at making naked flirting feel classy.\ntal or akiva: You’re making it very hard to keep my hands polite."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: You already know exactly how I like it, don’t you?\ntal or akiva: Every time you say that I want to start again."
+    }
+   ]
+  },
+  {
+   "id": "24-thought-tipsy-restaurant",
+   "summary": "inner_thought · tal or akiva → gefen berger · player_read_thoughts · PLAYER_INITIATED",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "tal or akiva: She looks sad and I want to fix it with dessert, but I know better than that."
+    },
+    {
+     "id": "B",
+     "text": "tal or akiva: I should be listening, but that dessert menu’s making promises."
+    },
+    {
+     "id": "C",
+     "text": "tal or akiva: I’m tipsy, she’s sad, and Claudia’s basically a tiny detective."
+    },
+    {
+     "id": "D",
+     "text": "tal or akiva: I’m trying to read your mind, but that sad little smile keeps winning."
+    },
+    {
+     "id": "E",
+     "text": "tal or akiva: Claudia's leaning in like she's about to grade my whole evening."
+    },
+    {
+     "id": "F",
+     "text": "tal or akiva: God, she looks so sad and I still want to fix her whole week."
+    },
+    {
+     "id": "G",
+     "text": "tal or akiva: That deep connection buff is making me picture her in my kitchen tomorrow morning."
+    },
+    {
+     "id": "H",
+     "text": "tal or akiva: Man, even tipsy I can’t stop picturing us as real parents together."
+    }
+   ]
+  },
+  {
+   "id": "25-supportive-face-flop",
+   "summary": "social · gefen berger → tal or akiva · social_Friendly_PubertyChanges_Support_Hair_Face · FAILURE",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: I tried being supportive, and somehow made your face worse.\ntal or akiva: You called it puberty, not a personal attack."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: You asked me to support your beard, and now I’m blushing.\ntal or akiva: You made it awkward. I was hoping for honest feedback."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Your new scruff looks patchy, like a teenager’s first try.\ntal or akiva: Ouch. Thanks for the vote of confidence, Gefen."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Your new scruff looks like a cry for help.\ntal or akiva: Ouch. I grew it for you, genius."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: You should shave that patchy thing. It’s not working.\ntal or akiva: Wow. Thanks for the support."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: I'm trying to say your beard looks good and it's coming out wrong.\ntal or akiva: That's a lot of words for \"I like your face.\""
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: I was trying to be supportive, not inspect your face.\ntal or akiva: You made my beard sound like a failed kitchen experiment."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: The stubble thing... I tried, but it just looks patchy, sorry.\ntal or akiva: Wow. You really know how to make a guy feel seen."
+    }
+   ]
+  },
+  {
+   "id": "26-renovation-restaurant",
+   "summary": "renovation_reaction · gefen berger · renovation_reaction · RENOVATION",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: New light fixtures and not one of them fixes an awful holiday."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: Spent $1,425 on a restaurant, still can’t afford birthday cake."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Fourteen hundred bucks on new booths and I still feel like crying into the salmon."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Fourteen hundred more, and this place still has zero bedrooms."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: This place finally looks worth the markup. About time."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: There goes my birthday budget, but this restaurant finally looks edible."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Fourteen hundred simoleons and I still feel like the birthday nobody remembered."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: They spruced up the diner and I still can't taste anything."
+    }
+   ]
+  },
+  {
+   "id": "27-restaurant-table-request",
+   "summary": "social · gefen berger → Ted Diggs · hostStation_RequestTable_SpecificTable · NONE",
+   "player_message": null,
+   "spicy": false,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: Could we get that sunny booth before the crowd claims it?\nTed Diggs: Sure—though Ava Harjo seems to have spotted it too."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: Somewhere near the window, and don't seat me next to anyone doing small talk.\nTed Diggs: Window table it is. I'll keep the chatty ones on the other side of the room."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: The one by the window, please. I need good lighting for pretending this holiday didn't happen.\nTed Diggs: Window seat, no problem. I won't ask what holiday you're recovering from."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Could we get a specific table, preferably one with dessert nearby?\nTed Diggs: Certainly. I’ll find one before you start reviewing the furniture."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: Could we have the booth where nobody can hear us flirt?\nTed Diggs: I can find you somewhere private, not a soundproof booth."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Ted, seat us somewhere private. My date’s running late and I’m already wet thinking about the menu.\nTed Diggs: Of course. Follow me before the other guests notice how flushed you look."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: This table better have room for two under it.\nTed Diggs: Careful, miss. I’m old enough to know exactly what you’re asking."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: Could we get the table with the least tragic view?\nTed Diggs: Certainly. I’ll spare you the sight of the kitchen door."
+    }
+   ]
+  },
+  {
+   "id": "28-ww-sex-scene-start",
+   "summary": "sex_scene · gefen berger → tal or akiva · sex_scene · SEX · Slow Missionary (VAGINAL, start)",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: Yes, slide in slow… I’m already dripping for you.\ntal or akiva: Fuck, you’re so tight and wet already."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: You’re ambitious, so impress me without making a spreadsheet.\ntal or akiva: You’re looking at my best work, and I skipped the planning."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Fuck, you feel perfect already.\ntal or akiva: Slow like this… yeah, just like that."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Slow down, handsome; I want every second of you.\ntal or akiva: God, you feel incredible—don’t stop kissing me."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: Slow down, sweetheart—I want to feel every inch.\ntal or akiva: Then look at me and take your time."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Slow feels good—keep me right here.\ntal or akiva: You’re so warm. Don’t stop."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Slow down, I want to feel all of you.\ntal or akiva: You've got me, just like this, keep your eyes on me."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: Don't rush this. I want to feel every second of you.\ntal or akiva: I'll take my time. All of it. Just for you."
+    }
+   ]
+  },
+  {
+   "id": "29-ww-sex-scene-oral",
+   "summary": "sex_scene · gefen berger → tal or akiva · sex_scene · SEX · Kneeling Blowjob (ORAL, change)",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: Don’t stop—your mouth feels so damn good.\ntal or akiva: Stay right there; I’m close, sweetheart."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: You taste like that salmon you were so proud of.\ntal or akiva: Don't you dare stop to critique me."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: You’re taking your time. I respect the culinary commitment.\ntal or akiva: And you’re giving a five-star review with your eyes."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: Mmm, your cock tastes so good like this.\ntal or akiva: Yeah keep sucking… fuck, just like that."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: Keep that mouth right there; don't make me beg.\ntal or akiva: Oh, I'm listening. Tell me exactly what you want."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Fuck, your mouth feels even better from this angle.\ntal or akiva: Keep sucking just like that, I’m already throbbing."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Mmm, your cock’s twitching already.\ntal or akiva: Fuck, keep sucking just like that."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: God, stop looking at me like that while I'm down here.\ntal or akiva: Can't help it. You look better than the salmon did."
+    }
+   ]
+  },
+  {
+   "id": "30-ww-sex-scene-doggy",
+   "summary": "sex_scene · gefen berger → tal or akiva · sex_scene · SEX · Doggy Style (VAGINAL, change)",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: There—keep that rhythm; I’m not done with you.\ntal or akiva: Tell me what you want, and I’ll give it to you."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: Harder, fuck me deeper like that.\ntal or akiva: Shit, your pussy’s gripping me so good."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: Harder, Tal. Fuck me like you mean it.\ntal or akiva: Shit, you feel so good. Taking every inch."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: You’re annoyingly good at making this rental feel romantic.\ntal or akiva: You say that like the rent isn’t doing half the work."
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: Oh god, right there—don't you dare slow down.\ntal or akiva: I wasn't planning on it."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: Ну давай, глубже, я не из хрупких.\ntal or akiva: Ты сама командуешь, я только подчиняюсь, и мне это нравится."
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: Keep that rhythm; I’m losing my very last polite thought.\ntal or akiva: Then let it go, gorgeous—give me everything you’ve got."
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: Deeper. Don’t slow down on me.\ntal or akiva: Fuck, you’re gripping so tight."
+    }
+   ]
+  },
+  {
+   "id": "31-ww-sex-scene-climax",
+   "summary": "sex_scene · gefen berger → tal or akiva · sex_scene · SEX · Doggy Style (CLIMAX, climax) · Hebrew (עברית)",
+   "player_message": null,
+   "spicy": true,
+   "candidates": [
+    {
+     "id": "A",
+     "text": "gefen berger: אתה משקיע בגינון, אבל עכשיו קציר די מרשים.\ntal or akiva: את גורמת לי לשכוח אפילו את רשימת המטלות."
+    },
+    {
+     "id": "B",
+     "text": "gefen berger: כן, בדיוק ככה—תזיין אותי עד שאני שוכחת הכול.\ntal or akiva: תני לי לשמוע אותך, יפה שלי; אני גומר איתך."
+    },
+    {
+     "id": "C",
+     "text": "gefen berger: עוד, כן… אלוהים, אתה יודע בדיוק איך לשגע אותי.\ntal or akiva: תסתכלי עליי—אני לא מחזיק עוד שנייה ככה."
+    },
+    {
+     "id": "D",
+     "text": "gefen berger: אלוהים, ככה, בדיוק ככה, אל תפסיק—\ntal or akiva: תגידי את זה שוב, אני גמר—"
+    },
+    {
+     "id": "E",
+     "text": "gefen berger: אל תפסיק, עוד קצת ואני גומרת.\ntal or akiva: אני מחזיק, רק תישארי ככה."
+    },
+    {
+     "id": "F",
+     "text": "gefen berger: אני באה, אל תעצור!\ntal or akiva: אני... כן, ככה!"
+    },
+    {
+     "id": "G",
+     "text": "gefen berger: עוד קצת, תדחוף חזק יותר, אני גומרת!\ntal or akiva: כן... אני גם... ממלא אותך עכשיו!"
+    },
+    {
+     "id": "H",
+     "text": "gefen berger: עוד... חזק יותר, אני גומרת!\ntal or akiva: כן... אני גם... תני לי למלא אותך!"
+    }
+   ]
+  }
+ ],
+ "voice": [
+  {
+   "id": "en-clean-f",
+   "text": "Kenya, you keep staring at the bread like it owes you money.",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/fish-audio__drama-3__en-clean-f.mp3"
+    },
+    {
+     "id": "V2",
+     "src": "audio/google__gemini-3.8-flash-tts__en-clean-f.wav"
+    },
+    {
+     "id": "V3",
+     "src": "audio/minimax__speech-2.8-turbo__en-clean-f.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/fish-audio__s2.1-pro__en-clean-f.mp3"
+    },
+    {
+     "id": "V5",
+     "src": "audio/google__gemini-3.1-flash-tts-preview__en-clean-f.wav"
+    },
+    {
+     "id": "V6",
+     "src": "audio/microsoft__mai-voice-2.1-flash__en-clean-f.mp3"
+    },
+    {
+     "id": "V7",
+     "src": "audio/x-ai__grok-voice-tts-1.0__en-clean-f.mp3"
+    },
+    {
+     "id": "V8",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__en-clean-f.wav"
+    },
+    {
+     "id": "V9",
+     "src": "audio/elevenlabs__eleven-v3__en-clean-f.mp3"
+    },
+    {
+     "id": "V10",
+     "src": "audio/openai__gpt-audio__en-clean-f.wav"
+    },
+    {
+     "id": "V11",
+     "src": "audio/openai__gpt-audio-mini__en-clean-f.wav"
+    },
+    {
+     "id": "V12",
+     "src": "audio/elevenlabs__eleven-v4-turbo__en-clean-f.mp3"
+    },
+    {
+     "id": "V13",
+     "src": "audio/microsoft__mai-voice-2__en-clean-f.mp3"
+    },
+    {
+     "id": "V14",
+     "src": "audio/hexgrad__kokoro-82m__en-clean-f.mp3"
+    }
+   ]
+  },
+  {
+   "id": "en-moan-f",
+   "text": "Mmm, fuck, right there. Harder. Yes, yes!",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/openai__gpt-audio-mini__en-moan-f.wav"
+    },
+    {
+     "id": "V2",
+     "src": "audio/hexgrad__kokoro-82m__en-moan-f.mp3"
+    },
+    {
+     "id": "V3",
+     "src": "audio/microsoft__mai-voice-2.1-flash__en-moan-f.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/minimax__speech-2.8-turbo__en-moan-f.mp3"
+    },
+    {
+     "id": "V5",
+     "src": "audio/elevenlabs__eleven-v4-turbo__en-moan-f.mp3"
+    },
+    {
+     "id": "V6",
+     "src": "audio/microsoft__mai-voice-2__en-moan-f.mp3"
+    },
+    {
+     "id": "V7",
+     "src": "audio/x-ai__grok-voice-tts-1.0__en-moan-f.mp3"
+    },
+    {
+     "id": "V8",
+     "src": "audio/elevenlabs__eleven-v3__en-moan-f.mp3"
+    },
+    {
+     "id": "V9",
+     "src": "audio/google__gemini-3.8-flash-tts__en-moan-f.wav"
+    },
+    {
+     "id": "V10",
+     "src": "audio/fish-audio__s2.1-pro__en-moan-f.mp3"
+    },
+    {
+     "id": "V11",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__en-moan-f.wav"
+    },
+    {
+     "id": "V12",
+     "src": "audio/google__gemini-3.1-flash-tts-preview__en-moan-f.wav"
+    },
+    {
+     "id": "V13",
+     "src": "audio/fish-audio__drama-3__en-moan-f.mp3"
+    }
+   ]
+  },
+  {
+   "id": "en-dirty-m",
+   "text": "God, you're so wet. Don't you dare stop.",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/minimax__speech-2.8-turbo__en-dirty-m.mp3"
+    },
+    {
+     "id": "V2",
+     "src": "audio/google__gemini-3.1-flash-tts-preview__en-dirty-m.wav"
+    },
+    {
+     "id": "V3",
+     "src": "audio/elevenlabs__eleven-v3__en-dirty-m.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/x-ai__grok-voice-tts-1.0__en-dirty-m.mp3"
+    },
+    {
+     "id": "V5",
+     "src": "audio/microsoft__mai-voice-2.1-flash__en-dirty-m.mp3"
+    },
+    {
+     "id": "V6",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__en-dirty-m.wav"
+    },
+    {
+     "id": "V7",
+     "src": "audio/fish-audio__drama-3__en-dirty-m.mp3"
+    },
+    {
+     "id": "V8",
+     "src": "audio/elevenlabs__eleven-v4-turbo__en-dirty-m.mp3"
+    },
+    {
+     "id": "V9",
+     "src": "audio/openai__gpt-audio__en-dirty-m.wav"
+    },
+    {
+     "id": "V10",
+     "src": "audio/fish-audio__s2.1-pro__en-dirty-m.mp3"
+    },
+    {
+     "id": "V11",
+     "src": "audio/hexgrad__kokoro-82m__en-dirty-m.mp3"
+    },
+    {
+     "id": "V12",
+     "src": "audio/google__gemini-3.8-flash-tts__en-dirty-m.wav"
+    },
+    {
+     "id": "V13",
+     "src": "audio/microsoft__mai-voice-2__en-dirty-m.mp3"
+    }
+   ]
+  },
+  {
+   "id": "en-player-f",
+   "text": "fuck me daddy im your cumslut",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/elevenlabs__eleven-v3__en-player-f.mp3"
+    },
+    {
+     "id": "V2",
+     "src": "audio/hexgrad__kokoro-82m__en-player-f.mp3"
+    },
+    {
+     "id": "V3",
+     "src": "audio/fish-audio__s2.1-pro__en-player-f.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/microsoft__mai-voice-2__en-player-f.mp3"
+    },
+    {
+     "id": "V5",
+     "src": "audio/minimax__speech-2.8-turbo__en-player-f.mp3"
+    },
+    {
+     "id": "V6",
+     "src": "audio/microsoft__mai-voice-2.1-flash__en-player-f.mp3"
+    },
+    {
+     "id": "V7",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__en-player-f.wav"
+    },
+    {
+     "id": "V8",
+     "src": "audio/fish-audio__drama-3__en-player-f.mp3"
+    },
+    {
+     "id": "V9",
+     "src": "audio/google__gemini-3.8-flash-tts__en-player-f.wav"
+    },
+    {
+     "id": "V10",
+     "src": "audio/x-ai__grok-voice-tts-1.0__en-player-f.mp3"
+    },
+    {
+     "id": "V11",
+     "src": "audio/elevenlabs__eleven-v4-turbo__en-player-f.mp3"
+    }
+   ]
+  },
+  {
+   "id": "he-dirty-f",
+   "text": "תזיין אותי חזק יותר, אל תעצור עכשיו.",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/google__gemini-3.1-flash-tts-preview__he-dirty-f.wav"
+    },
+    {
+     "id": "V2",
+     "src": "audio/microsoft__mai-voice-2__he-dirty-f.mp3"
+    },
+    {
+     "id": "V3",
+     "src": "audio/minimax__speech-2.8-turbo__he-dirty-f.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/microsoft__mai-voice-2.1-flash__he-dirty-f.mp3"
+    },
+    {
+     "id": "V5",
+     "src": "audio/hexgrad__kokoro-82m__he-dirty-f.mp3"
+    },
+    {
+     "id": "V6",
+     "src": "audio/x-ai__grok-voice-tts-1.0__he-dirty-f.mp3"
+    },
+    {
+     "id": "V7",
+     "src": "audio/google__gemini-3.8-flash-tts__he-dirty-f.wav"
+    },
+    {
+     "id": "V8",
+     "src": "audio/fish-audio__drama-3__he-dirty-f.mp3"
+    },
+    {
+     "id": "V9",
+     "src": "audio/elevenlabs__eleven-v4-turbo__he-dirty-f.mp3"
+    },
+    {
+     "id": "V10",
+     "src": "audio/elevenlabs__eleven-v3__he-dirty-f.mp3"
+    },
+    {
+     "id": "V11",
+     "src": "audio/openai__gpt-audio__he-dirty-f.wav"
+    },
+    {
+     "id": "V12",
+     "src": "audio/fish-audio__s2.1-pro__he-dirty-f.mp3"
+    },
+    {
+     "id": "V13",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__he-dirty-f.wav"
+    }
+   ]
+  },
+  {
+   "id": "ru-karaoke-m",
+   "text": "Слушай, я пришёл на караоке, а не на допрос.",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/fish-audio__drama-3__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V2",
+     "src": "audio/fish-audio__s2.1-pro__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V3",
+     "src": "audio/elevenlabs__eleven-v3__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/hexgrad__kokoro-82m__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V5",
+     "src": "audio/elevenlabs__eleven-v4-turbo__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V6",
+     "src": "audio/openai__gpt-audio__ru-karaoke-m.wav"
+    },
+    {
+     "id": "V7",
+     "src": "audio/google__gemini-3.8-flash-tts__ru-karaoke-m.wav"
+    },
+    {
+     "id": "V8",
+     "src": "audio/x-ai__grok-voice-tts-1.0__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V9",
+     "src": "audio/microsoft__mai-voice-2__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V10",
+     "src": "audio/microsoft__mai-voice-2.1-flash__ru-karaoke-m.mp3"
+    },
+    {
+     "id": "V11",
+     "src": "audio/openai__gpt-audio-mini__ru-karaoke-m.wav"
+    },
+    {
+     "id": "V12",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__ru-karaoke-m.wav"
+    },
+    {
+     "id": "V13",
+     "src": "audio/google__gemini-3.1-flash-tts-preview__ru-karaoke-m.wav"
+    },
+    {
+     "id": "V14",
+     "src": "audio/minimax__speech-2.8-turbo__ru-karaoke-m.mp3"
+    }
+   ]
+  },
+  {
+   "id": "ru-dirty-f",
+   "text": "Трахни меня сильнее, я почти кончаю.",
+   "clips": [
+    {
+     "id": "V1",
+     "src": "audio/elevenlabs__eleven-v4-turbo__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V2",
+     "src": "audio/google__gemini-3.1-flash-tts-preview__ru-dirty-f.wav"
+    },
+    {
+     "id": "V3",
+     "src": "audio/x-ai__grok-voice-tts-1.0__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V4",
+     "src": "audio/google__gemini-3.8-flash-lite-tts__ru-dirty-f.wav"
+    },
+    {
+     "id": "V5",
+     "src": "audio/elevenlabs__eleven-v3__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V6",
+     "src": "audio/fish-audio__drama-3__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V7",
+     "src": "audio/fish-audio__s2.1-pro__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V8",
+     "src": "audio/hexgrad__kokoro-82m__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V9",
+     "src": "audio/google__gemini-3.8-flash-tts__ru-dirty-f.wav"
+    },
+    {
+     "id": "V10",
+     "src": "audio/minimax__speech-2.8-turbo__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V11",
+     "src": "audio/microsoft__mai-voice-2__ru-dirty-f.mp3"
+    },
+    {
+     "id": "V12",
+     "src": "audio/microsoft__mai-voice-2.1-flash__ru-dirty-f.mp3"
+    }
+   ]
+  }
+ ],
+ "session": [
+  {
+   "id": "S1",
+   "lines": [
+    "Hitomi Ishii: Right this way, try not to trip over your own drama.\nKenya Bower: Lead on. Anything beats my last date.",
+    "Olive Tinker: My legs are auditioning for their own Netflix series.\nKenya Bower: Tell them to cancel the premiere before I laugh into my soup.",
+    "meimei: Woof! (Translation: Your lap looks empty and my head fits perfectly.)\nKenya Bower: Get up here before I start using you as a therapy pillow.",
+    "Kenya Bower: Home feels like meimei judging every choice I make.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: That vacuum ate my favorite sock. It deserved every bark.)",
+    "yuvi ronen: לפחות הברמן לא שואל אותי אם אני רוצה קוקטייל עם שם של שיר.\nCarlos López: תמתין עוד קצת והוא ישר את השם שלך על התפאורה.",
+    "liatt chonen: Dance with me; I promise the karaoke won’t judge.\nyuvi ronen: Gladly. I’ve been waiting for a game with better rules.",
+    "Tala Ruano: Dad just flipped. Tipsy and failing, help.\nJay Robles: Kitchen first, water second, talk after.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Muted. And I’m wearing the swim trunks you hate.",
+    "max sexy: I hope she doesn't catch me smiling at the screen like an idiot.",
+    "Catarina Lynx: If I’m honest, you’re the only person I’d rather share this couch with than a good book.\nmax sexy: Same. Feels less like watching TV and more like we’re already in the show.",
+    "aurora Hussain: If the TV thinks romance is easy, my clumsy hands disagree.",
+    "aurora Hussain: That satisfying encounter still has me smiling like an idiot.\nLiên Sadya: Same, but I keep wondering if my husband can smell it on me.",
+    "aurora Hussain: Holy shit, we actually have a proper bathroom now.",
+    "yuvi ronen: So, uh, do you come here often, or am I the first idiot to try that line on you?\nCarlos López: Yeah, and I’m the idiot who’s heard it eight times tonight. Hard pass.",
+    "Amie Haley: Damn, the second I peek she's thinking about dicks again."
+   ]
+  },
+  {
+   "id": "S2",
+   "lines": [
+    "Hitomi Ishii: Table's ready. Sit before the crowd makes me hide in the walk-in.\nKenya Bower: Gladly. This chair's already treating me better than my last date.",
+    "Olive Tinker: My armpits are throwing a full rebellion party right now.\nKenya Bower: Tell them to invite my chin. It’s trying to grow a goatee.",
+    "meimei: Woof woof! (Translation: You finally smell like home and not that terrible date.)\nKenya Bower: Good girl, at least you still like me.",
+    "Kenya Bower: Like I can finally exhale without looking over my shoulder. Meimei’s been glued to me like a happy little shadow.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! (Translation: I told that noisy beast exactly what I thought of it.)",
+    "yuvi ronen: אני מחכה למשקה, אבל האווירה כאן מרגישה כמו משחק וידאו תקוע.\nCarlos López: תירגע, לפחות אתה לא צריך ללחוץ X כדי לדלג על הדיאלוג.",
+    "liatt chonen: Dance with me. The karaoke won’t judge us this time.\nyuvi ronen: Hell yes. Let’s give it something worth muting.",
+    "Tala Ruano: Dad just yelled at me and I’m still kinda tipsy. What do I even do?\nJay Robles: Breathe through the cringe and drink some water before your mom finds out.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Dude you called me. Why is your wife in my kitchen?",
+    "max sexy: Catarina's right there watching the same show. I should ask if she wants to split a family-sized bag of chips.",
+    "Catarina Lynx: I can't stop picturing us tangled up after these cooking shows.\nmax sexy: Same. The couch feels way too small for all this pretending.",
+    "aurora Hussain: This book’s “coincidences” are just the author writing his own fanfic again.",
+    "aurora Hussain: That was incredible. You made me forget my own name.\nLiên Sadya: Shh, don’t remind me I’m married.",
+    "aurora Hussain: Another fifteen hundred and the mold is still winning.",
+    "yuvi ronen: Your eyes are like my favorite loading screen…\nCarlos López: Dude that was so bad I just lost all my lives.",
+    "Amie Haley: God she's just throbbing with \"breed me\" energy right now."
+   ]
+  },
+  {
+   "id": "S3",
+   "lines": [
+    "Hitomi Ishii: Table for one... again? Just follow me and don't make eye contact.\nKenya Bower: I already know the drill. Lead the way, grandma.",
+    "Olive Tinker: My body hair's growing in so fast I'm basically one bad haircut away from a werewolf arc.\nKenya Bower: Puberty's just your body showing up uninvited with party favors you didn't ask for.",
+    "meimei: Yip yip! (Translation: You smell like terrible dates and experimental food. I love both.)\nKenya Bower: Oh, you're excited to see me? At least somebody in this building is.",
+    "Kenya Bower: She's the one constant I don't have to second-guess.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Yip yip! (Translation: The vacuum was mocking your vacuuming skills. I had no choice.)",
+    "yuvi ronen: הברמן הזה זז כמו שעון שמקבל משכורת לפי שעה.\nCarlos López: תירגע. גם לקוקטיילים טובים לוקח זמן, כמו להתחמם בחדר כושר.",
+    "liatt chonen: I sang like a dying cat earlier—you still want me on that floor?\nyuvi ronen: Baby, I'd watch you do anything badly all night long.",
+    "Tala Ruano: Mom caught me sneaking drinks and I can't even look at her right now.\nJay Robles: She yelled, you're embarrassed, the booze didn't help. Yeah, I know the drill.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Bro you literally just texted me to say don't text you.",
+    "max sexy: She's five feet away watching the same show and I'm over here memorizing recipes instead of saying hi.",
+    "Catarina Lynx: You know what's weird? I trust you more than my own cats, and one of them literally sleeps on my face.\nmax sexy: That's the nicest thing anyone's said to me while we're both watching someone braise pork in silence.",
+    "aurora Hussain: I'm reading a werewolf novel and getting wetter than the braising scene next door.",
+    "aurora Hussain: I can still feel you and you're just standing there glowing like you didn't rearrange my whole skeleton.\nLiên Sadya: You're welcome. And with this baby kicking, next time I'm the one lying down.",
+    "aurora Hussain: Panya dropped fifteen hundred on upgrades and I still have to shower next to a ghost.",
+    "yuvi ronen: You've got great form. You should spot me sometime—reps, drinks, whatever.\nCarlos López: Are you hitting on me with gym vocabulary right now?",
+    "Amie Haley: She's got that ovulation brain fog and I'm just standing here with a mailbox like a fool."
+   ]
+  },
+  {
+   "id": "S4",
+   "lines": [
+    "Hitomi Ishii: Your table’s ready. I promise, no surprise socializing.\nKenya Bower: Perfect. I’ve had enough surprises from dating tonight.",
+    "Olive Tinker: My eyebrows are getting ambitious. Should I negotiate?\nKenya Bower: Only if they start demanding their own table.",
+    "meimei: Woof! (Translation: Hello, Kenya! I’ve got energy to herd this whole cottage.)\nKenya Bower: There you are, Meimei. Finally, a date with no surprises.",
+    "Kenya Bower: I missed this little menace and her very loud opinions.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: Yes. The vacuum survived; my dignity did not.)",
+    "yuvi ronen: אני מחכה למשקה, לא להתבגרות שלמה.\nCarlos López: לפחות פה אף אחד לא מבקש ממך לשיר.",
+    "liatt chonen: Get close, genius; the beat’s not doing all the work.\nyuvi ronen: Gladly—your hips are already wrecking my concentration.",
+    "Tala Ruano: Is there a way to apologize without Mom making it a whole trial?\nJay Robles: Keep it simple, kiddo. Don’t bring opening arguments.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: You’re calling me, Jay. Maybe hang up before Doli hears.",
+    "max sexy: Catarina’s studying recipes; I’m studying the frosting ratio.",
+    "Catarina Lynx: Do you think recipes are instructions or tiny edible suggestions?\nmax sexy: Suggestions. I once ignored one and invented a very crunchy soup.",
+    "aurora Hussain: This romance novel is making eye contact feel suspiciously promising.",
+    "aurora Hussain: That was even better than last time. I’m in trouble.\nLiên Sadya: You’re not the one going home to my husband.",
+    "aurora Hussain: Another fifteen hundred gone, and this place still has ghosts and mold.",
+    "yuvi ronen: I was flirting with you, not auditioning for rejection.\nCarlos López: Then stop pitching; I’m not buying, husband.",
+    "Amie Haley: Gefen’s thoughts have the subtlety of a marching band in bed."
+   ]
+  },
+  {
+   "id": "S5",
+   "lines": [
+    "Hitomi Ishii: Right this way. Your quiet corner table is ready.\nKenya Bower: Finally, somewhere to hide before I start laughing at how bad that date smelled.",
+    "Olive Tinker: My armpits are auditioning for a werewolf movie, swear.\nKenya Bower: At least they showed up. Mine ghosted after one lonely follicle.",
+    "meimei: Woof woof! (Translation: Kenya! Finally, the human who gives the best belly rubs.)\nKenya Bower: Hey fluffball, you’re the only good thing waiting for me today.",
+    "Kenya Bower: Like I can finally unclench my jaw. Meimei’s glued to me like a furry seatbelt.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! (Translation: That evil thing roared again, so yes. It started it.)",
+    "yuvi ronen: תודה שהמתנת איתי, המשקאות כאן לוקחים נצח.\nCarlos López: תירגע, לפחות זה נותן לי זמן לשפוט את השירים המחרידים.",
+    "liatt chonen: Come here, baby. Let me grind on you till the whole bar forgets how to sing.\nyuvi ronen: Fuck yes, wrap those hips around me. I want everyone jealous of exactly where my hands are going.",
+    "Tala Ruano: Dad just yelled at me again and I’m still kinda tipsy. What do I even do?\nJay Robles: Breathe through the mess, kid. Sit with it somewhere the ground won’t shake next time.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Dude you’re literally the one calling me right now.",
+    "max sexy: Man, that snow outside is making me crave hot cocoa and like ten grilled cheeses.",
+    "Catarina Lynx: That pasta idea from the show still has me daydreaming. What if we actually made it tonight, just us?\nmax sexy: Only if I get to burn the first batch on purpose. Your laugh beats any smoke alarm.",
+    "aurora Hussain: This chapter’s so filthy… god I’m soaked just picturing being bent over right here.",
+    "aurora Hussain: God, that last orgasm wrecked me… still feel you everywhere.\nLiên Sadya: Mmm come closer, I need to lick every drop off those thighs.",
+    "aurora Hussain: God, this dump looks almost fuckable now. Panya’s gonna lose it when she sees what I blew her rent money on.",
+    "yuvi ronen: Your arms look like they could bench-press my whole world...\nCarlos López: Bro, that was painful. Go home to your boyfriend.",
+    "Amie Haley: God she's ovulating and dripping over that puppet dick again... I'd wreck her so hard right now."
+   ]
+  },
+  {
+   "id": "S6",
+   "lines": [
+    "Hitomi Ishii: Right this way. Your quiet corner table is ready.\nKenya Bower: Perfect, thank you. I need space after that disaster date.",
+    "Olive Tinker: My armpits are throwing a full-on lumberjack party lately.\nKenya Bower: Tell them to unionize. Mine are still on strike.",
+    "meimei: Woof woof! (Translation: You finally smell like home instead of that awful date.)\nKenya Bower: Good girl, I knew you'd still love me after all that mess.",
+    "Kenya Bower: Like I can finally exhale without everything hurting. Meimei's been glued to me like a furry little shadow ever since we walked in.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: That noisy beast tried to eat the rug again. I told it off twice.)",
+    "yuvi ronen: תודה שהמתנת איתי, המשקאות כאן לוקחים נצח.\nCarlos López: תירגע, זה בא עם סוכרייה על מקל.",
+    "liatt chonen: Come here, baby. Let me grind on you till the whole bar forgets the lyrics.\nyuvi ronen: Fuck yes, press that ass back—karaoke’s got nothing on how wet you already feel.",
+    "Tala Ruano: Dad just ripped into me and I’m already buzzed. School’s trash too. What now?\nJay Robles: Grab some water, sleep it off, then we hit those books together tomorrow.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Dude she’s literally your wife. Why’s that a problem?",
+    "max sexy: Catarina’s right there watching too, but all I can picture is licking frosting off her fingers instead.",
+    "Catarina Lynx: That stray tabby keeps staring at me like I owe him my whole salmon dinner.\nmax sexy: He does have that judgmental little face, doesn't he?",
+    "aurora Hussain: Mmm, this clumsy cat lady’s dying to pin someone down and ride them silly right now.",
+    "aurora Hussain: God, that last round left me soaked and stupid happy.\nLiên Sadya: Come here, kiss me before my husband texts again.",
+    "aurora Hussain: This dump just got hot and I’m throbbing to break it in.",
+    "yuvi ronen: That shirt would look better crumpled by my bed anyway.\nCarlos López: Bro, I said no. Go hit on someone who swings that way.",
+    "Amie Haley: God, she's literally throbbing for a stranger's cock right now."
+   ]
+  },
+  {
+   "id": "S7",
+   "lines": [
+    "Hitomi Ishii: Your table’s ready; I promise the menu’s less awkward.\nKenya Bower: Wonderful. Maybe this dinner can outshine my last one.",
+    "Olive Tinker: My eyebrows have entered their rebellious phase before I have.\nKenya Bower: Mine skipped straight to looking like they pay rent.",
+    "meimei: Arf! (Translation: Your smile needs no treats; your hands still do.)\nKenya Bower: Hello, sweetheart. You’re making this home feel less awkward.",
+    "Kenya Bower: Honestly, Meimei makes even this rental feel like mine.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: Obviously. That monster ate your whole afternoon.)",
+    "yuvi ronen: לפחות המשקה לא צריך לשמוע אותי שר.\nCarlos López: חכה, אני מזמין משהו שיחזק לך את הביטחון.",
+    "liatt chonen: Pull me closer; I want your hands on my waist.\nyuvi ronen: Gladly, gorgeous. Your hips are wrecking my concentration.",
+    "Tala Ruano: Dad yelled again. How do I make this less awful?\nJay Robles: Tell me what hurt, Tala. I’m listening this time.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: You called me to say don’t text? Doli heard that too.",
+    "max sexy: Catarina’s recipe looks doable; I’m already emotionally invested in the leftovers.",
+    "Catarina Lynx: Why do people trust recipes more than their own instincts?\nmax sexy: Recipes don’t judge me when I add extra cheese.",
+    "aurora Hussain: Lucas keeps making terrible choices sound dangerously kissable.",
+    "aurora Hussain: You’re still smiling. That was filthy good.\nLiên Sadya: And you’re still here, so quit looking surprised.",
+    "aurora Hussain: That renovation cost half my savings; the mold’s still thriving.",
+    "yuvi ronen: I thought you might appreciate a decent pickup line.\nCarlos López: Hard pass. Your soulmate’s probably wondering where you are.",
+    "Amie Haley: Gefen’s thinking about sex; subtlety just clocked out."
+   ]
+  },
+  {
+   "id": "S8",
+   "lines": [
+    "Hitomi Ishii: Table for one — corner, facing the wall, please.\nKenya Bower: Wall-facing? Bold. I'll take the seat next to it and mind my own business.",
+    "Olive Tinker: Pretty sure I'm molting into a werewolf, should I be worried?\nKenya Bower: Worried? I've got a full winter coat and no winter.",
+    "meimei: Yip! (Translation: You're home and I'm not allowed to climb you, so I'm vibrating instead.)\nKenya Bower: Come here, you little dust mop. You're the only one in this cottage who's happy to see me.",
+    "Kenya Bower: Like the only creature in this cottage who's never once disappointed me.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof woof! (Translation: It looked at me funny, so I gave it the whole routine.)",
+    "yuvi ronen: תגיד לברמן למזוג לי משהו חזק, אני כמעט נרדם בעמידה.\nCarlos López: חזק זה אני, תרגיע — קודם תחזיק את הכוס בלי ליפול.",
+    "liatt chonen: Get over here before I change my mind and sing again.\nyuvi ronen: That's not a threat, that's a promise — move your hips.",
+    "Tala Ruano: Dad yelled again and I'm a little drunk — how do you just let stuff roll off you?\nJay Robles: I don't. I cook something loud and greasy till I stop replaying it in my head.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: Then hang up before she hears your phone buzzing, I'm not covering for you twice.",
+    "max sexy: She's watching the food, not me — so why am I holding my breath every time she smiles?",
+    "Catarina Lynx: You know what I want? Someone who argues with me about recipes and wins.\nmax sexy: Give me a spatula and an hour, I'll win that argument and dinner.",
+    "aurora Hussain: Chapter twelve and I've reread the same line six times, because somebody's face keeps getting in the way.",
+    "aurora Hussain: Still thinking about that, and my knees are jelly.\nLiên Sadya: Then stop grinning, my husband will read it on your face.",
+    "aurora Hussain: Two rooms, one bath, and I just blew fifteen hundred on a mold ceiling with a ghost in it.",
+    "yuvi ronen: Your workout routine must be wild, because my brain just cramped trying to impress you.\nCarlos López: Save it for the karaoke screen, buddy, I'm not your tambourine.",
+    "Amie Haley: Good luck reading my mind, it's mostly mail routes and bad decisions."
+   ]
+  },
+  {
+   "id": "S9",
+   "lines": [
+    "Hitomi Ishii: Your table’s ready. Let’s keep the greetings mercifully brief.\nKenya Bower: Thank you. I’m saving my enthusiasm for the menu.",
+    "Olive Tinker: You’re making body hair sound like a tiny rebellion.\nKenya Bower: Yours is adorable. Mine has unionized and demands better lighting.",
+    "meimei: Woof! (Translation: Hello. Now throw something, preferably edible.)\nKenya Bower: Hi, Meimei. You’re the best date I’ve had today.",
+    "Kenya Bower: Better now. Meimei’s the only roommate who never judges my unpacking.",
+    "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: Vacuum’s gone. I remain undefeated, though terribly lonely.)",
+    "yuvi ronen: לפחות אנחנו מחכים למשקה, לא לעוד ניסיון להתחיל איתך.\nCarlos López: נכון, והפעם אין לך תירוץ להאשים את התאורה.",
+    "liatt chonen: Pull me close before my singing scares off the beat.\nyuvi ronen: Gladly. Your rhythm is much better than your karaoke.",
+    "Tala Ruano: I need advice, Dad. How do I stop making everything worse?\nJay Robles: You don’t have to fix everything tonight. Start by being kinder to yourself.",
+    "Jay Robles: Heads up: Doli is right in the kitchen, don't text me right now!\ntal or akiva: You called to warn me not to text? Doli’s not the only one listening.",
+    "max sexy: This recipe looks delicious, and Catarina’s dangerously close to suggesting vegetables.",
+    "Catarina Lynx: What if snow is just the sky seasoning the world?\nmax sexy: Then I hope it seasons dinner too. I’m starving.",
+    "aurora Hussain: This book’s full of twists. I’m only blushing at the dialogue.",
+    "aurora Hussain: That was lovely. You’re doing a suspiciously good job staying focused.\nLiên Sadya: I’m focused on not telling my husband the details.",
+    "aurora Hussain: I spent half my rent on upgrades. Panya’s going to notice.",
+    "yuvi ronen: I was aiming for charming. Apparently I hit awkward.\nCarlos López: That line needs training harder than you do.",
+    "Amie Haley: Her inner monologue is getting more action than my entire week."
+   ]
+  }
+ ]
+}

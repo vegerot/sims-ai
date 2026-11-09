@@ -57,6 +57,11 @@ _active_drama_buffs = globals().get('_active_drama_buffs', set())
 _last_drama_check = 0.0
 _last_drama_at = 0.0
 _bb_prev_value = None
+_last_displayed = globals().get('_last_displayed')  # (event_id, text) of the newest shown line, for ratings.
+_sex_state = {}  # WickedWhims sex instance id -> (last voiced animation id, monotonic time, climax voiced)
+_last_sex_check = 0.0
+_sex_check_broken = False
+_ADULT_AGE_NAMES = ('YOUNGADULT', 'ADULT', 'ELDER')
 
 _MUTE_VOICE_ACTOR = 0x7FFFFFFF
 _PENDING_TIMEOUT_SECONDS = 25.0
@@ -798,15 +803,72 @@ def _check_drama_moment(now):
     _submit(ev, *muted_sims)
 
 
+def _check_sex_scene(now):
+    """Voice WickedWhims sex: on start, on each animation change (>= 25 s apart), and once at climax."""
+    global _sex_state, _last_sex_check, _sex_check_broken
+    if _sex_check_broken or not _enabled or _pending is not None or now < _audio_until or now - _last_sex_check < 2.0:
+        return
+    _last_sex_check = now
+    try:
+        from wickedwhims.sex.integral.sex_handlers.active_sex.active_sex_handlers import get_active_sex_instances
+    except ImportError:  # WickedWhims isn't installed.
+        _sex_check_broken = True
+        return
+    try:
+        hh_id = services.active_household_id()
+        manager = services.sim_info_manager()
+        live = {}
+        fire = None
+        for inst in get_active_sex_instances():
+            anim = inst.get_animation_instance()
+            if anim is None:
+                continue
+            inst_id = inst.get_identifier()
+            infos = [manager.get(int(sid)) for sid in inst.get_actors_as_sim_id()]
+            if len(infos) < 2 or any(i is None or not _is_human(i) or i.age.name not in _ADULT_AGE_NAMES for i in infos):
+                continue  # Solo, pet, or non-adult: never voiced.
+            infos.sort(key=lambda i: i.household_id != hh_id)
+            if infos[0].household_id != hh_id:
+                continue
+            anim_id = anim.get_identifier()
+            category = anim.get_sex_category().name
+            last_anim, last_at, climaxed = _sex_state.get(inst_id, (None, -1e9, False))
+            live[inst_id] = (last_anim, last_at, climaxed)
+            if fire is not None:
+                continue
+            if category == 'CLIMAX' and not climaxed and now - last_at >= 8.0:
+                fire = (inst_id, infos, anim, anim_id, category, 'climax')
+            elif anim_id != last_anim and now - last_at >= 25.0 and category != 'CLIMAX':
+                fire = (inst_id, infos, anim, anim_id, category, 'start' if last_anim is None else 'change')
+        _sex_state = live
+        if fire is None:
+            return
+        inst_id, infos, anim, anim_id, category, stage = fire
+        actor, target = (i.get_sim_instance() for i in infos[:2])
+        if actor is None or target is None:
+            return
+        _sex_state[inst_id] = (anim_id, now, stage == 'climax' or _sex_state[inst_id][2])
+        ev = _make_event('sex_scene', 'sex-', actor, target, 'sex_scene', None, 'SEX')
+        ev['sex_stage'] = stage
+        ev['sex_animation'] = {'name': str(anim.get_original_string_display_name() or ''), 'category': category,
+                               'author': str(anim.get_author() or '')}
+        _note_partner(actor.sim_info, target.sim_info, now)
+        _submit(ev, actor, target)
+    except Exception:
+        _sex_check_broken = True  # One traceback in events.jsonl instead of one every 2 s.
+        _record_error()
+
+
 class _ReplyPoller:
     def poll(self, _timeline_handle):
-        global _pending, _audio_until
+        global _pending, _audio_until, _last_displayed
         try:
             _restore_mutes()
             if _pending is not None and time.time() - float(_pending['observed_at']) > _PENDING_TIMEOUT_SECONDS:
                 _pending = None
                 _restore_mutes(force=True)
             _check_drama_moment(time.monotonic())
+            _check_sex_scene(time.monotonic())
             if _pending is None or not os.path.exists(_reply_path):
                 return
             with open(_reply_path, encoding='utf-8-sig') as stream:
@@ -856,6 +918,7 @@ class _ReplyPoller:
             timeout_ms = round((shown_dur + 2.0) * 1000)
             _notify(title, reply['text'], actor_info, target_info, timeout_ms=timeout_ms)
             _record(dict(reply, type='displayed', displayed_at=time.time(), timeout_duration_ms=timeout_ms))
+            _last_displayed = (reply['event_id'], reply['text'])
         except Exception:
             _record_error()
 
@@ -991,6 +1054,14 @@ def _on_pie_thoughts(actor_sim, target_sim):
         _submit(_make_event('inner_thought', 'thought-', thinker, observer, 'player_read_thoughts', None, 'PLAYER_INITIATED'), thinker)
 
 
+def _rate_last_line(rating, actor_sim):
+    if _last_displayed is None:
+        _notify('Banter Lab', 'No line to rate yet.', actor_sim.sim_info, timeout_ms=3000)
+        return
+    _record({'type': 'rating', 'event_id': _last_displayed[0], 'rating': rating, 'observed_at': time.time()})
+    _notify('Banter Lab', ('Loved: ' if rating > 0 else 'Bad: ') + _last_displayed[1], actor_sim.sim_info, timeout_ms=3000)
+
+
 def _make_pie_cls(base_cls, affordance_mgr, guid, priority, self_only, label_fn, run_fn):
     class _PieInteraction(base_cls):
         guid64 = guid
@@ -1055,6 +1126,10 @@ def _install_pie_menu_interaction():
             _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000001, 27, False,
                           lambda actor, target, fname: ('Disable English Banter' if _enabled else 'Enable English Banter')
                           if target is actor else f'Speak to {fname} (English)...', _on_pie_main),
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000005, 26, False,
+                          lambda _actor, _target, _fname: 'Loved That Line', lambda a, _t: _rate_last_line(1, a)),
+            _make_pie_cls(base_cls, affordance_mgr, 0xBA47E21AB0000006, 25, False,
+                          lambda _actor, _target, _fname: 'Bad Line', lambda a, _t: _rate_last_line(-1, a)),
         )
     guids = {c.guid64 for c in _pie_classes}
     count = 0
@@ -1173,14 +1248,5 @@ if services.current_zone() is not None:
         _ensure_companion_running()
     _restore_mutes(force=True)
     _ensure_poller_alarm()
-
-_ev_file = os.path.join(_data_directory, 'events.jsonl')
-if os.path.exists(_ev_file) and os.path.getsize(_ev_file) > 2097152:
-    with open(_ev_file, 'rb') as _ef:
-        _ef.seek(-262144, os.SEEK_END)
-        _tail = _ef.read()
-    _nl = _tail.find(b'\n')
-    with open(_ev_file, 'wb') as _ef:
-        _ef.write(_tail[_nl + 1:] if _nl >= 0 else _tail)
 
 _record({'type': 'loaded', 'observed_at': time.time(), 'enabled': _enabled})

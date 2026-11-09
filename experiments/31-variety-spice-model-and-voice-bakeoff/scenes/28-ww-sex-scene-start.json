@@ -1,0 +1,720 @@
+{
+ "type": "sex_scene",
+ "outcome": "SEX",
+ "event_id": "harness-28-ww-sex-scene-start",
+ "observed_at": 1794038012.6940706,
+ "interaction": "sex_scene",
+ "interaction_stbl": null,
+ "venue": "venue_MultiUnit",
+ "venue_stbl": 574271278,
+ "lot_name": "2 Sequoia Cottage",
+ "lot_value": 180937,
+ "lot_rooms": "1 bed / 1 bath",
+ "weather": null,
+ "lot_traits": [
+  "zoneModifier_Hidden_WaterHeater_On",
+  "ZoneModifiers_Hidden_BBGameplayEffects",
+  "zoneModifier_lotTrait_RomanticAtmosphere"
+ ],
+ "business": {
+  "type": "RENTAL_UNIT",
+  "is_open": false,
+  "is_owned_by_active": false,
+  "star_rating": 4.0,
+  "daily_rent": 271
+ },
+ "actor": {
+  "id": "152301827300524057",
+  "name": "gefen berger",
+  "age": "ADULT",
+  "gender": "FEMALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": null,
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_Materialistic",
+   "trait_Creative",
+   "trait_Foodie",
+   "trait_Unflirty"
+  ],
+  "trait_stbls": [
+   1424623293,
+   1024593484,
+   610855744,
+   2584626283
+  ],
+  "extra_traits": [
+   "trait_GenderOptions_Toilet_Sitting",
+   "trait_Hidden_Likes_Fruitcake",
+   "trait_Occult_NoOccult",
+   "trait_Species_Human",
+   "trait_FamilySim",
+   "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_SexualOrientation_WooHooInterests_NotFemale",
+   "trait_Hidden_BeenKissed",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_SimPreference_Dislikes_Characteristic_Ambitionless",
+   "trait_CivicPolicy_SkillBased_FunCommunity",
+   "trait_GenderOptions_AttractedTo_Male",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+   "trait_CivicPolicy_SkillBased_CreativeArts",
+   "Basemental:Trait_No_GetFamous",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_Hidden_HadWooHoo",
+   "trait_GenderFemale",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_Clothing_WomensWear",
+   "trait_GenderOptions_Frame_Feminine",
+   "trait_WalkStyleDefault",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Artist_Major",
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "trait_CivicPolicy_UtilityProduction",
+   "trait_Umbrella_User",
+   "trait_GenderOptions_Lactate_Can",
+   "trait_SimPreference_Dislikes_Communication_SmallTalk",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_adult",
+   "trait_GenderOptions_AttractedTo_NotFemale",
+   "trait_Hidden_UniversityEnrollment_HasSeenEnrollmentInfo",
+   "trait_SimPreference_Dislikes_Music_Electronica",
+   "trait_Handedness_Right",
+   "trait_Umbrella_Preference_Adult_1",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_SimPreference_Likes_Activities_Fitness",
+   "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sinister_Minor"
+  ],
+  "aspiration": "Track_Family_SuperParent",
+  "aspiration_stbl": 3099076333,
+  "household_funds": 11113,
+  "careers": [
+   {
+    "id": "career_Adult_Culinary",
+    "track_id": "Culinary_Track1",
+    "track_stbl": 4280443893,
+    "title_stbl": 1520755172,
+    "level": 3,
+    "at_work": false
+   }
+  ],
+  "skills": [
+   {
+    "id": "statistic_Skill_AdultMajor_HomestyleCooking",
+    "stbl": 3133829100,
+    "level": 4
+   },
+   {
+    "id": "statistic_Skill_Bowling",
+    "stbl": 4072031435,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Photography",
+    "stbl": 1563788065,
+    "level": 3
+   },
+   {
+    "id": "skill_Fitness",
+    "stbl": 656926678,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_CrossStitch",
+    "stbl": 430081370,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Writing",
+    "stbl": 143749022,
+    "level": 2
+   }
+  ],
+  "mood": "TURBODRIVER:WickedWhims_Mood_Sex",
+  "buffs": [
+   {
+    "id": "TURBODRIVER:WickedWhims_Buff_Period_Fertility_Ovulation",
+    "name_stbl": 2780961455,
+    "reason_stbl": null
+   },
+   {
+    "id": "buff_zoneMod_Trait_RomanticAtmosphere_confident",
+    "name_stbl": 4213541309,
+    "reason_stbl": 2633803656
+   },
+   {
+    "id": "TURBODRIVER:WickedWhims_Buff_SexMood_Context_Attraction_Body_Penis",
+    "name_stbl": 92477836,
+    "reason_stbl": null
+   },
+   {
+    "id": "buff_NeighborRelPhoneCall_Friendly_BroughtFriendsTogether",
+    "name_stbl": 4029371617,
+    "reason_stbl": 424509454
+   }
+  ],
+  "activities": [
+   {
+    "id": "TURBODRIVER:WickedWhims_Sex_Animation_Default",
+    "stbl": 2175203501,
+    "target": "bedDouble_EP07FABRIClocal",
+    "target_stbl": 2174468311
+   },
+   {
+    "id": "TURBODRIVER:WickedWhims_Sex_Animation_Default_Puppet",
+    "stbl": 2175203501,
+    "target": null,
+    "target_stbl": null
+   }
+  ],
+  "situations": [],
+  "social_connections": [
+   {
+    "id": "152301827798007883",
+    "name": "tal or akiva",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 38.7,
+    "romance": 20.4,
+    "bits": [
+     "RomanticCombo_RomanticInterest",
+     "friendship-friend",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "bit_NoLongerFriends",
+     "relbit_SocialContext_Romance_Casual",
+     "lifeMilestoneBit_FellInLove",
+     "romantic_FirstKiss",
+     "HaveBeenRomantic",
+     "HasBeenFriends",
+     "has_met",
+     "relbit_SocialContext_Fun_Casual",
+     "relationshipbit_Compatibility_Amazing",
+     "relbit_SocialContext_Casual",
+     "relationshipBit_Stayover",
+     "SpecialBits_Greeted",
+     "shortTermBits_TemporaryStay_Welcome",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "949439442525423711",
+    "name": "Kenya Bower",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 46.6,
+    "romance": 0.0,
+    "bits": [
+     "friendship-friend",
+     "relbit_SocialContext_Friendship_Friendly",
+     "HasBeenFriends",
+     "has_met",
+     "relbit_SocialContext_Fun_Casual",
+     "neighbor",
+     "multi_unit_neighbor",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic",
+     "shortTermBits_healedNegativeSentiment",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": [
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+     "sentimentBit_Actor_MotivatedBy_Target_ST_FriendlyAdvice"
+    ]
+   },
+   {
+    "id": "818834826890642485",
+    "name": "Dante Nadeau",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 43.4,
+    "romance": 0.0,
+    "bits": [
+     "friendship-friend",
+     "relbit_SocialContext_Casual",
+     "HasBeenFriends",
+     "has_met",
+     "relBit_Attraction_4_Actor_AttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryLow",
+     "sentimentBit_Actor_MotivatedBy_Target_ST_FriendlyAdvice"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_1_Actor_VeryRepelledBy_Target",
+     "TURBODRIVER:WickedWhims_RelBit_HadLewdDreamAbout",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_Medium",
+     "shortTermBits_healedNegativeSentiment"
+    ]
+   },
+   {
+    "id": "440532443741029022",
+    "name": "Beatrix Ross",
+    "gender": "FEMALE",
+    "age": "YOUNGADULT",
+    "same_household": false,
+    "friendship": 24.3,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Fun_Casual",
+     "relbit_SocialContext_Friendship_Friendly",
+     "relbit_SocialContext_Romance_Casual",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "has_met",
+     "relationshipbit_Compatibility_Amazing",
+     "neighbor",
+     "multi_unit_neighbor",
+     "relbit_SocialContext_Casual",
+     "shortTermBits_healedNegativeSentiment"
+    ],
+    "reverse_bits": [
+     "sentimentBit_Actor_CloseTo_Target_ST_generic"
+    ]
+   },
+   {
+    "id": "312179698725487991",
+    "name": "Panya Li",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 14.4,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Fun_Casual",
+     "has_met",
+     "relbit_SocialContext_Casual",
+     "relationshipbit_Compatibility_Bad",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "relBit_MultiUnit_TenantToLandlord"
+    ],
+    "reverse_bits": [
+     "relBit_MultiUnit_LandlordToTenant"
+    ]
+   },
+   {
+    "id": "1010237970797495008",
+    "name": "Badin Sinaga",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 13.2,
+    "bits": [
+     "friendship-acquaintances",
+     "RomanticCombo_RomanticInterest",
+     "has_met",
+     "HaveBeenRomantic"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ]
+   },
+   {
+    "id": "152301827958616155",
+    "name": "Xochitl Luna",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 29.8,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Casual",
+     "relbit_SocialContext_Fun_Casual",
+     "has_met",
+     "relationshipbit_Compatibility_Good",
+     "neighbor"
+    ],
+    "reverse_bits": []
+   }
+  ]
+ },
+ "target": {
+  "id": "152301827798007883",
+  "name": "tal or akiva",
+  "age": "ADULT",
+  "gender": "MALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": null,
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_Glutton",
+   "trait_Ambitious",
+   "trait_FamilyOriented",
+   "trait_Snob",
+   "trait_Neat",
+   "trait_LoveStruck"
+  ],
+  "trait_stbls": [
+   2163496933,
+   4031320556,
+   450450742,
+   3953317174,
+   2332510722,
+   749768522
+  ],
+  "extra_traits": [
+   "trait_GenderOptions_Pregnancy_CanImpregnate",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+   "trait_SimPreference_Dislikes_Color_Yellow",
+   "trait_Hidden_Likes_Fruitcake",
+   "trait_Occult_NoOccult",
+   "trait_Species_Human",
+   "trait_FamilySim",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_SimPreference_Dislikes_Music_SPop",
+   "trait_Hidden_BeenKissed",
+   "trait_CivicPolicy_SkillBased_FunCommunity",
+   "trait_SimPreference_Likes_Music_Classical",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "Basemental:Trait_No_GetFamous",
+   "trait_GenderOptions_Clothing_MensWear",
+   "trait_GenderOptions_AttractedTo_Female",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_CivicPolicy_SkillBased_FreeLove",
+   "trait_Hidden_HadWooHoo",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_SexualOrientation_WooHooInterests_Female",
+   "trait_SimPreference_Likes_Communication_DeepThoughts",
+   "trait_WalkStyleDefault",
+   "trait_CivicPolicy_SkillBased_JuicedCommunity",
+   "trait_Fear_Failure",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "trait_SimPreference_Likes_Activities_Painting",
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "trait_Hidden_SelfDiscoveryMax",
+   "trait_Umbrella_User",
+   "trait_GenderOptions_Toilet_Standing",
+   "trait_SimPreference_Likes_Characteristic_Idealist",
+   "trait_GenderOptions_Frame_Masculine",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_adult",
+   "trait_Hidden_UniversityEnrollment_HasSeenEnrollmentInfo",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sage_Minor",
+   "Trait_SimPreference_Likes_Music_Latin",
+   "trait_SimPreference_NoOpinion_Activities_Gardening",
+   "trait_Handedness_Right",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Major",
+   "trait_CivicPolicy_EcoFriendlyAppliances",
+   "trait_CivicPolicy_GreenGardening",
+   "trait_CivicPolicy_SkillBased_SelfCare",
+   "trait_Umbrella_Preference_Adult_1",
+   "trait_GenderMale",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_GenderOptions_Lactate_CanNot",
+   "trait_SimPreference_Likes_Activities_Gardening",
+   "trait_SimPreference_Likes_Activities_VideoGaming",
+   "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+   "trait_Hidden_TemporaryStay_RecentlyArrived",
+   "trait_GenderOptions_AttractedTo_NotMale"
+  ],
+  "aspiration": "Track_Family_SuperParent",
+  "aspiration_stbl": 3099076333,
+  "household_funds": 6541,
+  "careers": [
+   {
+    "id": "careers_Adult_Gardener",
+    "track_id": "Gardener_careerTrack1_main",
+    "track_stbl": 375510992,
+    "title_stbl": 2957026315,
+    "level": 3,
+    "at_work": false
+   }
+  ],
+  "skills": [
+   {
+    "id": "statistic_Skill_AdultMajor_HomestyleCooking",
+    "stbl": 3133829100,
+    "level": 6
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Baking",
+    "stbl": 1464035566,
+    "level": 5
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Charisma",
+    "stbl": 2364309712,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Gardening",
+    "stbl": 2243298849,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Romance",
+    "stbl": 1559876043,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Logic",
+    "stbl": 737363436,
+    "level": 3
+   }
+  ],
+  "mood": "TURBODRIVER:WickedWhims_Mood_Sex",
+  "buffs": [
+   {
+    "id": "buff_Food_Cooking_2",
+    "name_stbl": 1279605639,
+    "reason_stbl": 1688226896
+   },
+   {
+    "id": "buff_zoneMod_Trait_RomanticAtmosphere_flirty",
+    "name_stbl": 2524784437,
+    "reason_stbl": 2633803656
+   }
+  ],
+  "activities": [
+   {
+    "id": "TURBODRIVER:WickedWhims_Sex_Animation_Default",
+    "stbl": 2175203501,
+    "target": null,
+    "target_stbl": null
+   },
+   {
+    "id": "TURBODRIVER:WickedWhims_Sex_Animation_Default_Puppet",
+    "stbl": 2175203501,
+    "target": null,
+    "target_stbl": null
+   }
+  ],
+  "situations": [
+   {
+    "id": "situation_Stayover_Normal",
+    "stbl": null,
+    "role": "situationJob_Stayover_Guest",
+    "role_stbl": 437339897
+   }
+  ],
+  "social_connections": [
+   {
+    "id": "949439442525423711",
+    "name": "Kenya Bower",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": -91.9,
+    "bits": [
+     "RomanticCombo_ItsVeryAwkward",
+     "friendship-acquaintances",
+     "relbit_SocialContext_Romance_Casual",
+     "HaveBeenExes",
+     "romantic-Broken_Up",
+     "bit_NoLongerFriends",
+     "romantic-HasBeenUnfaithful",
+     "lifeMilestoneBit_FellInLove",
+     "HasBeenFriends",
+     "relationshipbit_Compatibility_Good",
+     "has_met",
+     "relbit_SocialContext_Fun_Casual",
+     "HaveBeenRomantic",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relbit_SocialContext_Casual",
+     "relBit_Attraction_4_Actor_AttractedTo_Target",
+     "sentimentBit_Actor_CloseTo_Target_ST_MoveIn_FromMovingIn"
+    ],
+    "reverse_bits": [
+     "sentimentBit_Actor_HurtBy_Target_LT_generic",
+     "sentimentBit_Actor_FuriousAt_Target_ST_generic",
+     "sentimentBit_Actor_HurtBy_Target_ST_saddened",
+     "sentimentBit_Actor_BitterAt_Target_ST_breakup",
+     "sentimentBit_Actor_EnamoredBy_Target_ST_SleepCuddled",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic"
+    ]
+   },
+   {
+    "id": "152301827300524057",
+    "name": "gefen berger",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 38.7,
+    "romance": 20.4,
+    "bits": [
+     "RomanticCombo_RomanticInterest",
+     "friendship-friend",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "bit_NoLongerFriends",
+     "relbit_SocialContext_Romance_Casual",
+     "lifeMilestoneBit_FellInLove",
+     "romantic_FirstKiss",
+     "HaveBeenRomantic",
+     "HasBeenFriends",
+     "has_met",
+     "relbit_SocialContext_Fun_Casual",
+     "relationshipbit_Compatibility_Amazing",
+     "relbit_SocialContext_Casual",
+     "relationshipBit_Stayover",
+     "SpecialBits_Greeted",
+     "shortTermBits_TemporaryStay_Welcome",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None"
+    ],
+    "reverse_bits": [
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+    ]
+   },
+   {
+    "id": "841353092180935146",
+    "name": "meimei",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 27.1,
+    "romance": 0.0,
+    "bits": [
+     "simToPet_RelationshipBit_02_Acquaintance",
+     "has_met",
+     "relationshipBit_Target_IsDogOwnedBy_Actor"
+    ],
+    "reverse_bits": [
+     "relationshipBit_Target_IsDogOwnerOf_Actor"
+    ]
+   },
+   {
+    "id": "440532443853947873",
+    "name": "Sandra Águila",
+    "gender": "FEMALE",
+    "age": "YOUNGADULT",
+    "same_household": false,
+    "friendship": 26.6,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relbit_SocialContext_Casual",
+     "relbit_SocialContext_Romance_Casual",
+     "relbit_SocialContext_Fun_Casual",
+     "has_met",
+     "sentimentBit_Actor_MotivatedBy_Target_ST_FriendlyAdvice"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958398525",
+    "name": "Makoa Kealoha",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 22.1,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "has_met",
+     "relbit_SocialContext_Casual",
+     "relationshipbit_Compatibility_Good",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "sentimentBit_Actor_MotivatedBy_Target_ST_FriendlyAdvice"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "818834826890642485",
+    "name": "Dante Nadeau",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 5.5,
+    "romance": 0.0,
+    "bits": [
+     "RomanticCombo_RomanticInterest",
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Good",
+     "relbit_SocialContext_Casual",
+     "has_met",
+     "HaveBeenRomantic",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958547580",
+    "name": "Mei Prescott",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "RomanticCombo_Acquaintances",
+     "friendship-acquaintances",
+     "relbit_SocialContext_Fun_Casual",
+     "relbit_SocialContext_Romance_Casual",
+     "has_met",
+     "relbit_SocialContext_Casual",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relationshipbit_Compatibility_Good",
+     "sentimentBit_Actor_MotivatedBy_Target_ST_FriendlyAdvice"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "152301827958548633",
+    "name": "Jay Robles",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "RomanticCombo_Acquaintances",
+     "relationshipbit_Compatibility_Good",
+     "has_met",
+     "HaveBeenRomantic",
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ],
+    "reverse_bits": []
+   }
+  ]
+ },
+ "relationship": {
+  "same_household": false,
+  "friendship": 38.7,
+  "romance": 20.4,
+  "bits": [
+   "RomanticCombo_RomanticInterest",
+   "friendship-friend",
+   "relbit_SocialContext_Awkwardness_Casual",
+   "bit_NoLongerFriends",
+   "relbit_SocialContext_Romance_Casual",
+   "lifeMilestoneBit_FellInLove",
+   "romantic_FirstKiss",
+   "HaveBeenRomantic",
+   "HasBeenFriends",
+   "has_met",
+   "relbit_SocialContext_Fun_Casual",
+   "relationshipbit_Compatibility_Amazing",
+   "relbit_SocialContext_Casual",
+   "relationshipBit_Stayover",
+   "SpecialBits_Greeted",
+   "shortTermBits_TemporaryStay_Welcome",
+   "relBit_Attraction_3_Actor_NeutralTo_Target",
+   "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+   "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset"
+  ],
+  "reverse_bits": []
+ },
+ "sex_stage": "start",
+ "sex_animation": {
+  "name": "Slow Missionary",
+  "category": "VAGINAL"
+ },
+ "_language": "English"
+}

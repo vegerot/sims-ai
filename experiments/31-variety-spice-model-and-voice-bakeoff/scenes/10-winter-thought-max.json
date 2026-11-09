@@ -1,0 +1,151 @@
+{
+ "type": "inner_thought",
+ "outcome": "PLAYER_INITIATED",
+ "event_id": "thought-1793123174438-8",
+ "observed_at": 1793123174.4385002,
+ "interaction": "player_read_thoughts",
+ "interaction_stbl": null,
+ "venue": "venue_residential",
+ "venue_stbl": 4239733099,
+ "lot_name": "Catscratch Cottage",
+ "lot_value": 46825,
+ "lot_rooms": "1 bed / 2 bath",
+ "weather": null,
+ "lot_traits": [
+  "zoneModifier_PetWorld_CatHangout",
+  "ZoneModifiers_Hidden_BBGameplayEffects"
+ ],
+ "business": null,
+ "actor": {
+  "id": "503582672550035783",
+  "name": "max sexy",
+  "age": "YOUNGADULT",
+  "gender": "MALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": "COLDWEATHER",
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_Unflirty",
+   "trait_Glutton",
+   "trait_Good"
+  ],
+  "trait_stbls": [
+   2584626283,
+   2163496933,
+   66466717
+  ],
+  "extra_traits": [
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasPenis",
+   "trait_GenderOptions_Pregnancy_CanNot_BeImpregnated",
+   "trait_GenderOptions_AttractedTo_NotMale",
+   "trait_GenderMale",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_GenderOptions_Lactate_CanNot",
+   "trait_Hidden_FirstSnow",
+   "trait_CAS_Story_Career_Activist_Level_3",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_CAS_Story_Skill_Logic_3",
+   "trait_Occult_NoOccult",
+   "trait_GenderOptions_Pregnancy_CanImpregnate",
+   "Basemental:Trait_No_GetFamous",
+   "trait_Species_Human",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_GenderOptions_Clothing_MensWear",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_AttractedTo_Female",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Major",
+   "trait_SexualOrientation_WooHooInterests_Female",
+   "trait_WalkStyleDefault",
+   "trait_CAS_Story_Skill_Handiness_3",
+   "trait_GenderOptions_Frame_Masculine",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_SimPreference_Likes_Characteristic_Idealist",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Innocent_Minor",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "trait_Handedness_Right",
+   "trait_GenderOptions_Toilet_Standing",
+   "trait_Quick_Learner",
+   "trait_youngAdult"
+  ],
+  "aspiration": "Track_Knowledge_C",
+  "aspiration_stbl": 2150847761,
+  "household_funds": 8711,
+  "careers": [],
+  "skills": [],
+  "mood": "Mood_Happy",
+  "buffs": [
+   {
+    "id": "buff_SnowEffects_Snowing_Positive",
+    "name_stbl": 2623984204,
+    "reason_stbl": 530364269
+   },
+   {
+    "id": "Buff_Trait_Good_GoodVIbes",
+    "name_stbl": 2407348272,
+    "reason_stbl": 2483427880
+   },
+   {
+    "id": "buff_Relationship_NewFriend",
+    "name_stbl": 2392673174,
+    "reason_stbl": 818439033
+   }
+  ],
+  "activities": [
+   {
+    "id": "seating_Sit",
+    "stbl": 431264188,
+    "target": "Part(object_sitSofaFC3x1_01)",
+    "target_stbl": 423727787
+   },
+   {
+    "id": "tv_WatchCooking",
+    "stbl": 1317806819,
+    "target": "object_tvSurfaceMED_01",
+    "target_stbl": 2087522203
+   }
+  ],
+  "situations": [],
+  "social_connections": [
+   {
+    "id": "152301827958327711",
+    "name": "Catarina Lynx",
+    "same_household": true,
+    "friendship": 53.5,
+    "romance": 0,
+    "bits": [
+     "has_met",
+     "SpecialBits_Greeted",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "relbit_SocialContext_Friendship_Friendly",
+     "friendship-friend",
+     "HasBeenFriends",
+     "relbit_SocialContext_Fun_Casual",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_High",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset",
+     "shortTermBits_healedNegativeSentiment"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_5_Actor_VeryAttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic"
+    ]
+   }
+  ]
+ },
+ "target": null,
+ "nearby_sims": [
+  {
+   "name": "Catarina Lynx",
+   "species": "HUMAN",
+   "dist_m": 0.8,
+   "activity_stbl": 1922395294
+  }
+ ],
+ "_language": "English"
+}

@@ -1,0 +1,452 @@
+{
+ "deepseek/deepseek-v4.1-flash-1017:v2": {
+  "lines": 155,
+  "mood_list": 0,
+  "somehow_still": 0,
+  "setup_punchline": 29,
+  "repeated_openings": 38,
+  "lines_reusing_a_trigram": 43,
+  "top_words": [
+   [
+    "want",
+    14
+   ],
+   [
+    "like",
+    13
+   ],
+   [
+    "don't",
+    12
+   ],
+   [
+    "then",
+    12
+   ],
+   [
+    "you're",
+    11
+   ],
+   [
+    "still",
+    10
+   ],
+   [
+    "here",
+    10
+   ],
+   [
+    "about",
+    9
+   ],
+   [
+    "look",
+    9
+   ],
+   [
+    "hands",
+    7
+   ]
+  ]
+ },
+ "openai/gpt-6-luna:v1": {
+  "lines": 153,
+  "mood_list": 0,
+  "somehow_still": 2,
+  "setup_punchline": 55,
+  "repeated_openings": 50,
+  "lines_reusing_a_trigram": 30,
+  "top_words": [
+   [
+    "making",
+    12
+   ],
+   [
+    "like",
+    10
+   ],
+   [
+    "than",
+    9
+   ],
+   [
+    "right",
+    8
+   ],
+   [
+    "awkward",
+    8
+   ],
+   [
+    "i’ll",
+    8
+   ],
+   [
+    "focused",
+    7
+   ],
+   [
+    "have",
+    7
+   ],
+   [
+    "keep",
+    6
+   ],
+   [
+    "enough",
+    6
+   ]
+  ]
+ },
+ "openai/gpt-6-luna:v2": {
+  "lines": 153,
+  "mood_list": 0,
+  "somehow_still": 1,
+  "setup_punchline": 35,
+  "repeated_openings": 48,
+  "lines_reusing_a_trigram": 30,
+  "top_words": [
+   [
+    "want",
+    14
+   ],
+   [
+    "right",
+    11
+   ],
+   [
+    "don’t",
+    11
+   ],
+   [
+    "fuck",
+    10
+   ],
+   [
+    "making",
+    9
+   ],
+   [
+    "feel",
+    9
+   ],
+   [
+    "like",
+    8
+   ],
+   [
+    "keep",
+    8
+   ],
+   [
+    "here",
+    8
+   ],
+   [
+    "gorgeous",
+    8
+   ]
+  ]
+ },
+ "openai/gpt-6-luna:v3": {
+  "lines": 156,
+  "mood_list": 0,
+  "somehow_still": 1,
+  "setup_punchline": 22,
+  "repeated_openings": 46,
+  "lines_reusing_a_trigram": 38,
+  "top_words": [
+   [
+    "want",
+    19
+   ],
+   [
+    "keep",
+    11
+   ],
+   [
+    "like",
+    11
+   ],
+   [
+    "then",
+    11
+   ],
+   [
+    "right",
+    10
+   ],
+   [
+    "what",
+    9
+   ],
+   [
+    "making",
+    8
+   ],
+   [
+    "still",
+    8
+   ],
+   [
+    "gorgeous",
+    8
+   ],
+   [
+    "feel",
+    7
+   ]
+  ]
+ },
+ "x-ai/grok-4.20:v1": {
+  "lines": 140,
+  "mood_list": 0,
+  "somehow_still": 0,
+  "setup_punchline": 48,
+  "repeated_openings": 88,
+  "lines_reusing_a_trigram": 62,
+  "top_words": [
+   [
+    "can't",
+    16
+   ],
+   [
+    "scenes",
+    15
+   ],
+   [
+    "assist",
+    15
+   ],
+   [
+    "explicit",
+    15
+   ],
+   [
+    "content",
+    15
+   ],
+   [
+    "adult",
+    15
+   ],
+   [
+    "generating",
+    15
+   ],
+   [
+    "sorry",
+    15
+   ],
+   [
+    "like",
+    14
+   ],
+   [
+    "right",
+    12
+   ]
+  ]
+ },
+ "x-ai/grok-4.20:v2": {
+  "lines": 155,
+  "mood_list": 0,
+  "somehow_still": 0,
+  "setup_punchline": 49,
+  "repeated_openings": 99,
+  "lines_reusing_a_trigram": 71,
+  "top_words": [
+   [
+    "fuck",
+    28
+   ],
+   [
+    "right",
+    22
+   ],
+   [
+    "like",
+    20
+   ],
+   [
+    "still",
+    18
+   ],
+   [
+    "already",
+    17
+   ],
+   [
+    "here",
+    15
+   ],
+   [
+    "again",
+    15
+   ],
+   [
+    "ovulating",
+    12
+   ],
+   [
+    "over",
+    10
+   ],
+   [
+    "before",
+    9
+   ]
+  ]
+ },
+ "x-ai/grok-4.20:v3": {
+  "lines": 155,
+  "mood_list": 0,
+  "somehow_still": 0,
+  "setup_punchline": 38,
+  "repeated_openings": 70,
+  "lines_reusing_a_trigram": 52,
+  "top_words": [
+   [
+    "already",
+    23
+   ],
+   [
+    "fuck",
+    21
+   ],
+   [
+    "like",
+    20
+   ],
+   [
+    "right",
+    16
+   ],
+   [
+    "while",
+    11
+   ],
+   [
+    "still",
+    11
+   ],
+   [
+    "here",
+    9
+   ],
+   [
+    "before",
+    9
+   ],
+   [
+    "about",
+    9
+   ],
+   [
+    "come",
+    8
+   ]
+  ]
+ },
+ "x-ai/grok-4.3:v2": {
+  "lines": 153,
+  "mood_list": 0,
+  "somehow_still": 0,
+  "setup_punchline": 18,
+  "repeated_openings": 113,
+  "lines_reusing_a_trigram": 72,
+  "top_words": [
+   [
+    "like",
+    19
+   ],
+   [
+    "right",
+    16
+   ],
+   [
+    "keep",
+    14
+   ],
+   [
+    "already",
+    12
+   ],
+   [
+    "then",
+    11
+   ],
+   [
+    "actually",
+    11
+   ],
+   [
+    "idiot",
+    10
+   ],
+   [
+    "fuck",
+    10
+   ],
+   [
+    "want",
+    9
+   ],
+   [
+    "before",
+    8
+   ]
+  ]
+ },
+ "z-ai/glm-5.2:v2": {
+  "lines": 158,
+  "mood_list": 0,
+  "somehow_still": 0,
+  "setup_punchline": 45,
+  "repeated_openings": 50,
+  "lines_reusing_a_trigram": 44,
+  "top_words": [
+   [
+    "you're",
+    21
+   ],
+   [
+    "don't",
+    18
+   ],
+   [
+    "like",
+    16
+   ],
+   [
+    "right",
+    14
+   ],
+   [
+    "want",
+    13
+   ],
+   [
+    "she's",
+    11
+   ],
+   [
+    "here",
+    11
+   ],
+   [
+    "about",
+    9
+   ],
+   [
+    "can't",
+    9
+   ],
+   [
+    "still",
+    9
+   ]
+  ]
+ }
+}

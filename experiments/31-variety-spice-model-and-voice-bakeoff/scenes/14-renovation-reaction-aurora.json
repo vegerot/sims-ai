@@ -1,0 +1,131 @@
+{
+ "type": "renovation_reaction",
+ "outcome": "RENOVATION",
+ "event_id": "renov-1793103246479-5",
+ "observed_at": 1793103246.4792726,
+ "interaction": "renovation_reaction",
+ "interaction_stbl": null,
+ "venue": "venue_MultiUnit",
+ "venue_stbl": 574271278,
+ "lot_name": "11C Sungai Point",
+ "lot_value": 119818,
+ "lot_rooms": "2 bed / 1 bath",
+ "weather": null,
+ "lot_traits": [
+  "ZoneModifiers_Hidden_BBGameplayEffects",
+  "zoneModifier_Hidden_FuseBox_On",
+  "zoneModifiers_lotTrait_moldSystem_susceptibleToMold",
+  "zoneModifier_lotTrait_Haunted"
+ ],
+ "business": {
+  "type": "RENTAL_UNIT",
+  "is_open": false,
+  "is_owned_by_active": false,
+  "star_rating": 1,
+  "daily_rent": 129
+ },
+ "actor": {
+  "id": "55476264782922099",
+  "name": "aurora Hussain",
+  "age": "YOUNGADULT",
+  "gender": "FEMALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": null,
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_CatLover",
+   "trait_Clumsy",
+   "trait_Proper"
+  ],
+  "trait_stbls": [
+   2354615563,
+   2182590620,
+   2585796774
+  ],
+  "extra_traits": [
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "trait_Handedness_Right",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Lover_Major",
+   "trait_youngAdult",
+   "trait_Alluring",
+   "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+   "trait_WalkStyleDefault",
+   "trait_GenderOptions_Clothing_WomensWear",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_GenderOptions_Toilet_Sitting",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_Occult_NoOccult",
+   "trait_GenderOptions_AttractedTo_Male",
+   "trait_GenderOptions_AttractedTo_NotFemale",
+   "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+   "trait_Species_Human",
+   "Basemental:Trait_No_GetFamous",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_GenderOptions_Frame_Feminine",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_Lactate_Can",
+   "trait_GenderFemale",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Caregiver_Minor",
+   "trait_SexualOrientation_WooHooInterests_Female"
+  ],
+  "aspiration": "Track_Love_C",
+  "household_funds": 3482,
+  "careers": [],
+  "skills": [],
+  "mood": "Mood_Happy",
+  "buffs": [
+   {
+    "id": "buff_Environment_BBGameplayEffects_GoodEnvironmentSmall",
+    "name_stbl": 1899004182,
+    "reason_stbl": 673048548
+   },
+   {
+    "id": "buff_Food_Cooking_2",
+    "name_stbl": 1279605639,
+    "reason_stbl": 1688226896
+   },
+   {
+    "id": "buff_DateDebrief_Terrible_Regular",
+    "name_stbl": 2468656695,
+    "reason_stbl": null
+   },
+   {
+    "id": "buff_Woohoo_PleasantlySatisfied_Teen",
+    "name_stbl": 686551311,
+    "reason_stbl": null
+   }
+  ],
+  "activities": [],
+  "situations": [],
+  "social_connections": [
+   {
+    "id": "532857280101201358",
+    "name": "Panya Li",
+    "same_household": false,
+    "friendship": 0,
+    "romance": 0,
+    "bits": [
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Good",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_Attraction_4_Actor_AttractedTo_Target",
+     "relBit_MultiUnit_TenantToLandlord"
+    ],
+    "reverse_bits": [
+     "relBit_MultiUnit_LandlordToTenant"
+    ]
+   }
+  ]
+ },
+ "target": null,
+ "renovation_delta": 1555,
+ "_language": "English"
+}

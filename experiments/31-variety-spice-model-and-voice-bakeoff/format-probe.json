@@ -1,0 +1,53 @@
+{
+ "x-ai/grok-voice-tts-1.0 wav": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"success\":false,\"error\":{\"name\":\"ZodError\",\"message\":\"[\\n  {\\n    \\\"code\\\": \\\"invalid_value\\\",\\n    \\\"values\\\": [\\n      \\\"mp"
+ },
+ "x-ai/grok-voice-tts-1.0 pcm": {
+  "bytes": 199200,
+  "head": "12001900",
+  "s": 0.65,
+  "seconds_if_24k_s16": 4.15
+ },
+ "elevenlabs/eleven-v4-turbo wav": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"success\":false,\"error\":{\"name\":\"ZodError\",\"message\":\"[\\n  {\\n    \\\"code\\\": \\\"invalid_value\\\",\\n    \\\"values\\\": [\\n      \\\"mp"
+ },
+ "elevenlabs/eleven-v4-turbo pcm": {
+  "bytes": 241920,
+  "head": "00000000",
+  "s": 1.31,
+  "seconds_if_24k_s16": 5.04
+ },
+ "minimax/speech-2.8-turbo wav": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"success\":false,\"error\":{\"name\":\"ZodError\",\"message\":\"[\\n  {\\n    \\\"code\\\": \\\"invalid_value\\\",\\n    \\\"values\\\": [\\n      \\\"mp"
+ },
+ "minimax/speech-2.8-turbo pcm": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"error\":{\"message\":\"MiniMax TTS only supports response_format=\\\"mp3\\\" for streaming. Got \\\"pcm\\\".\",\"code\":400}}"
+ },
+ "fish-audio/drama-3 wav": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"success\":false,\"error\":{\"name\":\"ZodError\",\"message\":\"[\\n  {\\n    \\\"code\\\": \\\"invalid_value\\\",\\n    \\\"values\\\": [\\n      \\\"mp"
+ },
+ "fish-audio/drama-3 pcm": {
+  "bytes": 696320,
+  "head": "f9fff7ff",
+  "s": 1.73,
+  "seconds_if_24k_s16": 14.51
+ },
+ "fish-audio/s2.1-pro wav": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"success\":false,\"error\":{\"name\":\"ZodError\",\"message\":\"[\\n  {\\n    \\\"code\\\": \\\"invalid_value\\\",\\n    \\\"values\\\": [\\n      \\\"mp"
+ },
+ "fish-audio/s2.1-pro pcm": {
+  "bytes": 385024,
+  "head": "cc00c300",
+  "s": 1.26,
+  "seconds_if_24k_s16": 8.02
+ },
+ "google/gemini-3.8-flash-lite-tts wav": {
+  "error": "HTTP 400 on /api/v1/audio/speech: {\"success\":false,\"error\":{\"name\":\"ZodError\",\"message\":\"[\\n  {\\n    \\\"code\\\": \\\"invalid_value\\\",\\n    \\\"values\\\": [\\n      \\\"mp"
+ },
+ "google/gemini-3.8-flash-lite-tts pcm": {
+  "bytes": 243840,
+  "head": "00000000",
+  "s": 2.01,
+  "seconds_if_24k_s16": 5.08
+ }
+}

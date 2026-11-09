@@ -1,0 +1,368 @@
+{
+ "type": "renovation_reaction",
+ "outcome": "RENOVATION",
+ "event_id": "renov-1794015509999-1",
+ "observed_at": 1794015509.9995677,
+ "interaction": "renovation_reaction",
+ "interaction_stbl": null,
+ "venue": "venue_Restaurant",
+ "venue_stbl": 1862667879,
+ "lot_name": "Pop's Chock'Lit Shoppe",
+ "lot_value": 86948,
+ "lot_rooms": "0 bed / 3 bath",
+ "weather": null,
+ "lot_traits": [
+  "ZoneModifiers_Hidden_BBGameplayEffects",
+  "zoneModifier_lotTrait_Convivial",
+  "zoneModifier_pro_ChefsKitchen"
+ ],
+ "business": null,
+ "actor": {
+  "id": "152301827300524057",
+  "name": "gefen berger",
+  "age": "ADULT",
+  "gender": "FEMALE",
+  "species": "HUMAN",
+  "breed": null,
+  "breed_stbl": null,
+  "outfit": null,
+  "pregnant": null,
+  "is_outside": false,
+  "traits": [
+   "trait_Materialistic",
+   "trait_Creative",
+   "trait_Foodie",
+   "trait_Unflirty"
+  ],
+  "trait_stbls": [
+   1424623293,
+   1024593484,
+   610855744,
+   2584626283
+  ],
+  "extra_traits": [
+   "trait_GenderOptions_Toilet_Sitting",
+   "trait_Hidden_Likes_Fruitcake",
+   "trait_Occult_NoOccult",
+   "trait_Species_Human",
+   "trait_FamilySim",
+   "trait_GenderOptions_Pregnancy_CanBeImpregnated",
+   "trait_RelExpectations_OpenToChange_Yes",
+   "trait_Hidden_BeenKissed",
+   "trait_SexualOrientation_WooHooInterests_NotFemale",
+   "trait_GenderOptions_AttractedTo_Male",
+   "trait_SimPreference_Dislikes_Characteristic_Ambitionless",
+   "trait_GenderOptions_Sexuality_Exploring",
+   "trait_CivicPolicy_SkillBased_FunCommunity",
+   "TURBODRIVER:WickedWhims_Trait_Nudity_Core_HasVagina",
+   "trait_CivicPolicy_SkillBased_CreativeArts",
+   "Basemental:Trait_No_GetFamous",
+   "Basemental:Not_Predisposed_to_Addictions_Trait",
+   "trait_Hidden_HadWooHoo",
+   "trait_GenderFemale",
+   "trait_RelExpectations_EmotionalExclusivity_Yes",
+   "trait_GenderOptions_Clothing_WomensWear",
+   "trait_GenderOptions_Frame_Feminine",
+   "trait_WalkStyleDefault",
+   "TURBODRIVER:WickedWhims_Trait_Attractiveness_HasGeneratedTraits",
+   "trait_RelExpectations_PhysicalExclusivity_Yes",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Artist_Major",
+   "trait_SexualOrientation_WooHooInterests_Male",
+   "trait_CivicPolicy_UtilityProduction",
+   "trait_Umbrella_User",
+   "trait_GenderOptions_Lactate_Can",
+   "trait_SimPreference_Dislikes_Communication_SmallTalk",
+   "TURBODRIVER:WickedWhims_Trait_PeripheralTraits_HasDefaults",
+   "trait_adult",
+   "trait_GenderOptions_AttractedTo_NotFemale",
+   "trait_Hidden_UniversityEnrollment_HasSeenEnrollmentInfo",
+   "trait_SimPreference_Dislikes_Music_Electronica",
+   "trait_Handedness_Right",
+   "trait_Umbrella_Preference_Adult_1",
+   "trait_RelExpectations_WoohooExclusivity_Yes",
+   "trait_SimPreference_Likes_Activities_Fitness",
+   "trait_GenderOptions_Pregnancy_CanNotImpregnate",
+   "TURBODRIVER:WickedWhims_Trait_Personality_Archetype_Sinister_Minor"
+  ],
+  "aspiration": "Track_Family_SuperParent",
+  "aspiration_stbl": 3099076333,
+  "household_funds": 11709,
+  "careers": [
+   {
+    "id": "career_Adult_Culinary",
+    "track_id": "Culinary_Track1",
+    "track_stbl": 4280443893,
+    "title_stbl": 1520755172,
+    "level": 3,
+    "at_work": false
+   }
+  ],
+  "skills": [
+   {
+    "id": "statistic_Skill_AdultMajor_HomestyleCooking",
+    "stbl": 3133829100,
+    "level": 4
+   },
+   {
+    "id": "statistic_Skill_Bowling",
+    "stbl": 4072031435,
+    "level": 3
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Photography",
+    "stbl": 1563788065,
+    "level": 3
+   },
+   {
+    "id": "skill_Fitness",
+    "stbl": 656926678,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_CrossStitch",
+    "stbl": 430081370,
+    "level": 2
+   },
+   {
+    "id": "statistic_Skill_AdultMajor_Writing",
+    "stbl": 143749022,
+    "level": 2
+   }
+  ],
+  "mood": "Mood_Sad",
+  "buffs": [
+   {
+    "id": "buff_Holidays_Visible_Failure",
+    "name_stbl": 459857116,
+    "reason_stbl": 314962836
+   },
+   {
+    "id": "Buff_Forgotten_Birthday",
+    "name_stbl": 4078015187,
+    "reason_stbl": 2115690017
+   },
+   {
+    "id": "buff_Environment_BBGameplayEffects_GoodEnvironmentSmall",
+    "name_stbl": 1899004182,
+    "reason_stbl": 673048548
+   },
+   {
+    "id": "Buffs_CoreSocialBuffs_MadeADeepConnection",
+    "name_stbl": 3509779125,
+    "reason_stbl": 27785670
+   }
+  ],
+  "activities": [],
+  "situations": [
+   {
+    "id": "situation_NPCInvite_Restaurant_Date",
+    "stbl": null,
+    "role": "jobs_NPCInvites_Restaurant_Actor_Target",
+    "role_stbl": null
+   },
+   {
+    "id": "Situation_Restaurant_PlayerGroup_Idle",
+    "stbl": null,
+    "role": "jobs_Venue_Restaurant_PlayerGroup_Idle",
+    "role_stbl": null
+   }
+  ],
+  "social_connections": [
+   {
+    "id": "152301827798007883",
+    "name": "tal or akiva",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 34.5,
+    "romance": 15.6,
+    "bits": [
+     "relbit_SocialContext_Casual",
+     "RomanticCombo_RomanticInterest",
+     "friendship-acquaintances",
+     "TURBODRIVER:WickedWhims_RelBit_ShortTerm_RecentlyHadSocialInteraction",
+     "SpecialBits_Greeted",
+     "relationshipbit_Compatibility_Amazing",
+     "relbit_SocialContext_Fun_Casual",
+     "has_met",
+     "HasBeenFriends",
+     "HaveBeenRomantic",
+     "romantic_FirstKiss",
+     "lifeMilestoneBit_FellInLove",
+     "relbit_SocialContext_Romance_Casual",
+     "bit_NoLongerFriends",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Relationships_Persistent_Boredom_Reset",
+     "TURBODRIVER:WickedWhims_RelBit_Relationship_Archetype_Hint_Minor",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None"
+    ],
+    "reverse_bits": []
+   },
+   {
+    "id": "949439442525423711",
+    "name": "Kenya Bower",
+    "gender": "FEMALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 47.5,
+    "romance": 0.0,
+    "bits": [
+     "friendship-friend",
+     "relbit_SocialContext_Fun_Casual",
+     "has_met",
+     "HasBeenFriends",
+     "relbit_SocialContext_Friendship_Friendly",
+     "neighbor",
+     "multi_unit_neighbor",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "shortTermBits_healedNegativeSentiment",
+     "sentimentBit_Actor_CloseTo_Target_ST_generic"
+    ],
+    "reverse_bits": [
+     "sentimentBit_Actor_MotivatedBy_Target_ST_FriendlyAdvice",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_None"
+    ]
+   },
+   {
+    "id": "440532443741029022",
+    "name": "Beatrix Ross",
+    "gender": "FEMALE",
+    "age": "YOUNGADULT",
+    "same_household": false,
+    "friendship": 25.4,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Amazing",
+     "has_met",
+     "relbit_SocialContext_Awkwardness_Casual",
+     "relbit_SocialContext_Romance_Casual",
+     "relbit_SocialContext_Friendship_Friendly",
+     "relbit_SocialContext_Fun_Casual",
+     "SpecialBits_Greeted",
+     "neighbor",
+     "multi_unit_neighbor",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "shortTermBits_healedNegativeSentiment"
+    ],
+    "reverse_bits": [
+     "sentimentBit_Actor_CloseTo_Target_ST_generic"
+    ]
+   },
+   {
+    "id": "1010237970797495008",
+    "name": "Badin Sinaga",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 0.0,
+    "romance": 15.8,
+    "bits": [
+     "friendship-acquaintances",
+     "RomanticCombo_RomanticInterest",
+     "HaveBeenRomantic",
+     "has_met",
+     "relBit_Attraction_SuppressChangeBehavior"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_3_Actor_NeutralTo_Target"
+    ]
+   },
+   {
+    "id": "312179698725487991",
+    "name": "Panya Li",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 15.5,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Bad",
+     "relbit_SocialContext_Casual",
+     "has_met",
+     "relbit_SocialContext_Fun_Casual",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_Attraction_3_Actor_NeutralTo_Target",
+     "relBit_MultiUnit_TenantToLandlord"
+    ],
+    "reverse_bits": [
+     "relBit_MultiUnit_LandlordToTenant"
+    ]
+   },
+   {
+    "id": "818834826890642485",
+    "name": "Dante Nadeau",
+    "gender": "MALE",
+    "age": "ADULT",
+    "same_household": false,
+    "friendship": 42.2,
+    "romance": 0.0,
+    "bits": [
+     "friendship-friend",
+     "has_met",
+     "HasBeenFriends",
+     "relbit_SocialContext_Casual",
+     "relBit_Attraction_SuppressChangeBehavior",
+     "relBit_Attraction_4_Actor_AttractedTo_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_VeryLow"
+    ],
+    "reverse_bits": [
+     "relBit_Attraction_1_Actor_VeryRepelledBy_Target",
+     "TURBODRIVER:WickedWhims_RelBit_Attractiveness_Visual_Medium"
+    ]
+   },
+   {
+    "id": "152301827958616155",
+    "name": "Xochitl Luna",
+    "gender": "FEMALE",
+    "age": "YOUNGADULT",
+    "same_household": false,
+    "friendship": 30.9,
+    "romance": 0.0,
+    "bits": [
+     "friendship-acquaintances",
+     "relationshipbit_Compatibility_Good",
+     "has_met",
+     "relbit_SocialContext_Fun_Casual",
+     "relbit_SocialContext_Casual",
+     "neighbor",
+     "relBit_Attraction_SuppressChangeBehavior"
+    ],
+    "reverse_bits": []
+   }
+  ]
+ },
+ "target": null,
+ "nearby_sims": [
+  {
+   "name": "Victor Feng",
+   "species": "HUMAN",
+   "dist_m": 1.7,
+   "activity_stbl": 4064638542
+  },
+  {
+   "name": "Tina Tinker",
+   "species": "HUMAN",
+   "dist_m": 2.4,
+   "activity_stbl": 4064638542
+  },
+  {
+   "name": "Jay Robles",
+   "species": "HUMAN",
+   "dist_m": 8.6,
+   "activity_stbl": null
+  },
+  {
+   "name": "Craig Mock",
+   "species": "HUMAN",
+   "dist_m": 8.8,
+   "activity_stbl": null
+  }
+ ],
+ "renovation_delta": 1425,
+ "_language": "English"
+}

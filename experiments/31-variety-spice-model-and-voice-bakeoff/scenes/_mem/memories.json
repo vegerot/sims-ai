@@ -1,0 +1,1324 @@
+{
+  "updated_at": 1794038347.3,
+  "pair_count": 57,
+  "pairs": {
+    "Alex Keen :: Mortimer Goth": [
+      {
+        "ts": 1792645006.5,
+        "lot": null,
+        "interaction": "sim_BeAffectionate",
+        "outcome": null,
+        "text": "Alex Keen: I like being near you. There—said it before I could overthink it.\nMortimer Goth: How wonderfully direct. I’m rather glad you did."
+      },
+      {
+        "ts": 1792645006.5,
+        "lot": null,
+        "interaction": "sim_BeAffectionate",
+        "outcome": null,
+        "text": "Alex Keen: I’m trying to be affectionate. This feels oddly complicated.\nMortimer Goth: And yet, quite sweet. I may have to write it down."
+      },
+      {
+        "ts": 1792645006.5,
+        "lot": null,
+        "interaction": "mixer_Social_GetToKnow_Friendly_STC",
+        "outcome": null,
+        "text": "Mortimer: I’m always curious what makes someone tick. What do you do for adventure?\nAlex: Climb, explore… that sort of thing. I’m more comfortable when everything’s where it belongs. Usually."
+      }
+    ],
+    "Alex Keen :: Liberty Lee": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "Respectful Introduction",
+        "outcome": "SUCCESS",
+        "text": "Liberty: Hi, I’m Liberty. Nice to meet you—sorry, I nearly introduced myself to that lamp.\nAlex: Alex. Nice to meet you too. The lamp seems neat, at least."
+      },
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "Discuss Local Fishing Spots",
+        "outcome": "SUCCESS",
+        "text": "Liberty: There’s a good fishing spot nearby—quiet, scenic, and only mildly threatening to my balance.\nAlex: I’m in. I’ll bring a tidy tackle box; you can keep an eye on the scenery."
+      },
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "Discuss Logic Puzzles",
+        "outcome": "SUCCESS",
+        "text": "Liberty: Logic puzzles are fun because every clue fits somewhere. Unlike my feet, apparently.\nAlex: You’re good at them. And I can keep the pieces in a neat little pile."
+      },
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "Chat",
+        "outcome": "SUCCESS",
+        "text": "Liberty Lee: You make even a pile of puzzle pieces feel reassuringly organized. It’s oddly sweet.\nAlex Keen: I’ll take oddly sweet. You make falling over sound like a hobby."
+      },
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: what do you think of my baking technique?\nLiberty Lee: Hard to judge without seeing it—but please don’t make me taste-test while I’m nauseous."
+      },
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Liberty Lee: Hi, I’m Liberty. Is the loveseat more comfortable than the karaoke?\nAlex Keen: Alex. Definitely. The loveseat hasn’t hurt my eardrums yet."
+      }
+    ],
+    "Alex Keen :: Geoffrey Landgraab": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: i'm trying to watch world culture network on this tiny tv, want to join me?\nGeoffrey Landgraab: Certainly. Though I may need to sit very still to fit in the picture."
+      }
+    ],
+    "Alex Keen :: Rieko Okada": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Residential",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: Is my living room minimalist or just empty?\nRieko Okada: Empty. But in a fancy way, because you have a loveseat."
+      }
+    ],
+    "Alex Keen :: Mary Greenburg": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: I like your butt.\nMary Greenburg: Well! That’s a bold review from a stranger at karaoke. I’ll take it as a compliment."
+      }
+    ],
+    "Alex Keen :: Lucia Markovic": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "Rude Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: You’re very attractive. I’m Alex. That was the polite version.\nLucia Markovic: And the rude version? Go on—I was getting bored."
+      },
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Lucia Markovic: *waves* Still auditioning compliments, Alex?\nAlex Keen: Only if you’re still judging them. You look like a tough panel."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "nonTouching_Unpaired_Greeting_Wave",
+        "outcome": "SUCCESS",
+        "text": "Lucia Markovic: Hi, Alex! That was a fearless performance. I mean that as a compliment.\nAlex Keen: Thanks. I think. Your wave is much less dangerous than my singing."
+      }
+    ],
+    "Akira Kibo :: Alex Keen": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: I’m Alex. That was almost a normal introduction—karaoke’s improving my manners.\nAkira Kibo: Akira. Good to meet you. Let’s see if your singing’s as smooth as your greeting."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Akira Kibo: Hey, Alex. You look like you’re having a very serious conversation with that loveseat.\nAlex Keen: It’s listening better than the karaoke machine. Hi, Akira."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Akira Kibo: Hey, Alex. The cloud chair’s treating me better than the karaoke machine treats anyone.\nAlex Keen: Hi, Akira. I’m trying not to judge it, but it’s making that difficult."
+      }
+    ],
+    "Alex Keen :: Miko Ojo": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Alex Keen: Hey, Miko. That was a smooth performance—mind if I say hello before the next song?\nMiko Ojo: Hi, Alex. Sure. I’m taking a break from singing and pretending I’m not bored."
+      }
+    ],
+    "Alex Keen :: Mateo Markovic": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "nonTouching_Unpaired_Greeting_Wave",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Hey, Mateo. That wave looked confident—are you saving that energy for the karaoke machine?\nMateo Markovic: Absolutely. I’m fresh from the outdoors and ready to embarrass myself indoors. Your turn."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Mateo Markovic: Mateo. I’m new here—and your dancing suggests the karaoke machine’s not the only one taking risks.\nAlex Keen: Alex. Fair. At least the machine can’t see me dance. Wait—it’s facing me. Awkward."
+      }
+    ],
+    "Alex Keen :: Junko Uchida": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "Funny Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: I’m Alex. I’d make a joke about my singing, but the machine already gave me a compliment.\nJunko Uchida: Junko. It has excellent taste—or very low standards. Now, what are you ordering at the bar?"
+      }
+    ],
+    "Alex Keen :: Casey Gary": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "Tomarani Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: I’m Alex. I’d say the karaoke here is music to my ears, but they’re still recovering.\nCasey Gary: Casey. I’m trying to relax, but now I feel like I should put in a better performance."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "Throw Drink",
+        "outcome": "SUCCESS",
+        "text": "Casey Gary: Your confidence is getting on my nerves. There—now we’re both wearing the evening.\nAlex Keen: You threw your drink at me. I was expecting a critique, not a beverage."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Casey Gary: Hi. I’m Casey. I’m waving because my face hasn’t agreed to do anything else.\nAlex Keen: Hi, Casey. I’m Alex. The loveseat and I were just getting comfortable, but I can make room."
+      }
+    ],
+    "Alex Keen :: Faiz Jaleel": [
+      {
+        "ts": 1792645006.7,
+        "lot": "Karaoke Bar",
+        "interaction": "nonTouching_Unpaired_Greeting_Wave",
+        "outcome": "SUCCESS",
+        "text": "Faiz Jaleel: Hey, Alex! The room’s got great energy—even the karaoke machine’s cheering you on.\nAlex Keen: Thanks. I think it was cheering for the song to end. I'll take the win."
+      }
+    ],
+    "Alex Keen :: Anaya Jang": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Enthuse about Guitar Solos",
+        "outcome": "SUCCESS",
+        "text": "Anaya Jang: Guitar solos are tiny emotional gym sessions—now I’m swooning, and possibly queasy.\nAlex Keen: That solo shredded harder than my workout plan. I’m satisfied, playful, and not stealing the guitar."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Kiss",
+        "outcome": "SUCCESS",
+        "text": "Anaya Jang: That kiss deserves a gallery opening. The gym’s our studio; ignore the nausea critic.\nAlex Keen: Five stars. I’m very satisfied, and I haven’t even tried to steal the spotlight."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Talk about Marriage",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Marriage is like this loveseat: sturdy, romantic, and best inspected before signing anything.\nAnaya Jang: I’m already swooning. Let’s make our vows dramatic enough for a gallery opening."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Compliment Appearance",
+        "outcome": "SUCCESS",
+        "text": "Anaya Jang: You look wonderful—like a masterpiece that knows where the gym’s comfy loveseat is.\nAlex Keen: Thanks. You look amazing too; I’d steal that compliment, but I’m trying to be neat."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Confess Attraction",
+        "outcome": "SUCCESS",
+        "text": "Anaya Jang: I’m attracted to you, Alex. Even this gym loveseat can’t distract me from the masterpiece beside me.\nAlex Keen: That’s flattering. I’d make a joke, but I’m tired, playful, and suspiciously close to needing the restroom."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Pick-up Line",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Are you a gym playlist? Because you make this tired adventurer want one more set—and possibly a date.\nAnaya Jang: That was charming. I’m flattered—and this loveseat has excellent taste in romantic scenery."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Joke about Body Hair",
+        "outcome": "FAILURE",
+        "text": "Anaya Jang: I had a body-hair joke, but it fell flat—like our date, apparently. Still, you’re gorgeous.\nAlex Keen: I’m too tired to laugh, but I’ll sit here awkwardly and admire your commitment to the bit."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Flirt",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Your flirting has better stamina than I do. I’m tired, but the loveseat and you are both dangerously comfortable.\nAnaya Jang: A neat, adventurous kleptomaniac flirting at the gym—how romantic. Just don’t steal my heart and the weights."
+      }
+    ],
+    "Alex Keen :: Katrina Caliente": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Katrina Caliente: Hi, Alex. You look remarkably confident for someone sobering up.\nAlex Keen: Thanks. I’m hungry, but not desperate enough to steal the loveseat. Yet."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Alex Keen: Hi again, Katrina. I’m sitting very neatly, if that helps.\nKatrina Caliente: It does. The loveseat seems safe—for now."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Library",
+        "interaction": "Share Steamy Story",
+        "outcome": "FAILURE",
+        "text": "Katrina Caliente: I shared a steamy story. The library’s silence made it sound like a book report.\nAlex Keen: I’m too hungry and tired to blush. Also, I think that book just judged us."
+      }
+    ],
+    "Alex Keen :: Lucha Harjo": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "Funny Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Hello! I’m Alex. I promise I’m only judging the karaoke machine a little.\nLucha Harjo: Lucha. Good. It’s been murdering songs all night, and I’m too angry to stop it politely."
+      }
+    ],
+    "Alex Keen :: Ash Harjo": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Hi, I’m Alex. The karaoke machine looks like it could use a stern introduction too.\nAsh Harjo: Ash. I’ll introduce myself; you can keep an eye on the machine. It seems suspicious."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: שלום, מה שלומך?\nAsh Harjo: בסדר, תודה. מנסה להחליט אם לשיר או לתת למכונה עוד רגע לחשוב על זה."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "Get to Know",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: So, Ash—what do you like doing when you’re not negotiating with suspicious karaoke machines?\nAsh Harjo: Making things. Usually they’re less temperamental than this machine. Usually."
+      }
+    ],
+    "Alex Keen :: Megumi Ito": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Karaoke Bar",
+        "interaction": "socialMixer_Greetings_Wave",
+        "outcome": "NONE",
+        "text": "Alex Keen: Hi, Megumi. I’m Alex—trying to look casual, despite the karaoke machine’s best efforts.\nMegumi Ito: Megumi. You’re doing well. I’m only embarrassed on the machine’s behalf."
+      }
+    ],
+    "Alex Keen :: Tina Peeping": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Residential",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Hi, I’m Alex. I’d offer you something to drink, but I’m still recovering from a very disappointing quick meal.\nTina Peeping: Tina. That’s a dramatic introduction for someone who’s barely met a sandwich. I like you already."
+      }
+    ],
+    "Alex Keen :: Nalani Mahi'ai": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Discuss Local Fishing Spots",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: The river by the old bridge is good fishing. I’m stressed, so I’m watching sports instead of stealing a kayak.\nNalani Mahi'ai: Try the island cove! I’d tell you more, but this treadmill is making me sweat like a tropical storm."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Get to Know",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: So, you’re Child of the Ocean and cheerful. I’m adventurous, neat, and currently losing a fight with this crunch machine.\nNalani Mahi'ai: And you’re stressed but still curious? I’m energized, sweating profusely, and somehow making friends at treadmill speed."
+      }
+    ],
+    "Alex Keen :: Laura Paz": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Gym",
+        "interaction": "Funny Introduction",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: I’m Alex: confident, adventurous, and currently negotiating with my tired legs. Nice to meet you!\nLaura Paz: Laura. I’ve had a good workout, so I’m energized enough to politely ignore your flirting."
+      }
+    ],
+    "Alex Keen :: Stacy Zeigler": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Library",
+        "interaction": "Ask about Day",
+        "outcome": "SUCCESS",
+        "text": "Stacy Zeigler: How’s your day? Mine’s a little gloomy, but the library is keeping things nicely organized.\nAlex Keen: Pretty good—just discovered who I am. Also hungry, tired, and apparently meeting a wealthy weirdo."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Library",
+        "interaction": "Give Fake Bad News",
+        "outcome": "SUCCESS",
+        "text": "Alex Keen: Terrible news: the library books have discovered how quiet it is and they’re all moving in.\nStacy Zeigler: I’m sad, not gullible. Though I’d like to inspect the lease terms."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Library",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: fuck you!\nStacy Zeigler: That’s a bold library voice. I’ll file it under “needs editing."
+      },
+      {
+        "ts": 1792645006.8,
+        "lot": "Library",
+        "interaction": "Pry for Secrets",
+        "outcome": "SUCCESS",
+        "text": "Stacy Zeigler: I found your secret: you’re flirting with a meme while slowly losing a battle with that chair.\nAlex Keen: That’s private. The meme and I are taking things one exhausted scroll at a time."
+      }
+    ],
+    "solo::Alex Keen": [
+      {
+        "ts": 1792645006.8,
+        "lot": "Library",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Alex Keen: Playful, hungry, and exhausted—so I’m meme-scrolling from this chair like it’s a wellness plan."
+      }
+    ],
+    "Hitomi Ishii :: Kenya Bower": [
+      {
+        "ts": 1792724281.4,
+        "lot": "Boiling Point",
+        "interaction": "Be Seated",
+        "outcome": "SUCCESS",
+        "text": "Hitomi Ishii: Your table is ready. Please sit before my social battery files a formal complaint.\nKenya Bower: Gladly. My date was horrible, but at least this chair has excellent posture."
+      },
+      {
+        "ts": 1793091197.1,
+        "lot": "Boiling Point",
+        "interaction": "Scare",
+        "outcome": "SUCCESS",
+        "text": "Hitomi Ishii: BOO! The host has mastered one social skill: startling.\nKenya Bower: A restaurant scare? Finally, dinner comes with ambience."
+      },
+      {
+        "ts": 1793091229.2,
+        "lot": "Boiling Point",
+        "interaction": "Talk about Cooking",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: Cooking keeps me calm. Unlike my dating history.\nHitomi Ishii: Excellent. Please keep the calm away from my kitchen."
+      }
+    ],
+    "Carlos López :: yuvi ronen": [
+      {
+        "ts": 1792743130.2,
+        "lot": "Planet Honey Pop!",
+        "interaction": "Wait For Drink",
+        "outcome": "SUCCESS",
+        "text": "yuvi ronen: Waiting for a drink at karaoke feels like a very quiet audition.\nCarlos López: Stay confident. The bartender’s judging your posture, not your singing."
+      },
+      {
+        "ts": 1792743146.4,
+        "lot": "Planet Honey Pop!",
+        "interaction": "Wait For Drink",
+        "outcome": "SUCCESS",
+        "text": "yuvi ronen: I’m waiting for a drink, not a dramatic plot twist.\nCarlos López: At this bar, both arrive with a tiny umbrella."
+      }
+    ],
+    "liatt chonen :: yuvi ronen": [
+      {
+        "ts": 1792747996.7,
+        "lot": "Planet Honey Pop!",
+        "interaction": "Ask to Seductive Dance",
+        "outcome": "SUCCESS",
+        "text": "liatt chonen: Dance with me; I promise the karaoke won’t judge.\nyuvi ronen: Gladly. I’ve been waiting for a game with better rules."
+      },
+      {
+        "ts": 1792748030.8,
+        "lot": "Planet Honey Pop!",
+        "interaction": "Whisper Seductively",
+        "outcome": "SUCCESS",
+        "text": "yuvi ronen: Your voice is my favorite sound—even the high notes.\nliatt chonen: Whisper that again; the karaoke machine needs competition."
+      }
+    ],
+    "Kenya Bower :: Liên Sadya": [
+      {
+        "ts": 1793090985.3,
+        "lot": "Boiling Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: My blind date here was a disaster, how is the food?\nLiên Sadya: Better than the date, and thankfully less awkward."
+      }
+    ],
+    "Liên Sadya :: aurora Hussain": [
+      {
+        "ts": 1793100163.3,
+        "lot": "11C Sungai Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: What do you think of my new place?\nLiên Sadya: Cozy! Though the haunted mold deserves its own lease."
+      },
+      {
+        "ts": 1793100640.0,
+        "lot": "11C Sungai Point",
+        "interaction": "sim_text_message",
+        "outcome": "SIM_TEXT",
+        "text": "Liên Sadya: Your date was so bad, even the mold wants distance."
+      },
+      {
+        "ts": 1793102251.4,
+        "lot": "11C Sungai Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: How much is rent here anyway?\nLiên Sadya: §129 a day. The haunted mold doesn’t pay extra—yet."
+      }
+    ],
+    "Jay Robles :: Tala Ruano": [
+      {
+        "ts": 1793116787.9,
+        "lot": "Parkside Place",
+        "interaction": "Ask for Advice",
+        "outcome": "SUCCESS",
+        "text": "Tala Ruano: Dad yelled, I’m tipsy, and school’s a C. Advice?\nJay Robles: Sit with your feelings; preferably somewhere quake-resistant."
+      }
+    ],
+    "Jay Robles :: tal or akiva": [
+      {
+        "ts": 1793119029.3,
+        "lot": "Parkside Place",
+        "interaction": "player_phone_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Jay Robles: Doli is right in the kitchen, don't text me right now!\ntal or akiva: I’m not texting—you’re calling. Also, why is Doli in your kitchen?"
+      }
+    ],
+    "solo::max sexy": [
+      {
+        "ts": 1793123180.7,
+        "lot": "Catscratch Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "max sexy: This couch needs pillows, and this cooking show needs snacks. I’m a visionary."
+      }
+    ],
+    "Catarina Lynx :: max sexy": [
+      {
+        "ts": 1793122456.2,
+        "lot": "Catscratch Cottage",
+        "interaction": "Complain about",
+        "outcome": "SUCCESS",
+        "text": "max sexy: This snow is lovely, but the TV says add butter to everything.\nCatarina Lynx: At least the snow isn’t sitting on those pillowless pillows."
+      },
+      {
+        "ts": 1793122515.2,
+        "lot": "Catscratch Cottage",
+        "interaction": "Share Spirit",
+        "outcome": "SUCCESS",
+        "text": "max sexy: First snow, warm TV, questionable pillows—holiday spirit achieved.\nCatarina Lynx: Lovely. Now let’s argue whether snow improves soup."
+      },
+      {
+        "ts": 1793122550.1,
+        "lot": "Catscratch Cottage",
+        "interaction": "Talk about Cooking",
+        "outcome": "SUCCESS",
+        "text": "Catarina Lynx: Cooking shows say butter fixes everything. Even these pillows.\nmax sexy: I’ll make dinner. My logic skills can troubleshoot the oven."
+      },
+      {
+        "ts": 1793122568.2,
+        "lot": "Catscratch Cottage",
+        "interaction": "Complain about",
+        "outcome": "SUCCESS",
+        "text": "max sexy: The cooking channel says butter fixes winter. I object.\nCatarina Lynx: I complain professionally; my coworkers are Bob Pancakes. Sufficiently."
+      },
+      {
+        "ts": 1793122596.3,
+        "lot": "Catscratch Cottage",
+        "interaction": "Talk about Current Weather",
+        "outcome": "SUCCESS",
+        "text": "max sexy: Snow’s lovely; unlike these pillows, it actually has some substance.\nCatarina Lynx: Give it time. The snow hasn’t met our cooking channel yet."
+      },
+      {
+        "ts": 1793122617.2,
+        "lot": "Catscratch Cottage",
+        "interaction": "Discuss Local Fishing Spots",
+        "outcome": "SUCCESS",
+        "text": "max sexy: Best fishing spots? Somewhere the snow can’t judge my casting.\nCatarina Lynx: Try the lake. The fish appreciate a little culinary ambition."
+      },
+      {
+        "ts": 1793123795.0,
+        "lot": "Catscratch Cottage",
+        "interaction": "Deep Conversation",
+        "outcome": "SUCCESS",
+        "text": "Catarina Lynx: Deep thoughts: why does our cottage have two bathrooms?\nmax sexy: Nerd Brain says one bed, two baths is efficient plumbing."
+      },
+      {
+        "ts": 1793123862.2,
+        "lot": "Catscratch Cottage",
+        "interaction": "Tell Outrageous Story",
+        "outcome": "SUCCESS",
+        "text": "max sexy: I watched one cooking show; now I’m legally a chef.\nCatarina Lynx: Adorable. I’ll tell the kitchen you’re coming."
+      }
+    ],
+    "solo::aurora Hussain": [
+      {
+        "ts": 1793111067.9,
+        "lot": "11C Sungai Point",
+        "interaction": "drama_reaction",
+        "outcome": "DRAMA_MOMENT",
+        "text": "aurora Hussain: Finally, a satisfying encounter. The landlord’s one-star rating can stay."
+      },
+      {
+        "ts": 1793245155.0,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: This book’s fascinating; my rent’s still the plot twist."
+      },
+      {
+        "ts": 1793245178.7,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: I’m happy, well-fed, and renting haunted square footage."
+      },
+      {
+        "ts": 1793245593.6,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: Sports are simpler than romance: fewer awkward landlord meetings."
+      },
+      {
+        "ts": 1793245857.5,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: This romance novel has better chemistry than my landlord meetings."
+      },
+      {
+        "ts": 1793246013.8,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: I’m reading about unlikely coincidences; my landlord’s probably in chapter two."
+      },
+      {
+        "ts": 1793270262.3,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: This politician’s making less sense than my last cooking experiment."
+      },
+      {
+        "ts": 1793270350.0,
+        "lot": "11C Sungai Point",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: Pretty tasty, actually. Even breakfast survived my coordination."
+      }
+    ],
+    "solo::Panya Li": [
+      {
+        "ts": 1793272444.8,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Panya Li: I’m blushing at a TV romance, and you’re right there."
+      },
+      {
+        "ts": 1793324875.1,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Panya Li: Она счастлива и сыта, а я тут читаю мысли. Странное хобби."
+      }
+    ],
+    "Panya Li :: aurora Hussain": [
+      {
+        "ts": 1793271035.6,
+        "lot": "11C Sungai Point",
+        "interaction": "player_phone_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: Heads up: I cooked breakfast today\nPanya Li: Breakfast, huh? I’m impressed. Should I be worried?"
+      },
+      {
+        "ts": 1793272334.5,
+        "lot": "11C Sungai Point",
+        "interaction": "Funny Introduction",
+        "outcome": "SUCCESS",
+        "text": "Panya Li: I practiced this introduction on the romance channel. You’re welcome.\naurora Hussain: That explains the awkward delivery. At least you’re cute."
+      },
+      {
+        "ts": 1793272555.1,
+        "lot": "11C Sungai Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: Are you watching the TV or watching me?\nPanya Li: You, unfortunately. The TV has better dialogue, though."
+      },
+      {
+        "ts": 1793274144.6,
+        "lot": "11C Sungai Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: Heads up: is my rent going up next month?\nPanya Li: Not next month. I’m trying to keep this conversation charming."
+      },
+      {
+        "ts": 1793324910.0,
+        "lot": "11C Sungai Point",
+        "interaction": "Tomarani Introduction",
+        "outcome": "SUCCESS",
+        "text": "aurora Hussain: Nice to meet you. I promise this greeting’s freshly cooked.\nPanya Li: Likewise. You make introductions sound surprisingly appetizing."
+      }
+    ],
+    "Chánh Linh :: aurora Hussain": [
+      {
+        "ts": 1793093929.3,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Chánh Linh: This neighbor finds me attractive; the mold has competition."
+      },
+      {
+        "ts": 1793324957.2,
+        "lot": "11C Sungai Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: i hate you you smell like fish\nChánh Linh: That’s my garden, not me. Though I did plant fish."
+      },
+      {
+        "ts": 1793324984.6,
+        "lot": "11C Sungai Point",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "aurora Hussain: lies ik you dont shower\nChánh Linh: I’m gardening in this rain. Nature’s giving me the full rinse."
+      }
+    ],
+    "Kenya Bower :: Yasemin Tinker": [
+      {
+        "ts": 1793336380.9,
+        "lot": "Boiling Point",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: Hi, Yasemin. I’m Kenya, and suddenly very aware of my hair.\nYasemin Tinker: Nice to meet you. Should I pretend not to notice you blushing?"
+      },
+      {
+        "ts": 1793336445.4,
+        "lot": "Boiling Point",
+        "interaction": "Flirt",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: You make this restaurant feel less like a terrible date.\nYasemin Tinker: Flattering, but my wife’s two tables away. Try subtle."
+      },
+      {
+        "ts": 1793336482.7,
+        "lot": "Boiling Point",
+        "interaction": "Confess Attraction",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: I’m attracted to you, even with your wife nearby.\nYasemin Tinker: Bold confession. My wife’s close enough to hear the sequel."
+      },
+      {
+        "ts": 1793336524.9,
+        "lot": "Boiling Point",
+        "interaction": "Ask about Favorite Author",
+        "outcome": "SUCCESS",
+        "text": "Yasemin Tinker: Who’s your favorite author? I’m hoping you say someone dangerous.\nKenya Bower: Agatha Christie. Murder mysteries have better endings than dates."
+      }
+    ],
+    "solo::Liên Sadya": [
+      {
+        "ts": 1793104048.9,
+        "lot": "11C Sungai Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Liên Sadya: Aurora’s date was horrible; even the mold has standards."
+      },
+      {
+        "ts": 1793336555.6,
+        "lot": "Boiling Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Liên Sadya: I’m furious enough to critique this tea’s entire wardrobe."
+      }
+    ],
+    "Alika Kahananui :: Kenya Bower": [
+      {
+        "ts": 1793336603.5,
+        "lot": "Boiling Point",
+        "interaction": "Talk about Current Weather",
+        "outcome": "SUCCESS",
+        "text": "Alika Kahananui: This heat is ruining my drink. The weather has terrible taste.\nKenya Bower: You’re blaming the weather? That’s the first decent excuse tonight."
+      }
+    ],
+    "solo::Hitomi Ishii": [
+      {
+        "ts": 1793336779.2,
+        "lot": "Boiling Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Hitomi Ishii: I’m reading your thoughts, and somehow they’re louder than this restaurant."
+      }
+    ],
+    "Kenya Bower :: Olive Tinker": [
+      {
+        "ts": 1792724950.0,
+        "lot": "Boiling Point",
+        "interaction": "Show Off Outfit",
+        "outcome": "SUCCESS",
+        "text": "Olive Tinker: This outfit says “future artist,” while my report card says “please stop drawing in the margins.\nKenya Bower: Sharp look. I’m sad, exhausted, and still dressed worse than you. That’s an achievement."
+      },
+      {
+        "ts": 1793336569.1,
+        "lot": "Boiling Point",
+        "interaction": "Complain about",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: В этом ресторане даже меню выглядит так, будто пережило ужасное свидание.\nOlive Tinker: Зато меню не жалуется. Хотя, может, ему просто неловко."
+      },
+      {
+        "ts": 1793336583.6,
+        "lot": "Boiling Point",
+        "interaction": "Show Off Outfit",
+        "outcome": "SUCCESS",
+        "text": "Olive Tinker: This outfit has main-character energy, and I’m accepting compliments.\nKenya Bower: You look fantastic. I’d steal your style, but my budget said no."
+      },
+      {
+        "ts": 1793336635.7,
+        "lot": "Boiling Point",
+        "interaction": "Tell Funny Story",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: A waiter told a joke so dry, even this menu asked for water.\nOlive Tinker: That’s good. The menu’s the funniest thing here, and it’s not even trying."
+      },
+      {
+        "ts": 1793336655.4,
+        "lot": "Boiling Point",
+        "interaction": "Tell Urban Legend",
+        "outcome": "SUCCESS",
+        "text": "Olive Tinker: They say a ghost haunts this restaurant, judging everyone’s order.\nKenya Bower: Finally, someone here has standards. Is it taking reservations?"
+      },
+      {
+        "ts": 1793336681.3,
+        "lot": "Boiling Point",
+        "interaction": "Do an Impression",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: You’re the waiter taking notes. I’m ordering a personality.\nOlive Tinker: And you’re the diner pretending confidence is on the menu."
+      },
+      {
+        "ts": 1793336724.9,
+        "lot": "Boiling Point",
+        "interaction": "Yell At",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: You’re sobering up, and still somehow the loudest thing here.\nOlive Tinker: At least I’m not yelling at a teenager over dinner."
+      },
+      {
+        "ts": 1793336789.0,
+        "lot": "Boiling Point",
+        "interaction": "Joke about Body Hair",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: Body hair is just your skin growing tiny confidence whiskers.\nOlive Tinker: Great, mine’s apparently more confident than I am."
+      }
+    ],
+    "solo::Tina Tinker": [
+      {
+        "ts": 1793336842.0,
+        "lot": "Boiling Point",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Tina Tinker: I’m furious, awkward, and somehow still noticing how attractive you are."
+      }
+    ],
+    "Kenya Bower :: Tina Tinker": [
+      {
+        "ts": 1793336808.8,
+        "lot": "Boiling Point",
+        "interaction": "Romantic Introduction",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: Hi, Tina. You look like trouble I’d happily meet twice.\nTina Tinker: Hi. You’re charming, but I’m still angry, so pace yourself."
+      },
+      {
+        "ts": 1793336828.3,
+        "lot": "Boiling Point",
+        "interaction": "Enthuse about Dogs",
+        "outcome": "FAILURE",
+        "text": "Kenya Bower: Dogs are wonderful. You’re making this weirdly difficult.\nTina Tinker: I’m angry, not auditioning for your dog podcast."
+      },
+      {
+        "ts": 1793336864.0,
+        "lot": "Boiling Point",
+        "interaction": "Embrace",
+        "outcome": "FAILURE",
+        "text": "Kenya Bower: I was going for tender. You got startled furniture.\nTina Tinker: Don’t hug me like your apology has a warranty."
+      }
+    ],
+    "Kenya Bower :: meimei": [
+      {
+        "ts": 1792728043.2,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "Friendly",
+        "outcome": "SUCCESS",
+        "text": "meimei: Woof! (Translation: You seem nice; now let’s bark at that suspicious doorbell together.)\nKenya Bower: Hello, sweetheart. You’re already the most emotionally stable one in this rental."
+      },
+      {
+        "ts": 1792729927.7,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Did you bark at the vacuum while I was at Boiling Point?\nmeimei: Woof! (Translation: I was sad, pent-up, and the vacuum looked suspiciously like a noisy computer.)"
+      },
+      {
+        "ts": 1793091821.2,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: You would not believe what Hitomi did at the restaurant last night!\nmeimei: Woof! (Translation: Tell me everything; I’m already barking at the plot.)"
+      },
+      {
+        "ts": 1793092125.8,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Should we invite gefen upstairs for dinner?\nmeimei: Woof! (Translation: Yes, but I’m inspecting their shoes first.)"
+      },
+      {
+        "ts": 1793336937.2,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "Friendly Introduction",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: Hi, Meimei. You’re the only one here not judging my coat.\nmeimei: Woof! (Translation: Your coat is fine. Your hands look available for play.)"
+      },
+      {
+        "ts": 1793336973.0,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "Ask to Go Potty",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: Meimei, potty break, please. I’m on a tight bladder budget.\nmeimei: Woof! (Translation: Finally, a walk with a clear agenda.)"
+      }
+    ],
+    "Beatrix Ross :: gefen berger": [
+      {
+        "ts": 1793337566.2,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Funny Introduction",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: I’m Gefen, currently stressed but professionally trained in snacks.\nBeatrix Ross: Beatrix. Your introduction has surprisingly good timing with this song."
+      },
+      {
+        "ts": 1793337589.7,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Enthuse About Electronica Music",
+        "outcome": "FAILURE",
+        "text": "gefen berger: I tried to appreciate the electronica. My face filed a complaint.\nBeatrix Ross: Oh. I’ll dance quietly, so the song feels rejected too."
+      },
+      {
+        "ts": 1793337605.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Complain about TV Size",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: This TV is so tiny, I need binoculars for the drama.\nBeatrix Ross: You’re right. The pixels are practically whispering from across the room."
+      },
+      {
+        "ts": 1793337641.4,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Discuss Interests",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: What do you love doing when nobody expects you to socialize?\nBeatrix Ross: Reading at home. Books never make me explain my face."
+      },
+      {
+        "ts": 1793337660.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Enthuse about Fruitcake",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: Fruitcake is festive architecture held together by butter.\nBeatrix Ross: I respect a dessert that can double as a doorstop."
+      },
+      {
+        "ts": 1793337679.6,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Share San Sequoia Secrets",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: San Sequoia’s biggest secret is everyone’s business by lunch.\nBeatrix Ross: Finally, neighborhood news with a decent delivery time."
+      }
+    ],
+    "Kenya Bower :: gefen berger": [
+      {
+        "ts": 1793337780.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_phone_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: I MISS YOU PLEASE COME OVER BBG\nKenya Bower: Miss you too, but I’m home with the dog and comfy."
+      },
+      {
+        "ts": 1793338135.6,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Hug",
+        "outcome": "SUCCESS",
+        "text": "Kenya Bower: You look like you could use a friendly hug.\ngefen berger: Thanks. Let’s pretend my pajamas are intentional."
+      }
+    ],
+    "solo::Beatrix Ross": [
+      {
+        "ts": 1793338167.7,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Beatrix Ross: You’re drinking like clothes are optional, and somehow they are."
+      }
+    ],
+    "solo::Kenya Bower": [
+      {
+        "ts": 1793337130.8,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Thirty simoleons is plenty for one drink and excellent denial."
+      },
+      {
+        "ts": 1793337152.6,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: I’m singing karaoke to flirt with myself. Meimei’s judging the vocals."
+      },
+      {
+        "ts": 1793337188.6,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Fine, I’ll invoice my karaoke audience. Meimei, you’re up."
+      },
+      {
+        "ts": 1793337204.7,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Meimei’s my only audience, and she’s still more loyal than my ex."
+      },
+      {
+        "ts": 1793337226.8,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: She’s broke, I’m broke, and the rent has excellent acoustics."
+      },
+      {
+        "ts": 1793337274.0,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Evicted? Meimei and I become very motivated houseguests."
+      },
+      {
+        "ts": 1793337307.3,
+        "lot": "3 Sequoia Cottage",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: I’m charming in theory. Meimei likes me, and she’s brutally honest."
+      },
+      {
+        "ts": 1793338202.5,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Kenya Bower: Gefen’s tipsy, playful, and thinking deep thoughts in pajamas. I respect the range."
+      }
+    ],
+    "Dante Nadeau :: gefen berger": [
+      {
+        "ts": 1793338103.1,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Toast",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: To your continued success, Dante. Beatrix, please stop auditing my toast.\nDante Nadeau: Cheers. I was just wondering why you picked me."
+      },
+      {
+        "ts": 1793338307.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Ask For",
+        "outcome": "SUCCESS",
+        "text": "Dante Nadeau: A kiddie pool? Absolutely. Tiny splashes, premium childcare.\ngefen berger: Yes, please. My little one deserves an aquatic kingdom."
+      }
+    ],
+    "solo::Dante Nadeau": [
+      {
+        "ts": 1793338084.0,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Dante Nadeau: אני קורא את המחשבות שלה, והן כנראה עסוקות בכלים המלוכלכים."
+      },
+      {
+        "ts": 1793338119.5,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Dante Nadeau: She’s uncomfortable, I’m flirty. This conversation has terrible lighting."
+      },
+      {
+        "ts": 1793338353.7,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Dante Nadeau: She’s playing darts in workout clothes. Somehow, I’m still losing."
+      },
+      {
+        "ts": 1793338425.5,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Dante Nadeau: She’s hiding under the covers, and I’m still watching cooking shows."
+      },
+      {
+        "ts": 1793338457.3,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Dante Nadeau: I saw too much, and somehow you’re still the one uncomfortable."
+      }
+    ],
+    "Claudia Ha :: gefen berger": [
+      {
+        "ts": 1794015763.0,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Check Up on Table",
+        "outcome": "SUCCESS",
+        "text": "Claudia Ha: Just checking in. Nobody’s stealing anything now.\ngefen berger: Great. I was hoping for service, not a confession."
+      }
+    ],
+    "Ted Diggs :: gefen berger": [
+      {
+        "ts": 1794015609.6,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Request Table",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: Could I get a table before my birthday gets forgotten too?\nTed Diggs: Absolutely. I’ll find you one before the candles melt."
+      },
+      {
+        "ts": 1794015674.4,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Be Seated",
+        "outcome": "SUCCESS",
+        "text": "Ted Diggs: Your table’s ready. I promise, no birthday candles required.\ngefen berger: Great. Tonight, I’m celebrating surviving another deeply mediocre holiday."
+      },
+      {
+        "ts": 1794015716.8,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Request Table",
+        "outcome": "NONE",
+        "text": "gefen berger: Could I request a table where my date can’t hear me panic?\nTed Diggs: Certainly. I’ll find one with excellent panic acoustics."
+      },
+      {
+        "ts": 1794015740.1,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Be Seated",
+        "outcome": "SUCCESS",
+        "text": "Ted Diggs: Your table’s ready. The crowd’s only mildly judging your seating choice.\ngefen berger: Thank you. I’ve had enough judgment from this holiday already."
+      },
+      {
+        "ts": 1794015829.4,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Request Table",
+        "outcome": "NONE",
+        "text": "gefen berger: Could we get a specific table, preferably one with dessert nearby?\nTed Diggs: Certainly. I’ll find one before you start reviewing the furniture."
+      },
+      {
+        "ts": 1794015846.2,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Reserve Table",
+        "outcome": "SUCCESS",
+        "text": "Ted Diggs: Certainly. I’ll find you a table worthy of your standards.\ngefen berger: Good. The furniture already has my approval."
+      },
+      {
+        "ts": 1794015871.5,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Be Seated",
+        "outcome": "SUCCESS",
+        "text": "Ted Diggs: Your table’s ready. I promise, the birthday candles are optional.\ngefen berger: Thanks. A chair remembered me better than my birthday did."
+      }
+    ],
+    "Giancarlo Linder :: gefen berger": [
+      {
+        "ts": 1794015939.8,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Take Order",
+        "outcome": "SUCCESS",
+        "text": "Giancarlo Linder: Salmon and coffee. A bold pairing. I respect the confidence.\ngefen berger: I ordered them, not a personality assessment. Please."
+      }
+    ],
+    "Chánh Linh :: gefen berger": [
+      {
+        "ts": 1794037537.7,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Confront Ghost",
+        "outcome": "FAILURE",
+        "text": "gefen berger: I tried confronting you, and somehow I’m the uncomfortable one.\nChánh Linh: You came in with accusations. I brought absolutely no evidence."
+      }
+    ],
+    "solo::Amie Haley": [
+      {
+        "ts": 1794037919.6,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "Amie Haley: I was checking gefen berger’s thoughts and found absolutely no subtlety."
+      }
+    ],
+    "solo::gefen berger": [
+      {
+        "ts": 1793338048.5,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: I’m thinking about dinner, and somehow it’s judging me back."
+      },
+      {
+        "ts": 1793338261.6,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_ask_active_sim",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: The ball’s judging me less than everyone else, honestly."
+      },
+      {
+        "ts": 1793338273.6,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: I’m dribbling like the basketball owes me rent."
+      },
+      {
+        "ts": 1793338339.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: This drink tastes like a dare I already regret."
+      },
+      {
+        "ts": 1793338381.4,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: I’m bathing in my swimsuit, so privacy is thriving."
+      },
+      {
+        "ts": 1793338521.4,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: Dribbling helps me ignore how boldly that drink lied."
+      },
+      {
+        "ts": 1794015515.2,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "renovation_reaction",
+        "outcome": "RENOVATION",
+        "text": "gefen berger: Fourteen hundred on a restaurant makeover, and I’m still sad."
+      },
+      {
+        "ts": 1794037942.9,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: I’m trying to think romantic thoughts, but my brain’s plating dinner."
+      }
+    ],
+    "solo::tal or akiva": [
+      {
+        "ts": 1794012374.3,
+        "lot": "Glacier",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "tal or akiva: Gefen looks confident enough to make this umbrella feel underdressed."
+      },
+      {
+        "ts": 1794015855.7,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "tal or akiva: She’s sad, I’m tipsy, and somehow we’re having a deep connection."
+      },
+      {
+        "ts": 1794016084.4,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "tal or akiva: That salmon’s outstanding, and I’m trying not to look impressed."
+      },
+      {
+        "ts": 1794037961.3,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_read_thoughts",
+        "outcome": "PLAYER_INITIATED",
+        "text": "tal or akiva: You make this stay-over feel dangerously like a very good idea."
+      }
+    ],
+    "gefen berger :: tal or akiva": [
+      {
+        "ts": 1794012926.0,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Express Admiration",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: You make ambition look surprisingly charming, even in restaurant lighting.\ntal or akiva: You make compliments sound like they came with a thoughtful review."
+      },
+      {
+        "ts": 1794016000.5,
+        "lot": "Pop's Chock'Lit Shoppe",
+        "interaction": "Ask about Physical Attraction",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: Physically, you’re very much my type. Conveniently, I have eyes.\ntal or akiva: Good. I was hoping your eyes had excellent taste."
+      },
+      {
+        "ts": 1794037802.3,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Ask for Sex",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: Want to take this somewhere private, handsome?\ntal or akiva: Absolutely. I was hoping you’d ask."
+      },
+      {
+        "ts": 1794038015.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "player_direct_chat",
+        "outcome": "PLAYER_INITIATED",
+        "text": "gefen berger: fuck me daddy im your cumslut\ntal or akiva: Only if you keep that confidence when I start blushing."
+      },
+      {
+        "ts": 1794038079.8,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "drama_reaction",
+        "outcome": "DRAMA_MOMENT",
+        "text": "gefen berger: You look pretty pleased with yourself, and honestly, same.\ntal or akiva: We’re both happy. Let’s not overthink this one."
+      },
+      {
+        "ts": 1794038091.1,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Flirt",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: You make staying over look dangerously appealing.\ntal or akiva: Careful, I’m already getting comfortable here."
+      },
+      {
+        "ts": 1794038160.4,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "Ask for Sex",
+        "outcome": "SUCCESS",
+        "text": "gefen berger: Round two? Kenya’s close enough to critique our timing.\ntal or akiva: You ask beautifully. I’ll try not to earn a review."
+      },
+      {
+        "ts": 1794038347.3,
+        "lot": "2 Sequoia Cottage",
+        "interaction": "drama_reaction",
+        "outcome": "DRAMA_MOMENT",
+        "text": "gefen berger: Ты так доволен, что даже молчание звучит неприлично.\ntal or akiva: А ты улыбаешься так, будто уже выбираешь имя."
+      }
+    ]
+  }
+}
