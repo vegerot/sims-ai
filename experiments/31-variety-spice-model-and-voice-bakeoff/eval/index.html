@@ -99,8 +99,8 @@ async function rate(section, item, candidate, kind, value) {
     body: JSON.stringify({ rater: rater(), section, item, candidate, kind, value }) });
 }
 
-let DATA, RATINGS = [];
-async function restore() {
+const { data: DATA, ratings: RATINGS } = __INLINE__;  // serve.py inlines data.json and the saved ratings here.
+function restore() {
   state.clear();
   for (const r of RATINGS) if (r.rater === rater()) state.set(k(r.section, r.item, r.candidate, r.kind), r.value);
   render();
@@ -172,11 +172,7 @@ for (const b of document.querySelectorAll('nav button')) b.addEventListener('cli
   window.scrollTo(0, 0);
 });
 
-(async () => {
-  DATA = await (await fetch('data.json')).json();
-  RATINGS = await (await fetch('ratings')).json();  // Relative, so the page also works under the Funnel path.
-  restore();
-})();
+restore();
 </script>
 </body>
 </html>

@@ -1,9 +1,11 @@
 """Local rating page for experiment 31: python3.15 serve.py, then open http://localhost:8731.
 
-Serves index.html, data.json, and the clips in .local/exp31-tts; POST /rate appends to ../human-ratings.jsonl.
-The clips and lines come from her real save and are explicit. It listens on localhost only; to let her rate
+Serves the page with data.json and the saved ratings inlined and gzipped (one round trip instead of three, which
+roughly halved the load over a slow Funnel relay), the clips in .local/exp31-tts, and POST /rate, which appends to
+../human-ratings.jsonl. The clips and lines come from her real save and are explicit. It listens on localhost only; to let her rate
 from her house, publish it with `tailscale funnel --bg --set-path /rate-sims-banter 8731`, and `tailscale funnel reset` afterwards.
 """
+import gzip
 import json
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -26,11 +28,17 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = urlsplit(self.path).path  # Without the query, so '/key.json?x' can't slip past the check below.
-        if path == '/ratings':
+        if path in ('/', '/index.html'):
             rows = [json.loads(l) for l in RATINGS.open(encoding='utf-8')] if RATINGS.exists() else []
-            body = json.dumps(rows, ensure_ascii=False).encode('utf-8')
+            data = json.loads((HERE / 'data.json').read_text(encoding='utf-8'))
+            inline = json.dumps({'data': data, 'ratings': rows}, ensure_ascii=False).replace('</', '<\\/')  # A line can't close the <script>.
+            # Every browser sends Accept-Encoding: gzip, so always compress; the JSON shrinks about 4x.
+            body = gzip.compress((HERE / 'index.html').read_text(encoding='utf-8').replace('__INLINE__', inline).encode('utf-8'))
             self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Content-Encoding', 'gzip')
+            self.send_header('Content-Length', str(len(body)))
+            self.send_header('Cache-Control', 'no-store')  # A reload must show the latest saved ratings.
             self.end_headers()
             self.wfile.write(body)
             return
