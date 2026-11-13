@@ -94,7 +94,7 @@ const k = (s, i, c, kind) => [s, i, c, kind].join('|');
 
 async function rate(section, item, candidate, kind, value) {
   state.set(k(section, item, candidate, kind), value);
-  render();
+  paint();
   await fetch('rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ rater: rater(), section, item, candidate, kind, value }) });
 }
@@ -103,7 +103,7 @@ const { data: DATA, ratings: RATINGS } = __INLINE__;  // serve.py inlines data.j
 function restore() {
   state.clear();
   for (const r of RATINGS) if (r.rater === rater()) state.set(k(r.section, r.item, r.candidate, r.kind), r.value);
-  render();
+  paint();
 }
 
 function el(tag, attrs = {}, ...kids) {
@@ -113,37 +113,43 @@ function el(tag, attrs = {}, ...kids) {
   return e;
 }
 
-function render() {
-  const tl = document.getElementById('text-list'); tl.replaceChildren();
+// A rating button. It remembers its state key, the value it saves, and the class it shows while that value is saved,
+// so a click only repaints buttons (paint) instead of rebuilding the page, which would reload all 90 <audio> elements.
+// With `off`, clicking the active button saves `off` instead (un-star, un-thumb).
+function btn([s, i, c, kind], value, on, label, off, title = '') {
+  const key = k(s, i, c, kind);
+  return el('button', { class: 'btn', title, 'data-k': key, 'data-v': value, 'data-on': on,
+    onclick: () => rate(s, i, c, kind, off !== undefined && state.get(key) === value ? off : value) }, label);
+}
+
+function render() {  // Builds the page once.
+  const tl = document.getElementById('text-list');
   for (const s of DATA.text) {
-    const best = state.get(k('text', s.id, '*', 'best'));
     const card = el('div', { class: 'card' },
       el('div', { class: 'meta' }, s.summary), );
     if (s.spicy) card.firstChild.append(el('span', { class: 'spicy' }, '🌶 spicy'));
     if (s.player_message) card.append(el('p', { class: 'said' }, `She typed: “${s.player_message}”`));
     for (const c of s.candidates) {
-      const bad = state.get(k('text', s.id, c.id, 'bad')) === 1;
       card.append(el('div', { class: 'cand' },
         el('span', { class: 'letter' }, c.id),
         el('span', { class: 'txt' }, c.text),
         el('span', { class: 'acts' },
-          el('button', { class: 'btn' + (best === c.id ? ' on-best' : ''), title: 'Best line', onclick: () => rate('text', s.id, '*', 'best', best === c.id ? null : c.id) }, '⭐'),
-          el('button', { class: 'btn' + (bad ? ' on-bad' : ''), title: 'Bad line', onclick: () => rate('text', s.id, c.id, 'bad', bad ? 0 : 1) }, '👎'))));
+          btn(['text', s.id, '*', 'best'], c.id, 'on-best', '⭐', null, 'Best line'),
+          btn(['text', s.id, c.id, 'bad'], 1, 'on-bad', '👎', 0, 'Bad line'))));
     }
     tl.append(card);
   }
-  const vl = document.getElementById('voice-list'); vl.replaceChildren();
+  const vl = document.getElementById('voice-list');
   for (const v of DATA.voice) {
     const card = el('div', { class: 'card' }, el('div', { class: 'meta' }, v.id), el('p', { class: 'said' }, `“${v.text}”`));
     for (const clip of v.clips) {
-      const cur = state.get(k('voice', v.id, clip.id, 'stars'));
       const stars = el('span', { class: 'stars' });
-      for (let n = 1; n <= 5; n++) stars.append(el('button', { class: 'btn' + (cur === n ? ' on' : ''), onclick: () => rate('voice', v.id, clip.id, 'stars', n) }, String(n)));
+      for (let n = 1; n <= 5; n++) stars.append(btn(['voice', v.id, clip.id, 'stars'], n, 'on', String(n)));
       card.append(el('div', { class: 'clip' }, el('span', { class: 'letter' }, clip.id), el('audio', { controls: '', src: clip.src }), stars));
     }
     vl.append(card);
   }
-  const sl = document.getElementById('session-list'); sl.replaceChildren();
+  const sl = document.getElementById('session-list');
   for (const s of DATA.session) {
     const card = el('div', { class: 'card' }, el('div', { class: 'meta' }, `Evening ${s.id}`));
     const ol = el('ol', { class: 'session-lines' });
@@ -151,14 +157,17 @@ function render() {
     card.append(ol);
     const row = el('div', { class: 'row' });
     for (const kind of ['variety', 'fun']) {
-      const cur = state.get(k('session', s.id, '*', kind));
       const stars = el('span', { class: 'stars' }, el('b', {}, kind + ' '));
-      for (let n = 1; n <= 5; n++) stars.append(el('button', { class: 'btn' + (cur === n ? ' on' : ''), onclick: () => rate('session', s.id, '*', kind, n) }, String(n)));
+      for (let n = 1; n <= 5; n++) stars.append(btn(['session', s.id, '*', kind], n, 'on', String(n)));
       row.append(stars);
     }
     card.append(row);
     sl.append(card);
   }
+}
+
+function paint() {  // Highlights the saved choices and updates the progress line.
+  for (const b of document.querySelectorAll('[data-k]')) b.classList.toggle(b.dataset.on, String(state.get(b.dataset.k)) === b.dataset.v);
   const doneText = DATA.text.filter(s => state.get(k('text', s.id, '*', 'best'))).length;
   const doneVoice = DATA.voice.reduce((n, v) => n + v.clips.filter(c => state.get(k('voice', v.id, c.id, 'stars'))).length, 0);
   const allVoice = DATA.voice.reduce((n, v) => n + v.clips.length, 0);
@@ -172,6 +181,7 @@ for (const b of document.querySelectorAll('nav button')) b.addEventListener('cli
   window.scrollTo(0, 0);
 });
 
+render();
 restore();
 </script>
 </body>
