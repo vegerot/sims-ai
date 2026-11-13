@@ -31,7 +31,9 @@ class Handler(SimpleHTTPRequestHandler):
         if path in ('/', '/index.html'):
             rows = [json.loads(l) for l in RATINGS.open(encoding='utf-8')] if RATINGS.exists() else []
             data = json.loads((HERE / 'data.json').read_text(encoding='utf-8'))
-            inline = json.dumps({'data': data, 'ratings': rows}, ensure_ascii=False).replace('</', '<\\/')  # A line can't close the <script>.
+            key = json.loads((HERE / 'key.json').read_text(encoding='utf-8'))
+            names = {'voice': key['voice'], 'session': key['session']}  # Both rated in full; Lines stays blind until she finishes it.
+            inline = json.dumps({'data': data, 'ratings': rows, 'names': names}, ensure_ascii=False).replace('</', '<\\/')  # A line can't close the <script>.
             # Every browser sends Accept-Encoding: gzip, so always compress; the JSON shrinks about 4x.
             body = gzip.compress((HERE / 'index.html').read_text(encoding='utf-8').replace('__INLINE__', inline).encode('utf-8'))
             self.send_response(200)

@@ -36,6 +36,7 @@
   .spicy { display: inline-block; font-size: 12px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 0 8px; margin-left: 6px; }
   .cand { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: start; padding: 8px 0; border-top: 1px solid var(--line); }
   .letter { font-weight: 700; color: var(--muted); }
+  .model { display: block; font-weight: 400; font-size: 12px; overflow-wrap: anywhere; }
   .txt { white-space: pre-wrap; overflow-wrap: anywhere; }
   .acts { display: flex; gap: 6px; }
   .btn.on-best { background: var(--good); border-color: var(--good); color: #fff; }
@@ -71,11 +72,11 @@
     <div id="text-list"></div>
   </section>
   <section id="voice" hidden>
-    <p class="intro">Same line, different voice engines (hidden). Rate how good each one sounds for a Sim: 1 = unusable, 5 = perfect. Headphones recommended 🎧</p>
+    <p class="intro">Same line, different voice engines (now unblinded). Rate how good each one sounds for a Sim: 1 = unusable, 5 = perfect. Headphones recommended 🎧</p>
     <div id="voice-list"></div>
   </section>
   <section id="session" hidden>
-    <p class="intro">Each card is 16 exchanges in a row from one simulated evening. Does it get repetitive? Rate <b>variety</b> and <b>fun</b>, 1–5.</p>
+    <p class="intro">Each card is 16 exchanges in a row from one simulated evening, with its model and prompt now shown. Does it get repetitive? Rate <b>variety</b> and <b>fun</b>, 1–5.</p>
     <div id="session-list"></div>
   </section>
 </main>
@@ -99,7 +100,7 @@ async function rate(section, item, candidate, kind, value) {
     body: JSON.stringify({ rater: rater(), section, item, candidate, kind, value }) });
 }
 
-const { data: DATA, ratings: RATINGS } = __INLINE__;  // serve.py inlines data.json and the saved ratings here.
+const { data: DATA, ratings: RATINGS, names: NAMES } = __INLINE__;  // serve.py inlines data.json, the saved ratings, and the unblinded names.
 function restore() {
   state.clear();
   for (const r of RATINGS) if (r.rater === rater()) state.set(k(r.section, r.item, r.candidate, r.kind), r.value);
@@ -145,13 +146,16 @@ function render() {  // Builds the page once.
     for (const clip of v.clips) {
       const stars = el('span', { class: 'stars' });
       for (let n = 1; n <= 5; n++) stars.append(btn(['voice', v.id, clip.id, 'stars'], n, 'on', String(n)));
-      card.append(el('div', { class: 'clip' }, el('span', { class: 'letter' }, clip.id), el('audio', { controls: '', src: clip.src }), stars));
+      card.append(el('div', { class: 'clip' },
+        el('span', { class: 'letter' }, clip.id, el('span', { class: 'model' }, NAMES.voice[v.id][clip.id])),
+        el('audio', { controls: '', src: clip.src }), stars));
     }
     vl.append(card);
   }
   const sl = document.getElementById('session-list');
   for (const s of DATA.session) {
-    const card = el('div', { class: 'card' }, el('div', { class: 'meta' }, `Evening ${s.id}`));
+    const [model, prompt] = NAMES.session[s.id].split(':');
+    const card = el('div', { class: 'card' }, el('div', { class: 'meta' }, `Evening ${s.id} · `, el('b', {}, model), ` · prompt ${prompt}`));
     const ol = el('ol', { class: 'session-lines' });
     for (const line of s.lines) ol.append(el('li', {}, line));
     card.append(ol);
