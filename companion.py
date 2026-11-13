@@ -233,16 +233,14 @@ def _read_package_stbls(pkg_path: Path) -> dict[int, str]:
     return out
 
 
-def _stbl_source_mtime(game_dir: Path) -> float:
-    mtimes = [0.0]
-    exe = game_dir / 'Game' / 'Bin' / 'TS4_x64.exe'
-    if exe.exists():
-        mtimes.append(exe.stat().st_mtime)
+def _stbl_sources(game_dir: Path) -> str:
+    """Fingerprint of every STBL source (path, size, mtime). Not just the newest mtime: an unzipped mod keeps its
+    archive's old mtime, so a max-mtime check missed a newly installed animation pack."""
+    paths = [game_dir / 'Game' / 'Bin' / 'TS4_x64.exe']
     if DEFAULT_MODS_DIR.exists():
-        for pkg in DEFAULT_MODS_DIR.rglob('*.package'):
-            if pkg.name != 'BanterLabUI.package':
-                mtimes.append(pkg.stat().st_mtime)
-    return round(max(mtimes), 3)
+        paths += [p for p in DEFAULT_MODS_DIR.rglob('*.package') if p.name != 'BanterLabUI.package']
+    stats = sorted((str(p), p.stat().st_size, round(p.stat().st_mtime, 3)) for p in paths if p.exists())
+    return hashlib.sha256(json.dumps(stats).encode('utf-8')).hexdigest()
 
 
 def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
@@ -250,9 +248,9 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     if _stbl_cache is not None:
         return _stbl_cache
     meta_path = STBL_CACHE_PATH.with_suffix('.meta.json')
-    cur_mtime = _stbl_source_mtime(game_dir)
+    sources = _stbl_sources(game_dir)
     meta = json.loads(meta_path.read_text(encoding='utf-8')) if meta_path.exists() else {}
-    if STBL_CACHE_PATH.exists() and meta.get('v') == 2 and meta.get('max_mtime') == cur_mtime:
+    if STBL_CACHE_PATH.exists() and meta.get('sources') == sources:
         _stbl_cache = {int(k): v for k, v in json.loads(STBL_CACHE_PATH.read_text(encoding='utf-8')).items()}
         return _stbl_cache
     strings: dict[int, str] = {}
@@ -268,7 +266,7 @@ def load_stbl_dictionary(game_dir: Path = DEFAULT_GAME_DIR) -> dict[int, str]:
     if strings:
         STBL_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
         STBL_CACHE_PATH.write_text(json.dumps(strings, ensure_ascii=False), encoding='utf-8')
-        meta_path.write_text(json.dumps({'v': 2, 'max_mtime': cur_mtime}), encoding='utf-8')
+        meta_path.write_text(json.dumps({'sources': sources}), encoding='utf-8')
     _stbl_cache = strings
     return _stbl_cache
 
@@ -356,7 +354,7 @@ _ACTOR_TARGET_RE = re.compile(r'(?:(?<=_)|^)(actor|target)(?=_|$)', re.IGNORECAS
 
 
 def _clean_mood(mood: str | None) -> str | None:
-    m = re.sub(r'^(?i:mood_)|_(?i:dog|cat|horse)$', '', str(mood or '')).replace('Horse_', '')
+    m = re.sub(r'^(?i:TURBODRIVER:WickedWhims_Mood_|mood_)|_(?i:dog|cat|horse)$', '', str(mood or '')).replace('Horse_', '')
     return m or None
 
 
@@ -664,6 +662,17 @@ def is_spicy(event: dict) -> bool:
     )
 
 
+def _sex_animation(anim: dict | None) -> dict | None:
+    """Animation packs name their animations by STBL hash; swap it for the English name from the pack's string table."""
+    if not anim:
+        return anim
+    anim = dict(anim)
+    stbl = anim.pop('name_stbl', None)
+    if not anim.get('name'):
+        anim['name'] = resolve_stbl(stbl) or ''
+    return anim
+
+
 def build_scene(
     event: dict,
     language: str = 'English',
@@ -721,7 +730,7 @@ def build_scene(
         'player_message': event.get('player_message') or None,
         'drama_trigger': drama_trigger,
         'sex_stage': event.get('sex_stage'),
-        'sex_animation': event.get('sex_animation'),
+        'sex_animation': _sex_animation(event.get('sex_animation')),
         'sex_roles': event.get('sex_roles'),
         'renovation_delta': f'{renov:+d}' if isinstance(renov, int) and renov else None,
         'venue': venue_label or event.get('venue'),
@@ -772,7 +781,12 @@ def select_voice(sim: dict, avoid_voices: tuple[str, ...] = ()) -> str:
     return next((v for v in pool if v not in avoid_voices), base)
 
 
+# drama-3 performs these as [bracket] directions. Moods without an entry (notably Fine) get 'natural, expressive, playful':
+# in experiment 32 a mood-specific direction won 4/4 blind for WickedWhims' Sex mood and 2/3 for Happy, but lost 0/3 for
+# Fine ("relaxed, conversational" sounded bored and robotic).
 MOOD_TO_DELIVERY_TONE = {
+    'Sex': 'breathless, aroused, moaning between words',  # TURBODRIVER:WickedWhims_Mood_Sex
+    'Happy': 'bright, cheerful, warm',
     'Angry': 'exasperated, dramatic, annoyed',
     'Flirty': 'warm, playful, flirty',
     'Uncomfortable': 'tense, dry, slightly frazzled',

@@ -874,8 +874,12 @@ def _check_sex_scene(now):
         _sex_state[inst_id] = (anim_id, now, stage == 'climax' or _sex_state[inst_id][2])
         ev = _make_event('sex_scene', 'sex-', actor, target, 'sex_scene', None, 'SEX')
         ev['sex_stage'] = stage
-        ev['sex_animation'] = {'name': str(anim.get_original_string_display_name() or ''), 'category': category,
-                               'author': str(anim.get_author() or '')}
+        # WickedWhims' display_name is plain text for its preview animations but a LocalizedString for many pack
+        # animations (e.g. Anarcis); the companion resolves its hash from the pack's own string table.
+        display_name = (anim.get_original_instance() or anim).display_name
+        ev['sex_animation'] = {'name': display_name if isinstance(display_name, str) else '',
+                               'name_stbl': None if isinstance(display_name, str) else _string_hash(display_name),
+                               'category': category, 'author': str(anim.get_author() or '')}
         ev['sex_roles'] = _sex_roles(inst, anim, infos[:2])
         _note_partner(actor.sim_info, target.sim_info, now)
         _submit(ev, actor, target)

@@ -243,7 +243,10 @@ TEXT_MODELS = [
     'deepseek/deepseek-v4.1-flash-1017', 'z-ai/glm-5.2', 'minimax/minimax-m3.1-flash',
     'mistralai/mistral-small-2603', 'google/gemini-omni-1.2-flash',
 ]
-PROMPTS = {v: EXP31 / f'prompt-{v}.txt' for v in ('v1', 'v2', 'v3')}
+PROMPTS = {**{v: EXP31 / f'prompt-{v}.txt' for v in ('v1', 'v2', 'v3')}, 'prod': ROOT / 'prompt.txt'}
+# Grok 4.7 refuses 'none' ("Reasoning is mandatory for this endpoint"), so it runs at its lowest effort; its reasoning
+# tokens count against max_tokens, so reasoning models get more room.
+REASONING = {'x-ai/grok-4.7': 'minimal'}
 
 
 def scene_for(event: dict, prompt: str, mem: c.MemoryStore) -> dict:
@@ -259,26 +262,27 @@ def scene_for(event: dict, prompt: str, mem: c.MemoryStore) -> dict:
     return scene
 
 
-def chat(model: str, prompt: str, scene: dict) -> dict:
-    """The same chat request companion.generate() sends, with an experiment prompt."""
+def chat(model: str, system: str, scene: dict) -> dict:
+    """The same chat request companion.generate() sends, with an experiment system prompt."""
+    effort = REASONING.get(model, 'none')
     payload = {
         'model': model,
         'messages': [
-            {'role': 'system', 'content': PROMPTS[prompt].read_text(encoding='utf-8')},
+            {'role': 'system', 'content': system},
             {'role': 'user', 'content': json.dumps(scene, ensure_ascii=False)},
         ],
-        'max_tokens': 320,
-        'reasoning': {'effort': 'none'},
+        'max_tokens': 320 if effort == 'none' else 2000,
+        'reasoning': {'effort': effort},
     }
     return json.loads(c._openrouter_request('POST', '/api/v1/chat/completions', json.dumps(payload).encode('utf-8'), timeout=40).read())
 
 
-def _text_one(model: str, prompt: str, name: str, event: dict, scene: dict, sample: int) -> None:
+def _text_one(model: str, prompt: str, name: str, event: dict, scene: dict, sample: int, out: Path) -> None:
     row = {'model': model, 'prompt': prompt, 'scene': name, 'sample': sample,
            'spicy': bool(c.is_spicy(event)), 'language': scene['language'], 'event_type': scene['event_type']}
     started = time.monotonic()
     try:
-        result = chat(model, prompt, scene)
+        result = chat(model, PROMPTS[prompt].read_text(encoding='utf-8'), scene)
         row['elapsed_s'] = round(time.monotonic() - started, 3)
         row['raw_text'] = (result['choices'][0]['message'].get('content') or '').strip()
         row['text'] = c._normalize_dialogue_lines(row['raw_text'], event, speaker_count=scene['speaker_count']) if row['raw_text'] else ''
@@ -291,7 +295,7 @@ def _text_one(model: str, prompt: str, name: str, event: dict, scene: dict, samp
         row['elapsed_s'] = round(time.monotonic() - started, 3)
         body = getattr(exc, 'body', None) or (exc.read().decode('utf-8', 'replace') if hasattr(exc, 'read') else '')
         row['error'] = f'{type(exc).__name__}: {exc} {body[:300]}'
-    append_jsonl(EXP31 / 'text-results.jsonl', row)
+    append_jsonl(out, row)
     print(f"{model:36s} {prompt} {name:34s} {row['elapsed_s']:6.2f}s {(row.get('text') or row.get('error') or '')[:90]!r}", flush=True)
 
 
@@ -302,7 +306,7 @@ def exp31_text(args) -> None:
     scenes = load_scenes()
     if args.scenes:
         scenes = {k: v for k, v in scenes.items() if k.startswith(tuple(args.scenes.split(',')))}
-    jobs = [(model, prompt, name, ev, scene_for(ev, prompt, mem), s)
+    jobs = [(model, prompt, name, ev, scene_for(ev, prompt, mem), s, args.out)
             for model in args.models.split(',') for prompt in args.prompts.split(',')
             for name, ev in scenes.items() for s in range(args.samples)]
     print(len(jobs), 'calls', flush=True)
@@ -323,7 +327,7 @@ def _session_one(spec: str, passes: int = 3) -> None:
             t0 = time.monotonic()
             row = {'model': model, 'prompt': prompt, 'pass': i, 'scene': name, 'spicy': c.is_spicy(ev)}
             try:
-                raw = (chat(model, prompt, sc)['choices'][0]['message'].get('content') or '').strip()
+                raw = (chat(model, PROMPTS[prompt].read_text(encoding='utf-8'), sc)['choices'][0]['message'].get('content') or '').strip()
                 row['text'] = c._normalize_dialogue_lines(raw, ev, speaker_count=sc['speaker_count']) if raw else ''
                 if row['text']:
                     mem.record(ev, sc, row['text'])
@@ -888,6 +892,166 @@ def probe_drama_cast(args) -> None:
                   f"natural={r.get('natural')!s:5} en/he/ru={r['verbatim']}  {r.get('quality_note', r.get('raw', ''))}")
 
 
+# ── Experiment 32: Grok 4.7, voice moods, and repeats, on captured game data ──────────────────────
+
+EXP32 = ROOT / 'experiments' / '32-grok-4.7-voice-moods-and-repeats'
+SEQUENCES = {  # Frozen from real play: her whole Nov 6 evening, and the Nov 12 play-test's 8 WickedWhims events.
+    'nov6': EXP32 / 'scenes' / 'nov6-evening.json',
+    'sex': EXP32 / 'scenes' / 'playtest-sex-sequence.json',
+}
+VARIANTS = {  # Appended to the production prompt.
+    'prod': '',
+    'change-rule': (
+        '\nSex scene changes: on `sex_stage: "change"`, react to the new position itself (what its `name` says the bodies are '
+        'doing, the angle, the pace), not to the act of switching. Never say switch, change, flip, or again, and never reuse '
+        'an opening or a phrase from `pair_memory`.\n'),
+    'repeat-hint': (
+        '\nRepeats: `repeat_count` is how many times these two Sims already did this same interaction recently. When it is '
+        'present, the moment is a rerun: play off the repetition, or take a clearly different angle; never restate an idea '
+        'from `pair_memory`.\n'),
+}
+
+
+def _repeat_count(mem: c.MemoryStore, actor: str, target: str | None, scene: dict) -> int:
+    label = scene.get('interaction_label') or scene.get('interaction')
+    return sum(1 for e in mem.pairs.get(mem.make_key(actor, target), []) if e.get('interaction') == label)
+
+
+def _sequence(seq: str, model: str, variant: str, rep: int) -> None:
+    """Replay one frozen sequence in order with a fresh in-RAM memory, recording each reply like production."""
+    mem = c.MemoryStore()
+    system = PROMPTS['prod'].read_text(encoding='utf-8') + VARIANTS[variant]
+    for i, ev in enumerate(json.loads(SEQUENCES[seq].read_text(encoding='utf-8'))):
+        actor, target = str(ev['actor'].get('name') or ''), mem.event_target_name(ev)
+        scene = c.build_scene(ev, language='English',  # Fixed for comparable runs; production picks Hebrew/Russian 12% at random.
+                              pair_memory=mem.get_memory(actor, target), recent_gossip=mem.get_gossip(actor, target),
+                              recent_lines=mem.get_recent_lines(actor, target))
+        if variant == 'repeat-hint' and (n := _repeat_count(mem, actor, target, scene)):
+            scene['repeat_count'] = n
+        row = {'seq': seq, 'model': model, 'variant': variant, 'rep': rep, 'i': i, 'event_type': scene['event_type'],
+               'interaction': scene.get('interaction_label') or scene.get('interaction'), 'repeat_count': scene.get('repeat_count'),
+               'sex': (ev.get('sex_stage'), (ev.get('sex_animation') or {}).get('name'), ev.get('sex_roles')) if ev.get('sex_stage') else None}
+        t0 = time.monotonic()
+        try:
+            result = chat(model, system, scene)
+            row['elapsed_s'] = round(time.monotonic() - t0, 3)
+            raw = (result['choices'][0]['message'].get('content') or '').strip()
+            row['text'] = c._normalize_dialogue_lines(raw, ev, speaker_count=scene['speaker_count']) if raw else ''
+            row['reasoning_tokens'] = ((result.get('usage') or {}).get('completion_tokens_details') or {}).get('reasoning_tokens')
+            if row['text']:
+                mem.record(ev, scene, row['text'])
+        except Exception as exc:
+            row['elapsed_s'] = round(time.monotonic() - t0, 3)
+            row['error'] = str(exc)[:300]
+        append_jsonl(EXP32 / f'{seq}-results.jsonl', row)
+    print('done', seq, model, variant, rep, flush=True)
+
+
+def exp32_replay(args) -> None:
+    """Replay a frozen real sequence (her Nov 6 evening, or the play-test's sex events) per model x variant x rep."""
+    c.load_stbl_dictionary()
+    jobs = [(args.seq, m, v, r) for m in args.models.split(',') for v in args.variants.split(',') for r in range(args.reps)]
+    with ThreadPoolExecutor(len(jobs)) as pool:
+        list(pool.map(lambda j: _sequence(*j), jobs))
+
+
+def _words(s: str) -> list[str]:
+    return re.findall(r"[\w’']+", s.lower())
+
+
+def exp32_analyze(args) -> None:
+    """Per model x variant: latency, errors, and within-run repetition (openings, trigram reuse, switch words, host reruns)."""
+    switch = re.compile(r'\b(switch\w*|chang\w*|flip\w*|again|already)\b', re.I)
+    explicit = re.compile(r'\b(fuck\w*|cum\w*|cock\w*|dick\w*|puss\w*|tits?|clit|wet|suck\w*|moan\w*|deep(er)?|thrust\w*|naked|ass)\b', re.I)
+    for seq in ('nov6', 'sex'):
+        rows = read_jsonl(EXP32 / f'{seq}-results.jsonl')
+        if not rows:
+            continue
+        print(f'\n=== {seq}: {len(rows)} replies')
+        print(f"{'model':16s} {'variant':12s} {'runs':>4s} {'err':>3s} {'p50':>5s} {'p90':>5s} {'open2':>6s} {'tri':>6s} {'switch':>6s} {'explX':>6s} {'words':>5s}")
+        for model, variant in sorted({(r['model'], r['variant']) for r in rows}):
+            rs = [r for r in rows if r['model'] == model and r['variant'] == variant]
+            ok = [r for r in rs if r.get('text')]
+            lat = sorted(r['elapsed_s'] for r in ok)
+            opens = tris = sw = expl = n = 0
+            words = []
+            for rep in sorted({r['rep'] for r in rs}):
+                lines = [l.split(':', 1)[-1].strip() for r in sorted((r for r in ok if r['rep'] == rep), key=lambda r: r['i'])
+                         for l in r['text'].splitlines() if l.strip()]
+                seen_open, seen_tri = collections.Counter(), set()
+                for l in lines:
+                    w = _words(l)
+                    seen_open[' '.join(w[:2])] += 1
+                    t = {tuple(w[j:j + 3]) for j in range(len(w) - 2)}
+                    tris += bool(t & seen_tri)
+                    seen_tri |= t
+                    sw += bool(switch.search(l))
+                    expl += bool(explicit.search(l))
+                    words.append(len(w))
+                opens += sum(v - 1 for v in seen_open.values() if v > 1)
+                n += len(lines)
+            pct = lambda x: f'{100 * x / max(n, 1):5.0f}%'
+            print(f"{model.split('/')[-1]:16s} {variant:12s} {len({r['rep'] for r in rs}):4d} {len(rs) - len(ok):3d} "
+                  f"{statistics.median(lat):5.2f} {lat[int(0.9 * (len(lat) - 1))]:5.2f} {pct(opens):>6s} {pct(tris):>6s} {pct(sw):>6s} {pct(expl):>6s} "
+                  f"{statistics.mean(words) if words else 0:5.1f}")
+        if args.show:
+            for r in sorted(rows, key=lambda r: (r['model'], r['variant'], r['rep'], r['i'])):
+                if r['rep'] == 0:
+                    tag = f"{r['sex'][0]} {r['sex'][1]}" if r.get('sex') else (r.get('interaction') or '')
+                    print(f"  [{r['model'].split('/')[-1]} {r['variant']} #{r['i']} {tag}{' x' + str(r['repeat_count']) if r.get('repeat_count') else ''}] "
+                          f"{(r.get('text') or r.get('error') or '').replace(chr(10), ' | ')}")
+
+
+# Proposed delivery directions for the moods MOOD_TO_DELIVERY_TONE lacks; the most common ones in her play.
+NEW_MOOD_TONES = {
+    'Fine': 'relaxed, conversational, easygoing',
+    'Happy': 'bright, cheerful, warm',
+    'Tense': 'tight, clipped, on edge',
+    'Sex': 'breathless, aroused, moaning between words',  # TURBODRIVER:WickedWhims_Mood_Sex
+}
+
+
+def exp32_voice_moods(args) -> None:
+    """Generic direction vs a mood-specific one on real lines: same drama-3 voice, Gemini picks the better fit blind."""
+    lines = [  # (speaker gender, mood, situation, line) from the Nov 12 play-test and her Nov 6 evening.
+        ('F', 'Sex', 'mid-sex, oral', 'Yes, right there, lick me deeper.'),
+        ('M', 'Sex', 'mid-sex, oral', 'Mmm, you taste so fucking good already.'),
+        ('F', 'Sex', 'mid-sex, spanking', 'Harder, smack it like you mean it.'),
+        ('M', 'Sex', 'mid-sex, missionary', 'Hold on tight, taking you harder now.'),
+        ('F', 'Happy', 'after a kiss in the rain', "That kiss was smoother than this rain. Your turn to impress me."),
+        ('M', 'Happy', 'flirting at a restaurant', 'Good. I was hoping your eyes had excellent taste.'),
+        ('F', 'Happy', 'pitching a business idea', "Brilliant idea: let's make bubble tea our business expense."),
+        ('F', 'Fine', 'asking the host for a table', 'Could we get a specific table, preferably one with dessert nearby?'),
+        ('M', 'Fine', 'restaurant host seating her', "Certainly. I'll find you a table worthy of your standards."),
+        ('M', 'Fine', 'chatting about cooking', 'Same here, though my family calls it stealing dinner.'),
+    ]
+    voices = {'F': c.FEMALE_VOICES['Selene'], 'M': c.MALE_VOICES['Slax']}  # The voices the play-test Sims got.
+    generic = 'natural, expressive, playful'  # What all of these got before: no entry for Fine, Happy, or WickedWhims' Sex.
+    rng = random.Random(32)
+    out = []
+    for i, (g, mood, situation, line) in enumerate(lines):
+        a, _ = speak('fish-audio/drama-3', f'[{generic}] {line}', voices[g], 'pcm')
+        b, _ = speak('fish-audio/drama-3', f'[{NEW_MOOD_TONES[mood]}] {line}', voices[g], 'pcm')
+        a, b = wav_bytes(a, 44100), wav_bytes(b, 44100)
+        (TTS_AUDIO / f'mood-{i}-generic.wav').write_bytes(a)
+        (TTS_AUDIO / f'mood-{i}-mood.wav').write_bytes(b)
+        first_is_mood = rng.random() < 0.5
+        clips = [b, a] if first_is_mood else [a, b]
+        v = listen_json(clips, (
+            f'Two deliveries of the same video game line by the same voice. Context: the speaker feels "{mood if mood != "Sex" else "aroused"}", '
+            f'situation: {situation}. Line: "{line}". Reply in JSON only: {{"better": 1|2, "fit_1": 1-5, "fit_2": 1-5, "why": "few words"}}, '
+            'judging which delivery fits the feeling and situation better.'))
+        mood_won = v.get('better') == (1 if first_is_mood else 2)
+        fits = (v.get('fit_1'), v.get('fit_2')) if first_is_mood else (v.get('fit_2'), v.get('fit_1'))
+        row = {'i': i, 'mood': mood, 'line': line, 'mood_direction_won': mood_won, 'fit_mood': fits[0], 'fit_generic': fits[1], 'why': v.get('why')}
+        out.append(row)
+        print(f"{mood:5s} mood-won={mood_won!s:5s} fit mood/generic={fits[0]}/{fits[1]}  {line[:50]!r}  ({v.get('why')})", flush=True)
+    with (EXP32 / 'voice-moods.jsonl').open('w', encoding='utf-8') as f:
+        for r in out:
+            f.write(json.dumps(r, ensure_ascii=False) + '\n')
+    print(f"\nmood direction won {sum(r['mood_direction_won'] for r in out)}/{len(out)}")
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -906,7 +1070,7 @@ def main() -> None:
     text.add_argument('--samples', type=int, default=1)
     text.add_argument('--scenes', default='', help='comma-separated scene-name prefixes')
     text.add_argument('--workers', type=int, default=6)
-    text.set_defaults(run=exp31_text)
+    text.set_defaults(run=exp31_text, out=EXP31 / 'text-results.jsonl')
     session = exp31.add_parser('session', help=exp31_session.__doc__)
     session.add_argument('specs', nargs='+', metavar='MODEL:PROMPT')
     session.set_defaults(run=exp31_session)
@@ -929,6 +1093,25 @@ def main() -> None:
     probe.add_parser('drama-voices', help=probe_drama_voices.__doc__).set_defaults(run=probe_drama_voices)
     probe.add_parser('drama-consistency', help=probe_drama_consistency.__doc__).set_defaults(run=probe_drama_consistency)
     probe.add_parser('drama-cast', help=probe_drama_cast.__doc__).set_defaults(run=probe_drama_cast)
+
+    exp32 = experiments.add_parser('exp32', help='Grok 4.7, voice moods, and repeats on captured game data').add_subparsers(dest='command', required=True)
+    text32 = exp32.add_parser('text', help='exp31 text bake-off on the 31 frozen scenes, production prompt -> exp32 text-results.jsonl')
+    text32.add_argument('--models', default='x-ai/grok-4.20,x-ai/grok-4.7')
+    text32.add_argument('--prompts', default='prod')
+    text32.add_argument('--samples', type=int, default=1)
+    text32.add_argument('--scenes', default='')
+    text32.add_argument('--workers', type=int, default=6)
+    text32.set_defaults(run=exp31_text, out=EXP32 / 'text-results.jsonl')
+    replay = exp32.add_parser('replay', help=exp32_replay.__doc__)
+    replay.add_argument('seq', choices=sorted(SEQUENCES))
+    replay.add_argument('--models', default='x-ai/grok-4.20,x-ai/grok-4.7')
+    replay.add_argument('--variants', default='prod')
+    replay.add_argument('--reps', type=int, default=2)
+    replay.set_defaults(run=exp32_replay)
+    analyze32 = exp32.add_parser('analyze', help=exp32_analyze.__doc__)
+    analyze32.add_argument('--show', action='store_true', help='print every line of rep 0')
+    analyze32.set_defaults(run=exp32_analyze)
+    exp32.add_parser('voice-moods', help=exp32_voice_moods.__doc__).set_defaults(run=exp32_voice_moods)
 
     args = parser.parse_args()
     args.run(args)

@@ -1,0 +1,61 @@
+{
+  "experiment": "32-grok-4.7-voice-moods-and-repeats",
+  "date": "2026-11-12",
+  "question": "Is Grok 4.7 faster or better than 4.20 for the mod, and do mood-specific voice directions, a sex-scene change rule, and a repeat hint fix the issues seen in her logs?",
+  "evidence_status": "Harness runs against OpenRouter on captured game data: Experiment 31's 31 frozen scenes, her real Nov 6 evening (36 events, scenes/nov6-evening.json), and the Nov 12 play-test's 8 WickedWhims sex_scene events (scenes/playtest-sex-sequence.json), replayed in order with in-RAM memory recording. Voice judgments are Gemini's, blind. Not yet in the real game.",
+  "how_to_rerun": "python3.15 lab.py exp32 text | replay {nov6,sex} [--models --variants --reps] | analyze [--show] | voice-moods",
+  "grok_4_7": {
+    "public_stats": "OpenRouter live provider stats (last 30 min, default reasoning): grok-4.20 first token p50 0.47-0.62 s at 94-98 tok/s; grok-4.7 p50 2.4-3.6 s (p90 up to 22 s) at 54-68 tok/s. Price $2/$6 vs $1.25/$2.50 per M tokens. Artificial Analysis had no speed data.",
+    "reasoning": "grok-4.7 rejects reasoning effort 'none' ('Reasoning is mandatory for this endpoint and cannot be disabled'); 'minimal' still spent a median 829 reasoning tokens per scene.",
+    "31_scenes_single_call": {"grok-4.20": {"p50_s": 0.83, "p90_s": 1.14, "spicy_explicit": "8/16"}, "grok-4.7 minimal": {"p50_s": 14.81, "p90_s": 21.15, "spicy_explicit": "6/16"}},
+    "verdict": "Rejected: about 18x slower and tamer. Its sex lines avoided announcing switches (8%) but read tentative ('Hold still, I'm finding the rhythm')."
+  },
+  "grok_4_3": {
+    "why": "Newest Grok that allows reasoning off: grok-4.5, grok-4.6, and grok-build-0.1 return 'Reasoning is mandatory' for both effort 'none' and enabled false; grok-4.3 and grok-4.20 return 0 reasoning tokens.",
+    "method": "Same runs as 4.20 with today's prompt.txt (which already has the change rule, so compare with grok-4.20 change-rule): 31 scenes x1, sex x3, nov6 x3.",
+    "31_scenes": {"grok-4.20": {"p50_s": 0.83, "spicy_explicit": "6/16"}, "grok-4.3": {"p50_s": 1.02, "spicy_explicit": "5/16"}},
+    "sex": {"grok-4.20 change-rule": {"p50_s": 0.82, "repeated_openings": "19%", "trigram_reuse": "8%", "switch_lines": "15%", "explicit": "79%"}, "grok-4.3": {"p50_s": 0.93, "repeated_openings": "4%", "trigram_reuse": "2%", "switch_lines": "8%", "explicit": "38%"}},
+    "nov6": {"grok-4.20": {"p50_s": 0.71, "trigram_reuse": "11%", "explicit": "13%"}, "grok-4.3": {"p50_s": 0.95, "trigram_reuse": "16%", "explicit": "6%"}},
+    "examples": {"grok-4.3": ["Your handprint is blooming across my skin.", "This cradle has me open so wide."], "grok-4.20": ["Deeper, god—your weight pinning me like this is perfect.", "Fuck, your cheeks are already so red and hot."]},
+    "verdict": "Not shipped: more varied in sex scenes but half as explicit there, more trigram reuse on her evening, and ~0.15 s slower. Mina rated Grok 4.20 best."
+  },
+  "issue_2_sex_scene_switch_repeats": {
+    "method": "8 real play-test sex events in order, 3 runs per model x prompt; 'switch' counts lines with switch/change/flip/again/already",
+    "results": {
+      "grok-4.20 prod": {"p50_s": 0.76, "switch_lines": "29%", "explicit": "77%", "repeated_openings": "17%"},
+      "grok-4.20 change-rule": {"p50_s": 0.82, "switch_lines": "15%", "explicit": "79%", "repeated_openings": "19%"},
+      "grok-4.7 prod": {"p50_s": 14.85, "switch_lines": "8%", "explicit": "25%"},
+      "grok-4.7 change-rule": {"p50_s": 16.79, "switch_lines": "6%", "explicit": "29%"}
+    },
+    "examples": {
+      "prod": ["Switch it up, I want you on top now.", "Flip me over, I need you from behind now. (for Passionate Cradle)"],
+      "change-rule": ["Deeper, Tal—god, your weight on me feels so good.", "Fuck yes, cradle those hips, I'm not pulling out."]
+    },
+    "shipped": "The change rule went into prompt.txt's sex-scene section; most of the remaining 15% is the word 'already'."
+  },
+  "issue_1_voice_moods": {
+    "finding": "MOOD_TO_DELIVERY_TONE had no entry for Fine, Happy, or WickedWhims' TURBODRIVER:WickedWhims_Mood_Sex (which _clean_mood didn't even strip), so 23/32 play-test lines and 29/65 Nov 6 lines got the generic 'natural, expressive, playful'.",
+    "method": "10 real lines, same drama-3 voice, generic vs mood direction, Gemini picks the better fit blind (voice-moods.jsonl; clips in .local/exp31-tts/mood-*.wav)",
+    "results": {"Sex": "mood direction won 4/4 (fit 5 vs 2-3)", "Happy": "won 2/3", "Fine": "lost 0/3 ('relaxed, conversational' sounded bored and robotic)"},
+    "human_check": "Max preferred mood-0-mood.wav (Sex direction) over mood-0-generic.wav by ear.",
+    "shipped": "Sex -> 'breathless, aroused, moaning between words', Happy -> 'bright, cheerful, warm'; Fine keeps the generic direction; _clean_mood strips the WickedWhims prefix."
+  },
+  "issue_3_repeated_interactions": {
+    "method": "Her real Nov 6 evening, 3 runs per variant, grok-4.20; repeat-hint adds `repeat_count` (same interaction for this pair in memory) and a prompt rule",
+    "results": {"prod": {"repeated_openings": "11%", "trigram_reuse": "11%"}, "repeat-hint": {"repeated_openings": "10%", "trigram_reuse": "11%"}},
+    "finding": "Today's stack (Grok 4.20, prompt v3, cross-pair recent lines) already removed the Nov 6 host reruns ('Your table's ready' x3, 'birthday candles' x4 with Luna). The hint added flavor ('Same spot as last time?') but no measurable repetition gain.",
+    "shipped": "Nothing."
+  },
+  "issue_5_base_woohoo": "Base WooHoo already gets 3 lines per act (the WooHoo transition social, bed_woohoo completing about 44 s later, and a drama reaction); her real Nov 6 play used WickedWhims Ask for Sex (3x), which the sex_scene poller covers. Her WickedWhims has only the preview animations, so scenes reuse a handful of positions.",
+  "animation_pack": {
+    "installed": "Anarcis' WW_Anarcis.package (290.5 MB, wicked.cc) in Mods/WickedWhims Animations: 2,254 animation entries, 210 CLIMAX.",
+    "bugs_fixed": ["Pack animations named by LocalizedString reached the model with an empty name; the mod now sends name_stbl and the companion resolves it.", "The STBL cache missed packages whose mtime is older than the newest one (unzipped mods keep the archive mtime); it now fingerprints every source."],
+    "live": "Two scenes on her save: Gentle Cowgirl (name_stbl resolved), Rigidly Rogered (roles tal -> gefen), Twisted Top (anal), lines matching each. No climax event fired; WickedWhims ended after the last position. Saves 38/38 restored, companion data restored."
+  },
+  "issue_6_ratings": "The mod writes {'type': 'rating', 'event_id', 'rating': +/-1} to events.jsonl; nothing reads it. Ratings join to reply rows by event_id (model, prompt_sha, language, event type). No ratings collected yet.",
+  "limits": [
+    "Gemini judged voice fit; Mina hasn't heard the new directions.",
+    "Replays use fresh memory and English only; 3 runs per cell.",
+    "The 'switch' counter includes 'already', which is often fine."
+  ]
+}
