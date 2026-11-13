@@ -21,19 +21,17 @@ Console commands (`Ctrl+Shift+C`):
 
 | Command | Effect |
 | --- | --- |
-| `banter.status` | Print state, skip counts, and cost; log a full snapshot to `events.jsonl`. |
-| `banter.logs [on|off|tail]` | Mirror companion log lines into the console. |
+| `banter.status` | Print state, skip counts, and cost. |
+| `banter.logs` | Print the companion's last 10 log lines. |
 | `banter.reload` | Hot-reload `BanterLab.ts4script`. |
 | `banter.stop` | Turn English banter off and restore any muted Simlish voices. |
 
-All player controls (**Call / Text Someone (English)...**, **Ask <Sim> a Question (English)...**, **Speak to <Sim> (English)...**, 1-click **Hear <Sim>'s Thoughts (English)**, and **Enable/Disable English Banter**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
+All player controls (**Call / Text Someone (English)...**, **Ask <Sim> a Question (English)...**, **Speak to <Sim> (English)...**, 1-click **Hear <Sim>'s Thoughts (English)**, **Loved That Line** / **Bad Line** ratings, and **Enable/Disable English Banter**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
 
-Build and deploy (or uninstall / wipe playtest data for a clean slate). Everything runs on Python 3.15; the build calls `.local\python37\python.exe` only to compile the game's 3.7 bytecode:
+Build and deploy. Everything runs on Python 3.15; the build calls `.local\python37\python.exe` only to compile the game's 3.7 bytecode. To uninstall, delete `Mods\BanterLab`.
 
 ```powershell
 python3.15 '.\build.py'
-python3.15 '.\build.py' --uninstall
-python3.15 '.\build.py' --reset-data
 ```
 
 The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and deploys both to `C:\Users\Max\OneDrive\Documents\Electronic Arts\The Sims 4\Mods\BanterLab`. Runtime logs (`events.jsonl`, `companion.stdout.log`), `memories.json`, `cost_summary.json`, and `reply.json` live in `.local/data` outside OneDrive so OneDrive is never polled or written at runtime. Rebuild after any game update: `BanterLabUI.package` ships a patched copy of `Notifications.gfx` (`ShowNextMessage` honors `notification.timeout_duration`).
@@ -48,12 +46,6 @@ Python 3.15, standard library only. The game starts it; it exits when the game e
 - Plays the WAV when the game logs `displayed`.
 - Cost: the session cost is the sum of per-call `usage.cost`; the total is the dedicated key's usage on OpenRouter (`cost_summary.json`).
 
-Generate text for one captured event (offline prompt experiments, no audio):
-
-```powershell
-python3.15 '.\companion.py' --once '.\experiments\replay-set'
-```
-
 ## Experiment harnesses (`lab.py`)
 
 Every experiment script outside the mod lives in one CLI; outputs still land in each experiment's folder. Run `python3.15 lab.py --help` (or `lab.py exp31 --help`) for the full list:
@@ -63,6 +55,7 @@ python3.15 '.\lab.py' exp31 serve                      # blind rating page on lo
 python3.15 '.\lab.py' exp31 analyze ratings            # unblind human-ratings.jsonl
 python3.15 '.\lab.py' exp31 text --models x-ai/grok-4.7 --prompts v3
 python3.15 '.\lab.py' exp31 probe drama-cast           # audition Fish drama-3 voices
+python3.15 '.\lab.py' exp32 replay sex --models x-ai/grok-4.20 --reps 1   # replay real events in order, with memory
 python3.15 '.\lab.py' exp05 resources
 ```
 
@@ -101,5 +94,5 @@ Experiment 04's `benchmark.py` was deleted instead of ported: it called a `gener
 26. **[26 — `ENG_US` Mod STBL locale filtering, `AspirationTrack.display_text` resolution, universal `_ReplyPoller` timeout recovery, & *WickedWhims*/*Basemental* drama triggers](experiments/26-english-mod-stbls-aspirations-and-mod-drama/result.json):** Filtered `STBL` `Instance64` high byte `(inst_hi >> 24) == 0` (`ENG_US`) + `meta v2` cache invalidation (preventing `68` foreign-locale overwrites across `11,974` English Mod STBL strings), resolved `AspirationTrack.display_text` (`"Track_Love_C"` → `"Paragon Partner"`), moved `_pending` timeout recovery into `_ReplyPoller.poll` for all event types, collapsed `_pie_*` globals into a single `_pie_classes` tuple, and verified cold-boot Page-1 Pie Menu + `aspiration_stbl` (`thought-1793110619002-1`) and live *WickedWhims* `Satisfying Encounter` `Big Moment!` drama reaction (`drama-1793111061913-2`) in-game on `Slot_00000003.save`.
 27. **[27 — Off-lot `Call / Text Someone (English)...` (`UiSimPicker` portrait grid) & `SimInfo.sim_info` self-property fix](experiments/27-off-lot-phone-call-sim-picker/result.json):** Added Page-1 **`Call / Text Someone (English)...`** (`0xBA47E21AB0000004`) opening a native *Sims 4* `UiSimPicker` portrait grid of known human Sims sorted by relationship intensity, caught and fixed `SimInfo.sim_info` returning `self` (`SuperInteractionSaveState` on off-lot Sims), and verified live in-game on `Slot_00000002.save` (`Robles-Ruano` at `Parkside Place`, `phone-1793119023126-3`: `Jay Robles` calling off-lot `tal or akiva` while `Doli Ruano` stood in the kitchen, plus autonomous `1793116779763-1` `Tala Ruano ↔ Jay Robles`).
 28. **[28 — Earshot `nearby_sims`, modern `{0.SimPronoun*}` STBL tokens, DRY story-first `UiSimPicker` ranking, & `seating_Sit` anti-echo fix](experiments/28-nearby-sims-pronoun-stbl-and-contact-ranking/result.json):** Added same-floor/same-side earshot `nearby_sims` (`<= 10 m`), resolved `{0.SimPronoun*}` tokens across modern packs & *WickedWhims*, unified `_scored_relations` across `_sim_social_connections` and `UiSimPicker` (filtering unplayed ghosts and ranking exes/spouses/flames/landlords first), and caught & eliminated a 6-of-8 `"Could Use More Pillows"` furniture-catalog echo chamber live at `Catscratch Cottage` (`Catarina Lynx` ↔ `max sexy`, including live Hebrew exchange `1793122331318-1` and `1793123788262-9`..`1793123857853-10` with `0` errors).
-30. **[32 — Grok 4.7, voice moods, and repeats on captured game data](experiments/32-grok-4.7-voice-moods-and-repeats/result.json):** Grok 4.7 can't disable reasoning and took 14.8 s p50 on her scenes (4.20: 0.83 s), so it's out. Mood-specific drama-3 directions won 4/4 for WickedWhims' Sex mood and 2/3 for Happy (shipped) but 0/3 for Fine (kept generic). A sex-scene change rule halved "switch/flip" lines (29% → 15%, shipped). A repeat hint added nothing: today's stack already removed the Nov 6 host reruns.
 29. **[31 — Variety, spice, and the model + voice bake-off](experiments/31-variety-spice-model-and-voice-bakeoff/result.json):** Measured repetition templates and WickedWhims sanitizing in her real data, compared 9 text models × 3 prompts (single calls + simulated sessions) and 14 TTS engines on explicit/Hebrew/Russian lines, then shipped prompt v3, adults-only spicy routing to `x-ai/grok-4.20` with uncensored voices, cross-pair `recent_lines_elsewhere`, automatic WickedWhims `sex_scene` dialogue, in-game line ratings, and an untrimmed `events.jsonl`. Blind human ratings live in `eval/`.
+30. **[32 — Grok 4.7, voice moods, and repeats on captured game data](experiments/32-grok-4.7-voice-moods-and-repeats/result.json):** Grok 4.7 can't disable reasoning and took 14.8 s p50 on her scenes (4.20: 0.83 s), so it's out. Mood-specific drama-3 directions won 4/4 for WickedWhims' Sex mood and 2/3 for Happy (shipped) but 0/3 for Fine (kept generic). A sex-scene change rule halved "switch/flip" lines (29% → 15%, shipped). A repeat hint added nothing: today's stack already removed the Nov 6 host reruns.

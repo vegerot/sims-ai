@@ -1,7 +1,7 @@
-"""Observe socials, support player-to-Sim and Ask-Self chat, and display spoken banter.
+"""Observe socials, drama, and WickedWhims scenes; support player chat, Ask-Self, thoughts, and calls; display spoken banter.
 
 Controlled from Page 1 of the Sim Pie Menu (or `banter.stop` / `banter.status` / `banter.logs` / `banter.reload`).
-Model calls and OpenRouter gpt-audio-mini speech synthesis run in the external Python 3.15 companion,
+Model calls and speech synthesis run in the external Python 3.15 companion (companion.py),
 which this module starts automatically with `--parent-pid`.
 """
 

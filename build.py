@@ -1,15 +1,11 @@
-"""Build BanterLab.ts4script and BanterLabUI.package, deploy, or uninstall (--uninstall / --reset-data).
+"""Build BanterLab.ts4script and BanterLabUI.package and deploy both to Mods/BanterLab. To uninstall, delete that folder.
 
 Runs on Python 3.15 like the rest of the project; only the bytecode compile runs on the game's Python 3.7.
 """
 
-import argparse
-import ctypes
 import json
 import os
 import re
-import shutil
-import stat
 import struct
 import subprocess
 import tempfile
@@ -323,9 +319,6 @@ def _write_dbpf_package(output_path, resources):
 
 
 def build_ui_package(output_pkg, ui_pkg=DEFAULT_UI_PACKAGE):
-    if not ui_pkg.exists():
-        print(f'Skipping UI package build ({ui_pkg} not found)')
-        return None
     data = ui_pkg.read_bytes()
     assert data[:4] == b'DBPF', 'Expected DBPF header in UI.package'
     index_count = struct.unpack_from('<I', data, 36)[0]
@@ -384,76 +377,8 @@ def _ensure_mods_enabled(user_dir=DEFAULT_TS4_USER_DIR, game_ini=DEFAULT_GAME_IN
             print(f'Enabled script mods in {opt_path}')
 
 
-def uninstall_mod():
-    if DEFAULT_DEPLOY_DIR.exists():
-        for child in list(DEFAULT_DEPLOY_DIR.rglob('*')):
-            if child.is_file():
-                os.chmod(str(child), stat.S_IWRITE)
-                child.unlink()
-        if os.name == 'nt':
-            # Clear OneDrive read-only/system directory flags before rmdir
-            ctypes.windll.kernel32.SetFileAttributesW(str(DEFAULT_DEPLOY_DIR), 0x10)
-        try:
-            DEFAULT_DEPLOY_DIR.rmdir()
-        except PermissionError:
-            tmp = Path(tempfile.mkdtemp(prefix='banter-uninstall-'))
-            shutil.move(str(DEFAULT_DEPLOY_DIR), str(tmp / 'BanterLab'))
-        print(f'Uninstalled {DEFAULT_DEPLOY_DIR}')
-    else:
-        print(f'Already uninstalled ({DEFAULT_DEPLOY_DIR} absent)')
-    thumb_cache = DEFAULT_TS4_USER_DIR / 'localthumbcache.package'
-    if thumb_cache.exists():
-        thumb_cache.unlink()
-        print(f'Removed {thumb_cache}')
-    for log_path in (
-        DEFAULT_TS4_USER_DIR / 'Mods' / 'Basemental Drugs' / 'Basemental Drugs Log.log',
-        DEFAULT_TS4_USER_DIR / 'WickedWhimsInfoLog.log',
-    ):
-        if log_path.exists():
-            txt = log_path.read_text(encoding='utf-8', errors='replace')
-            if 'BanterLab' in txt:
-                kept = [ln for ln in txt.splitlines() if 'BanterLab' not in ln]
-                log_path.write_text('\n'.join(kept) + '\n', encoding='utf-8')
-                print(f'Scrubbed BanterLab entry from {log_path}')
-
-
-def reset_runtime_data(root):
-    data_dir = root / '.local' / 'data'
-    tts_dir = root / '.local' / 'tts'
-    for name in ('events.jsonl', 'memories.json', 'reply.json', 'companion.stdout.log', 'companion.stderr.log'):
-        p = data_dir / name
-        if p.exists():
-            p.unlink()
-            print(f'Removed {p}')
-    cost_path = data_dir / 'cost_summary.json'
-    if cost_path.exists():
-        cost = json.loads(cost_path.read_text(encoding='utf-8-sig'))
-        cost['session_usd'] = 0.0
-        cost['session_exchanges'] = 0
-        cost_path.write_text(json.dumps(cost, indent=2) + '\n', encoding='utf-8')
-    if tts_dir.exists():
-        removed_wavs = 0
-        for wav in tts_dir.glob('*.wav'):
-            wav.unlink()
-            removed_wavs += 1
-        if removed_wavs:
-            print(f'Removed {removed_wavs} cached WAV files from {tts_dir}')
-
-
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--uninstall', action='store_true', help='Remove Mods/BanterLab and localthumbcache.package')
-    parser.add_argument('--reset-data', action='store_true', help='Clear .local/data logs/memories and .local/tts WAVs')
-    args = parser.parse_args()
-
     root = Path(__file__).resolve().parent
-    if args.reset_data:
-        reset_runtime_data(root)
-    if args.uninstall:
-        uninstall_mod()
-    if args.reset_data or args.uninstall:
-        return
-
     source = root / 'src'
     init_text = (source / 'banter_lab' / '__init__.py').read_text(encoding='utf-8')
     proj_m = re.search(r"^_PROJECT_ROOT = r'([^']+)'", init_text, flags=re.M)
@@ -485,8 +410,7 @@ def main():
     if DEFAULT_DEPLOY_DIR.parent.exists():
         DEFAULT_DEPLOY_DIR.mkdir(parents=True, exist_ok=True)
         # companion.py and prompt.txt run from this repository; the game starts them from here.
-        assets = [output] + ([built_ui] if built_ui is not None else [])
-        for asset in assets:
+        for asset in (output, built_ui):
             dest = DEFAULT_DEPLOY_DIR / asset.name
             tmp_dest = dest.with_name(f'{dest.name}.{os.getpid()}.tmp')
             try:

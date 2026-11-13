@@ -3,7 +3,7 @@
 The game mod starts this process (`--data-directory`, `--parent-pid`); it exits when the game exits.
 It tails the game's events.jsonl, writes reply.json, synthesizes trilingual (English / Hebrew / Russian)
 speech with Fish drama-3 (plus classic Windows SAPI5 voices for pets), and plays it on `displayed`.
-`--once scene.json` (or a directory of scenes) generates text offline for prompt evaluation.
+Offline prompt and model experiments replay captured events through `lab.py`.
 """
 
 import argparse
@@ -72,7 +72,6 @@ _SPICY_TEXT_RE = re.compile(r'\b(fuck\w*|cum\w*|cock|dick|pussy|tits|horny|naked
 _ADULT_AGES = {'YOUNGADULT', 'ADULT', 'ELDER'}
 
 _stbl_cache: dict[int, str] | None = None
-_sim_voice_assignments: dict[str, str] = {}
 _tls_local = threading.local()
 _sapi_lock = threading.Lock()
 _sapi_proc: subprocess.Popen | None = None
@@ -771,11 +770,8 @@ def select_voice(sim: dict, avoid_voices: tuple[str, ...] = ()) -> str:
         pool = tuple(GIRL_VOICES if female else BOY_VOICES)
     else:
         pool = tuple(FEMALE_VOICES if female else MALE_VOICES)
-    base = _sim_voice_assignments.get(sim_id)
-    if not base:
-        id_num = abs(int(sim['id'])) if str(sim.get('id') or '').lstrip('-').isdigit() else sum(ord(c) for c in sim_id)
-        base = pool[id_num % len(pool)]
-        _sim_voice_assignments[sim_id] = base
+    id_num = abs(int(sim['id'])) if str(sim.get('id') or '').lstrip('-').isdigit() else sum(ord(c) for c in sim_id)
+    base = pool[id_num % len(pool)]
     if base not in avoid_voices:
         return base
     return next((v for v in pool if v not in avoid_voices), base)
@@ -823,7 +819,7 @@ def _synthesize_drama_line(spoken_text: str, voice: str, mood: str) -> dict:
     }
 
 
-def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str) -> dict:
+def _synthesize_pet_windows_tts(spoken_text: str, sim: dict) -> dict:
     global _sapi_proc
     voice = 'Microsoft Zira Desktop' if str(sim.get('gender') or '').upper() == 'FEMALE' else 'Microsoft David Desktop'
     ps_loop = (
@@ -842,7 +838,6 @@ def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str
         '}'
     )
     t0 = time.monotonic()
-    pcm = b''
     with _sapi_lock:
         try:
             if _sapi_proc is None or _sapi_proc.poll() is not None:
@@ -857,12 +852,10 @@ def _synthesize_pet_windows_tts(spoken_text: str, sim: dict, fallback_voice: str
             nbytes = int(_sapi_proc.stdout.readline().decode('ascii').strip() or '0')
             pcm = _sapi_proc.stdout.read(nbytes) if nbytes > 0 else b''
         except (OSError, ValueError):
-            _sapi_proc = None
-    if not pcm:
-        return _synthesize_drama_line(spoken_text, fallback_voice, str(sim.get('mood') or 'Fine'))
+            _sapi_proc = None  # A desynced worker would misread the next line's length; start a fresh one next time.
+            raise  # The caller records the error and the pet's line stays silent, rather than a human voice reading it.
     return {
-        'voice': voice, 'tone': 'windows_sapi5_pet', 'pcm': pcm,
-        'ttfa_s': None, 'ttlt_s': round(time.monotonic() - t0, 3),
+        'voice': voice, 'tone': 'windows_sapi5_pet', 'pcm': pcm, 'ttlt_s': round(time.monotonic() - t0, 3),
         'transcript': spoken_text, 'cost_usd': 0.0,
     }
 
@@ -933,7 +926,7 @@ def _clean_spoken_line(body: str) -> str:
 
 def _synthesize_sim_line(spoken: str, voice: str, sim: dict) -> dict:
     if str(sim.get('species') or 'HUMAN').upper() != 'HUMAN':
-        return _synthesize_pet_windows_tts(spoken, sim, voice)
+        return _synthesize_pet_windows_tts(spoken, sim)
     return _synthesize_drama_line(spoken, voice, str(sim.get('mood') or 'Fine'))
 
 
@@ -970,16 +963,16 @@ def synthesize_dialogue_openrouter(
             except Exception as exc:
                 line_results.append({'voice': voice, 'pcm': b'', 'cost_usd': 0.0, 'error': str(exc)})
 
-    sample_rate = SAMPLE_RATE  # drama-3 and the pets' SAPI voices both produce 44.1 kHz.
-    combined_pcm = (b'\x00\x00' * int(sample_rate * 0.15)).join(
-        _normalize_and_trim_pcm(r['pcm'], sample_rate) for r in line_results if r['pcm']
+    # drama-3 and the pets' SAPI voices both produce 44.1 kHz.
+    combined_pcm = (b'\x00\x00' * int(SAMPLE_RATE * 0.15)).join(
+        _normalize_and_trim_pcm(r['pcm']) for r in line_results if r['pcm']
     )
     if combined_pcm:
         wav_path.parent.mkdir(parents=True, exist_ok=True)
         with wave.open(str(wav_path), 'wb') as wf:
             wf.setnchannels(1)
             wf.setsampwidth(2)
-            wf.setframerate(sample_rate)
+            wf.setframerate(SAMPLE_RATE)
             wf.writeframes(combined_pcm)
         for old in sorted(wav_path.parent.glob('*.wav'), key=lambda p: p.stat().st_mtime)[:-30]:
             old.unlink(missing_ok=True)
@@ -989,7 +982,7 @@ def synthesize_dialogue_openrouter(
         'lines': [{k: v for k, v in r.items() if k != 'pcm'} for r in line_results],
         'tts_elapsed_seconds': round(time.monotonic() - started, 3),
         'tts_cost_usd': round(sum(r['cost_usd'] for r in line_results), 6),
-        'duration_seconds': round(len(combined_pcm) / (sample_rate * 2), 2),
+        'duration_seconds': round(len(combined_pcm) / (SAMPLE_RATE * 2), 2),
     }
 
 
@@ -1121,22 +1114,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-directory', type=Path, default=ROOT / '.local' / 'data')
     parser.add_argument('--parent-pid', type=int, help='Exit when this process (the game) exits.')
-    parser.add_argument('--once', type=Path, help='Generate text once from a captured event JSON file or directory.')
     args = parser.parse_args()
     data = args.data_directory
-
-    if args.once:
-        mem = MemoryStore()
-        for path in (sorted(args.once.glob('*.json')) if args.once.is_dir() else [args.once]):
-            event = json.loads(path.read_text(encoding='utf-8-sig'))
-            res = generate(event, mem)
-            mem.record(event, res.pop('_scene'), res['text'])
-            res.pop('_cost_usd', None)
-            if args.once.is_dir():
-                print(f"=== {path.name} ({res['elapsed_seconds']}s, {res['language']}) ===\n{res['text']}\n", flush=True)
-            else:
-                print(json.dumps(res, ensure_ascii=False, indent=2))
-        return
 
     lock = _acquire_single_instance_lock()
     if lock is None:
