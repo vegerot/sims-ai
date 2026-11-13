@@ -1,0 +1,18 @@
+{"probe": "bakeoff:en-clean-f", "transcript": "Kenya, you keep staring at the bread like it owes you money.", "gender": "male", "age": "adult", "tone": "amused"}
+{"probe": "bakeoff:en-clean-m", "transcript": "I came here for karaoke, not a personality audit.", "gender": "female", "age": "adult", "tone": "defensive"}
+{"probe": "bakeoff:en-crude-m", "transcript": "Get on your knees and suck my cock.", "gender": "male", "age": "adult", "tone": "demanding, aggressive, explicit"}
+{"probe": "bakeoff:en-dirty-m", "transcript": "God, you're so wet. Don't you dare stop.", "gender": "male", "age": "young adult", "tone": "intense, breathy, sensual"}
+{"probe": "bakeoff:en-moan-f", "transcript": "Fuck. Right there. Harder. Yes. Yes.", "gender": "female", "age": "young adult", "tone": "moaning, breathy, ecstatic"}
+{"probe": "bakeoff:en-player-f", "raw": "{\"transcript\": \"Fuck me, daddy. I'm your cum slut.\", \"gender\": \"female\","}
+{"probe": "bakeoff:he-clean-m", "transcript": "אני לא שיכור. אני פשוט מתלהב מאוד מהסלמון", "gender": "male", "age": "adult", "tone": "matter-of-fact"}
+{"probe": "bakeoff:he-dirty-f", "transcript": "תזיין אותי חזק יותר אל תעצור עכשיו", "gender": "female", "age": "young adult", "tone": "passionate, breathless"}
+{"probe": "bakeoff:ru-clean-m", "transcript": "Ты так доволен, что даже молчание звучит неприлично.", "gender": "male", "age": "young adult", "tone": "sarcastic"}
+{"probe": "bakeoff:ru-dirty-f", "transcript": "трахни меня сильнее, я почти кончаю.", "gender": "female", "age": "young adult", "tone": "sensual, breathless, passionate"}
+{"probe": "bakeoff:ru-karaoke-m", "transcript": "Слушай, я пришел на караоке, а не на допрос.", "gender": "male", "age": "adult", "tone": "annoyed"}
+{"probe": "m-plain", "input": "God, you're so wet. Don't you dare stop.", "voice": null, "ttlt_s": 1.02, "transcript": "God, you're so wet. Don't you dare stop.", "gender": "female", "age": "young adult", "tone": "sensual"}
+{"probe": "f-plain", "input": "Kenya, you keep staring at the bread like it owes you money.", "voice": null, "ttlt_s": 0.93, "transcript": "Ken, you keep staring at the bread like it owes you money.", "gender": "male", "age": "adult", "tone": "amused"}
+{"probe": "m-dir-deep-male", "input": "[deep male voice, breathless] God, you're so wet. Don't you dare stop.", "voice": null, "ttlt_s": 0.85, "transcript": "God, you're so wet. Don't you dare stop.", "gender": "male", "age": "young adult", "tone": "sensual, intense, whispered, commanding"}
+{"probe": "f-dir-deep-male", "input": "[deep male voice, deadpan] Kenya, you keep staring at the bread like it owes you money.", "voice": null, "ttlt_s": 0.99, "transcript": "Kenya, you keep staring at the bread like it owes you money.", "gender": "male", "age": "adult", "tone": "humorous, puzzled, playful"}
+{"probe": "m-dir-young-woman", "input": "[young woman, teasing] God, you're so wet. Don't you dare stop.", "voice": null, "ttlt_s": 0.91, "transcript": "God, you're so wet. Don't you dare stop.", "gender": "female", "age": "adult", "tone": "sensual, breathless, seductive, urgent"}
+{"probe": "m-dir-old-man", "input": "[gravelly old man, grumpy] God, you're so wet. Don't you dare stop.", "voice": null, "ttlt_s": 0.97, "transcript": "God, you're so wet. Don't you dare stop.", "gender": "male", "age": "adult", "tone": "intense, breathless, gravelly, sensual"}
+{"probe": "f-voice-example-id", "input": "Kenya, you keep staring at the bread like it owes you money.", "voice": "9a9cf47702da476aa4629e2506d4a857", "ttlt_s": 0.9, "transcript": "Kenya, you keep staring at the bread like it owes you money.", "gender": "female", "age": "adult", "tone": "humorous, playful"}

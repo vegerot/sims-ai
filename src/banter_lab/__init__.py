@@ -803,6 +803,30 @@ def _check_drama_moment(now):
     _submit(ev, *muted_sims)
 
 
+def _sex_roles(inst, anim, infos):
+    """{'giver', 'receiver'} when the animation acts in one direction only, so the model doesn't swap them (Grok 4.3 did).
+
+    WickedWhims has no giver flag: each actor lists actions toward others, and its ROLE_* actor tags are unused by the
+    preview animations. Live (2026-11-12): "Passionate Cunnilingus" listed only him -> her, but "Passionate Blowjob" and
+    vaginal positions list both directions, so those return None and the model infers it from the animation name.
+    These names come from WickedWhims' bytecode, so a mismatch records one traceback and the scene is voiced without roles.
+    """
+    try:
+        name_by_actor = {inst.get_actor_id_with_sim_id(info.sim_id): _sim_name(info) for info in infos}
+        directions = {
+            (name, name_by_actor.get(action.get_receiving_actor_id()))
+            for actor_id, name in name_by_actor.items() for action in anim.get_actor(actor_id).get_actor_actions()
+        }
+        directions = {(g, r) for g, r in directions if r is not None and r != g}
+        if len(directions) != 1:
+            return None
+        ((giver, receiver),) = directions
+        return {'giver': giver, 'receiver': receiver}
+    except Exception:
+        _record_error()
+        return None
+
+
 def _check_sex_scene(now):
     """Voice WickedWhims sex: on start, on each animation change (>= 25 s apart), and once at climax."""
     global _sex_state, _last_sex_check, _sex_check_broken
@@ -852,6 +876,7 @@ def _check_sex_scene(now):
         ev['sex_stage'] = stage
         ev['sex_animation'] = {'name': str(anim.get_original_string_display_name() or ''), 'category': category,
                                'author': str(anim.get_author() or '')}
+        ev['sex_roles'] = _sex_roles(inst, anim, infos[:2])
         _note_partner(actor.sim_info, target.sim_info, now)
         _submit(ev, actor, target)
     except Exception:

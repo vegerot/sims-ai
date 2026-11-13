@@ -42,9 +42,9 @@ The build writes `dist/BanterLab.ts4script` and `dist/BanterLabUI.package` and d
 
 Python 3.15, standard library only. The game starts it; it exits when the game exits, and a lock file (`.local/companion.lock`) keeps a single instance.
 
-- Tails `events.jsonl`, calls `openai/gpt-6-luna` (or `x-ai/grok-4.20` for adult spicy scenes; `reasoning: none`) through OpenRouter, and writes `reply.json`.
+- Tails `events.jsonl`, calls `x-ai/grok-4.20` for every scene (`reasoning: none`; tentative, from the blind ratings so far) through OpenRouter, and writes `reply.json`.
 - Resolves interaction, trait, buff, venue, and relationship names from the game's string tables (`.local/stbl_en_us.json` cache).
-- Synthesizes human lines with `openai/gpt-audio-mini` and pet lines (`species != "HUMAN"`) with the deadpan built-in Windows SAPI5 robot voice (`Microsoft Zira Desktop` / `Microsoft David Desktop` at 24 kHz PCM) in parallel. If `gpt-audio-mini` refuses a spicy line (`!_transcript_matches`), that line retries on `google/gemini-3.8-flash-lite-tts` via `/api/v1/audio/speech`.
+- Synthesizes human lines with `fish-audio/drama-3` (one fixed Fish library voice per Sim, the Sim's mood as a `[bracket]` direction, 16-bit 44.1 kHz PCM) and pet lines (`species != "HUMAN"`) with the deadpan built-in Windows SAPI5 robot voice (`Microsoft Zira Desktop` / `Microsoft David Desktop`, also 44.1 kHz) in parallel.
 - Plays the WAV when the game logs `displayed`.
 - Cost: the session cost is the sum of per-call `usage.cost`; the total is the dedicated key's usage on OpenRouter (`cost_summary.json`).
 

@@ -1,0 +1,48 @@
+{
+ "voice-sarah": {
+  "voice": "933563129e564b19a115bedd57b7406a",
+  "prefix": "",
+  "ttlt_s": [
+   0.75,
+   0.81,
+   0.47
+  ],
+  "verdict": "1) **DIFFERENT** speakers (Clip 1 is a different voice from Clips 2 & 3, which share a speaker), high confidence.  \n2) Clip 1: Female, 20s–30s; Clip 2: Female, 20s–30s; Clip 3: Female, 20s–30s.  \n3) Clip 1: Frustrated/exasperated; Clip 2: Intimate/beckoning/seductive; Clip 3: Disappointed/melancholic. No bracketed stage directions were read."
+ },
+ "voice-adrian": {
+  "voice": "bf322df2096a46f18c579d0baa36f41d",
+  "prefix": "",
+  "ttlt_s": [
+   0.62,
+   0.59,
+   0.5
+  ],
+  "verdict": "1) **SAME speaker across all three** (High confidence).\n2) **Male, roughly 30s–40s** for all three clips.\n3) Clip 1: Exasperated/annoyed; Clip 2: Intimate/commanding; Clip 3: Disappointed/melancholic; **No stage directions were read aloud**."
+ },
+ "direction-man": {
+  "voice": null,
+  "prefix": "[warm low-voiced man in his 30s] ",
+  "ttlt_s": [
+   0.64,
+   0.73,
+   0.4
+  ],
+  "verdict": "1) **DIFFERENT** speakers across the clips (High confidence).\n2) **Clip 1:** Male, 20s–30s; **Clip 2:** Male, 40s–50s; **Clip 3:** Male, 30s–40s.\n3) **Clip 1:** Exasperated/annoyed; **Clip 2:** Commanding/intimate; **Clip 3:** Disappointed/reflective. No bracketed stage directions were read aloud."
+ },
+ "direction-woman": {
+  "voice": null,
+  "prefix": "[bright young woman with a raspy laugh] ",
+  "ttlt_s": [
+   0.7,
+   0.6,
+   0.45
+  ],
+  "verdict": "1) **DIFFERENT** speaker across all three (high confidence).\n2) Clip 1: Female, child/young teen; Clip 2: Female, young adult; Clip 3: Female, young adult.\n3) Clip 1: Exasperated/playfully angry; Clip 2: Intimate/beckoning; Clip 3: Disappointed/melancholic. No stage directions were read aloud in any clip."
+ },
+ "pcm": {
+  "pcm_bytes": 536576,
+  "mp3_duration_s": 6.661125,
+  "implied_rate_16bit_mono": 40277,
+  "first_bytes": "0100000002000000"
+ }
+}
