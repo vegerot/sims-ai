@@ -28,10 +28,10 @@ Console commands (`Ctrl+Shift+C`):
 
 All player controls (**Call / Text Someone (English)...**, **Ask <Sim> a Question (English)...**, **Speak to <Sim> (English)...**, 1-click **Hear <Sim>'s Thoughts (English)**, and **Enable/Disable English Banter**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
 
-Build and deploy using Python 3.7 (or uninstall / wipe playtest data for a clean slate):
+Build and deploy (or uninstall / wipe playtest data for a clean slate). Everything runs on Python 3.15; the build calls `.local\python37\python.exe` only to compile the game's 3.7 bytecode:
 
 ```powershell
-& '.\.local\python37\python.exe' '.\build.py'
+python3.15 '.\build.py'
 python3.15 '.\build.py' --uninstall
 python3.15 '.\build.py' --reset-data
 ```
@@ -53,6 +53,20 @@ Generate text for one captured event (offline prompt experiments, no audio):
 ```powershell
 python3.15 '.\companion.py' --once '.\experiments\replay-set'
 ```
+
+## Experiment harnesses (`lab.py`)
+
+Every experiment script outside the mod lives in one CLI; outputs still land in each experiment's folder. Run `python3.15 lab.py --help` (or `lab.py exp31 --help`) for the full list:
+
+```powershell
+python3.15 '.\lab.py' exp31 serve                      # blind rating page on localhost:8731
+python3.15 '.\lab.py' exp31 analyze ratings            # unblind human-ratings.jsonl
+python3.15 '.\lab.py' exp31 text --models x-ai/grok-4.7 --prompts v3
+python3.15 '.\lab.py' exp31 probe drama-cast           # audition Fish drama-3 voices
+python3.15 '.\lab.py' exp05 resources
+```
+
+Experiment 04's `benchmark.py` was deleted instead of ported: it called a `generate(event, model, effort)` signature that `companion.py` dropped long ago. Its `result.json` remains the record.
 
 ## Verified experiments
 

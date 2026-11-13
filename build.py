@@ -1,16 +1,17 @@
-"""Build BanterLab.ts4script and BanterLabUI.package, deploy, or uninstall (--uninstall / --reset-data)."""
+"""Build BanterLab.ts4script and BanterLabUI.package, deploy, or uninstall (--uninstall / --reset-data).
+
+Runs on Python 3.15 like the rest of the project; only the bytecode compile runs on the game's Python 3.7.
+"""
 
 import argparse
 import ctypes
-import importlib.util
 import json
 import os
-import py_compile
 import re
 import shutil
 import stat
 import struct
-import sys
+import subprocess
 import tempfile
 import zipfile
 import zlib
@@ -21,6 +22,14 @@ DEFAULT_TS4_USER_DIR = Path(r'C:\Users\Max\OneDrive\Documents\Electronic Arts\Th
 DEFAULT_DEPLOY_DIR = DEFAULT_TS4_USER_DIR / 'Mods' / 'BanterLab'
 DEFAULT_UI_PACKAGE = DEFAULT_TS4_DIR / 'Data' / 'Client' / 'UI.package'
 DEFAULT_GAME_INI = DEFAULT_TS4_DIR / 'Game' / 'Bin' / 'Default.ini'
+# The game embeds Python 3.7, so its .pyc files must come from 3.7's py_compile (each version has its own magic number).
+# Jobs arrive as JSON on stdin: [[source, compiled, display name], ...].
+COMPILE_ON_37 = '''
+import importlib.util, json, py_compile, sys
+for src, cfile, dfile in json.load(sys.stdin):
+    py_compile.compile(src, cfile=cfile, dfile=dfile, doraise=True)
+    assert open(cfile, 'rb').read(4) == importlib.util.MAGIC_NUMBER
+'''
 
 
 def _encode_u30(val):
@@ -442,12 +451,8 @@ def main():
         reset_runtime_data(root)
     if args.uninstall:
         uninstall_mod()
+    if args.reset_data or args.uninstall:
         return
-    if args.reset_data and sys.version_info[:2] != (3, 7):
-        return
-
-    if sys.version_info[:2] != (3, 7):
-        raise SystemExit('The installed game requires Python 3.7 bytecode (.local/python37/python.exe).')
 
     source = root / 'src'
     init_text = (source / 'banter_lab' / '__init__.py').read_text(encoding='utf-8')
@@ -461,14 +466,14 @@ def main():
     output.parent.mkdir(exist_ok=True)
     tmp_script = output.with_name(f'{output.name}.{os.getpid()}.tmp')
     with tempfile.TemporaryDirectory() as temporary, zipfile.ZipFile(str(tmp_script), 'w', zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted(source.rglob('*.py')):
-            relative = path.relative_to(source).with_suffix('.pyc')
-            compiled = Path(temporary) / relative
-            compiled.parent.mkdir(parents=True, exist_ok=True)
-            py_compile.compile(str(path), cfile=str(compiled),
-                               dfile=relative.as_posix(), doraise=True)
-            assert compiled.read_bytes()[:4] == importlib.util.MAGIC_NUMBER
-            archive.write(str(compiled), relative.as_posix())
+        modules = [path.relative_to(source).with_suffix('.pyc') for path in sorted(source.rglob('*.py'))]
+        jobs = [[str(source / m.with_suffix('.py')), str(Path(temporary) / m), m.as_posix()] for m in modules]
+        for m in modules:
+            (Path(temporary) / m).parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run([str(root / '.local' / 'python37' / 'python.exe'), '-I', '-c', COMPILE_ON_37],
+                       input=json.dumps(jobs), text=True, check=True)
+        for m in modules:
+            archive.write(str(Path(temporary) / m), m.as_posix())
     os.replace(str(tmp_script), str(output))
     print(f'Built {output}')
     with zipfile.ZipFile(str(output)) as archive:

@@ -795,17 +795,6 @@ MOOD_TO_DELIVERY_TONE = {
 }
 
 
-def _word_set(text: str) -> set[str]:  # These two only serve the experiment harnesses' transcript checks now.
-    clean = re.sub(r'[\u0300-\u036f\u0591-\u05c7]', '', text.lower().replace('ё', 'е'))
-    words = re.findall(r'\w+', clean)
-    return {w for w in words if len(w) >= 3} or set(words)
-
-
-def _transcript_matches(spoken_text: str, transcript: str) -> bool:
-    spoken = _word_set(spoken_text)
-    return not spoken or len(spoken & _word_set(transcript)) / len(spoken) >= 0.6
-
-
 def _synthesize_drama_line(spoken_text: str, voice: str, mood: str) -> dict:
     """One line in the Sim's drama-3 voice; the mood becomes a bracket direction, which drama-3 performs but never reads aloud."""
     tone = MOOD_TO_DELIVERY_TONE.get(_clean_mood(mood) or 'Fine', 'natural, expressive, playful')

@@ -100,7 +100,7 @@ async function rate(section, item, candidate, kind, value) {
     body: JSON.stringify({ rater: rater(), section, item, candidate, kind, value }) });
 }
 
-const { data: DATA, ratings: RATINGS, names: NAMES } = __INLINE__;  // serve.py inlines data.json, the saved ratings, and the unblinded names.
+const { data: DATA, ratings: RATINGS, names: NAMES } = __INLINE__;  // `lab.py exp31 serve` inlines data.json, the saved ratings, and the unblinded names.
 function restore() {
   state.clear();
   for (const r of RATINGS) if (r.rater === rater()) state.set(k(r.section, r.item, r.candidate, r.kind), r.value);

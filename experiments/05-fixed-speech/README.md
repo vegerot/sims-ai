@@ -4,7 +4,7 @@ Goal: replace one known Simlish greeting with a fixed English clip before adding
 
 ## Current evidence
 
-The installed base animation package contains readable greeting cue names. FNV-1 64-bit hashing of cue names with voice suffixes resolves audio configurations in `Data/Client/ClientFullBuild1.package`. Counts, resource keys, hashes, and limits are in [result.json](result.json). Run `python3.15 inspect_resources.py` from this directory to reproduce the configuration lookup using the existing local Sims 4 Workspace reader. Raw game resources remain private.
+The installed base animation package contains readable greeting cue names. FNV-1 64-bit hashing of cue names with voice suffixes resolves audio configurations in `Data/Client/ClientFullBuild1.package`. Counts, resource keys, hashes, and limits are in [result.json](result.json). Run `python3.15 lab.py exp05 resources` from `gaming/sims-ai` to reproduce the configuration lookup using the existing local Sims 4 Workspace reader. Raw game resources remain private.
 
 Prepared our own [English WAV](audio/fixed-hello.wav) and [MP3](audio/fixed-hello.mp3), saying **Oh. Hello.**, with the installed Microsoft Zira voice through Windows SAPI, followed by MP3 conversion with the installed ffmpeg. This is a fixed test asset, not the proposed final TTS voice or service.
 
