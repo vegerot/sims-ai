@@ -89,7 +89,7 @@ _OUTFIT_NAMES = {
     6: 'CAREER', 9: 'SWIMWEAR', 10: 'HOTWEATHER', 11: 'COLDWEATHER',
 }
 
-_PROJECT_ROOT = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\gaming\sims-ai'
+_PROJECT_ROOT = r'C:\Users\Max\workspace\github.com\vegerot\ai-conversations\sims\sims-ai'
 _data_directory = os.path.join(_PROJECT_ROOT, '.local', 'data')
 _reply_path = os.path.join(_data_directory, 'reply.json')
 _COMPANION_PATH = os.path.join(_PROJECT_ROOT, 'companion.py')
