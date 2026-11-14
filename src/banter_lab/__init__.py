@@ -1223,6 +1223,8 @@ def stop(_connection=None):
     _audio_until = 0.0
     _last_social = None
     _restore_mutes(force=True)
+    # Pairs with 'started', so a quiet stretch in events.jsonl can be told apart from banter being off.
+    _record({'type': 'stopped', 'via': 'pie_menu' if _connection is None else 'console', 'observed_at': time.time()})
     if _connection is not None:
         sims4.commands.CheatOutput(_connection)('Banter Lab stopped and Simlish voices restored.')
 
