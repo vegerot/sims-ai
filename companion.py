@@ -36,7 +36,8 @@ STBL_CACHE_PATH = ROOT / '.local' / 'stbl_en_us.json'
 TTS_DIR = ROOT / '.local' / 'tts'
 LOCK_PATH = ROOT / '.local' / 'companion.lock'
 # Capped ($50) key dedicated to this project, so the key's own usage is the project's total cost.
-OPENROUTER_API_KEY = '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'
+# It lives in a file that git ignores, so it is never committed. A missing file stops the companion at startup.
+OPENROUTER_API_KEY = (ROOT / '.local' / 'openrouter-api-key.txt').read_text().strip()
 # Grok 4.20 for every scene: the fastest model, explicit when `spicy`, and Mina's favorite in the blind ratings so far
 # (experiment 31: 5/5 evenings, most ⭐ lines). Tentative until she finishes the Lines tab.
 CHAT_MODEL = 'x-ai/grok-4.20'

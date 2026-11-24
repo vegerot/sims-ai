@@ -2,7 +2,7 @@
 
 A birthday gift for October 29, 2026: contextual English banter that matches The Sims' playful energy. This directory is an experiment workspace, not the final mod architecture.
 
-[Conversation archive](../sims4-ai-birthday-mod-experiments.md) records the interview, implementation, observed results, and closing state.
+The conversation archive (`ai-conversations/sims/`, where this project lived until 2026-11-24) records the interview, implementation, observed results, and closing state.
 
 - [Plan](plan.md): goal, decisions, experiment sequence, and completion criteria.
 - [Progress](progress.md): append-only handoff; newest entries are last.
@@ -28,7 +28,7 @@ Console commands (`Ctrl+Shift+C`):
 
 All player controls (**Call / Text Someone (English)...**, **Ask <Sim> a Question (English)...**, **Speak to <Sim> (English)...**, 1-click **Hear <Sim>'s Thoughts (English)**, **Loved That Line** / **Bad Line** ratings, and **Enable/Disable English Banter**) live on Page 1 of the Sim Pie Menu. Redundant and experiment-only console commands were removed on 2026-10-22; their results live in `experiments/` and repository history.
 
-Build and deploy. Everything runs on Python 3.15; the build calls `.local\python37\python.exe` only to compile the game's 3.7 bytecode. To uninstall, delete `Mods\BanterLab`.
+Build and deploy. Everything runs on Python 3.15; the build calls `.local\python37\python.exe` only to compile the game's 3.7 bytecode. To uninstall, delete `Mods\BanterLab`. The companion reads its OpenRouter key from `.local\openrouter-api-key.txt` (one line); git ignores `.local/`, so the key is never committed.
 
 ```powershell
 python3.15 '.\build.py'
