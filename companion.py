@@ -38,11 +38,11 @@ LOCK_PATH = ROOT / '.local' / 'companion.lock'
 # Capped ($50) key dedicated to this project, so the key's own usage is the project's total cost.
 # It lives in a file that git ignores, so it is never committed. A missing file stops the companion at startup.
 OPENROUTER_API_KEY = (ROOT / '.local' / 'openrouter-api-key.txt').read_text().strip()
-# Grok 4.20 for every scene: the fastest model, explicit when `spicy`, and Mina's favorite in the blind ratings so far
+# Grok 4.20 for every scene: the fastest model, explicit when `spicy`, and M's favorite in the blind ratings so far
 # (experiment 31: 5/5 evenings, most ⭐ lines). Tentative until she finishes the Lines tab.
 CHAT_MODEL = 'x-ai/grok-4.20'
 REASONING_EFFORT = 'none'
-# Fish drama-3 voices every human line: Mina's top engine (4.57 stars), 0.9 s, reads explicit lines and Hebrew/Russian
+# Fish drama-3 voices every human line: M's top engine (4.57 stars), 0.9 s, reads explicit lines and Hebrew/Russian
 # verbatim (experiment 31). Its PCM is 16-bit mono 44.1 kHz ('audio/pcm;rate=44100;channels=1').
 TTS_MODEL = 'fish-audio/drama-3'
 SAMPLE_RATE = 44100

@@ -17,7 +17,7 @@
     "sex": {"grok-4.20 change-rule": {"p50_s": 0.82, "repeated_openings": "19%", "trigram_reuse": "8%", "switch_lines": "15%", "explicit": "79%"}, "grok-4.3": {"p50_s": 0.93, "repeated_openings": "4%", "trigram_reuse": "2%", "switch_lines": "8%", "explicit": "38%"}},
     "nov6": {"grok-4.20": {"p50_s": 0.71, "trigram_reuse": "11%", "explicit": "13%"}, "grok-4.3": {"p50_s": 0.95, "trigram_reuse": "16%", "explicit": "6%"}},
     "examples": {"grok-4.3": ["Your handprint is blooming across my skin.", "This cradle has me open so wide."], "grok-4.20": ["Deeper, god—your weight pinning me like this is perfect.", "Fuck, your cheeks are already so red and hot."]},
-    "verdict": "Not shipped: more varied in sex scenes but half as explicit there, more trigram reuse on her evening, and ~0.15 s slower. Mina rated Grok 4.20 best."
+    "verdict": "Not shipped: more varied in sex scenes but half as explicit there, more trigram reuse on her evening, and ~0.15 s slower. M rated Grok 4.20 best."
   },
   "issue_2_sex_scene_switch_repeats": {
     "method": "8 real play-test sex events in order, 3 runs per model x prompt; 'switch' counts lines with switch/change/flip/again/already",
@@ -54,7 +54,7 @@
   },
   "issue_6_ratings": "The mod writes {'type': 'rating', 'event_id', 'rating': +/-1} to events.jsonl; nothing reads it. Ratings join to reply rows by event_id (model, prompt_sha, language, event type). No ratings collected yet.",
   "limits": [
-    "Gemini judged voice fit; Mina hasn't heard the new directions.",
+    "Gemini judged voice fit; M hasn't heard the new directions.",
     "Replays use fresh memory and English only; 3 runs per cell.",
     "The 'switch' counter includes 'already', which is often fine."
   ]

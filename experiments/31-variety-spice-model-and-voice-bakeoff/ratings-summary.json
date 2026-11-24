@@ -22,27 +22,27 @@
     3.5,
     2
    ],
-   "Mina": [
+   "M": [
     4.57,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     5,
     2
    ],
-   "Mina en": [
+   "M en": [
     4.25,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     4.4,
     5
    ],
-   "Mina he": [
+   "M he": [
     5,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     5,
     2
    ]
@@ -69,27 +69,27 @@
     5,
     1
    ],
-   "Mina": [
+   "M": [
     4.43,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     5,
     2
    ],
-   "Mina en": [
+   "M en": [
     4,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     4.2,
     5
    ],
-   "Mina he": [
+   "M he": [
     5,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     5,
     2
    ]
@@ -112,27 +112,27 @@
     2,
     1
    ],
-   "Mina": [
+   "M": [
     2.43,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     4,
     2
    ],
-   "Mina en": [
+   "M en": [
     2,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     1.8,
     5
    ],
-   "Mina he": [
+   "M he": [
     4,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2.5,
     2
    ]
@@ -159,27 +159,27 @@
     1,
     1
    ],
-   "Mina": [
+   "M": [
     1.57,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     3,
     2
    ],
-   "Mina en": [
+   "M en": [
     1.5,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     1,
     5
    ],
-   "Mina he": [
+   "M he": [
     1,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2,
     2
    ]
@@ -206,27 +206,27 @@
     5,
     1
    ],
-   "Mina": [
+   "M": [
     3.33,
     6
    ],
-   "Mina clean": [
+   "M clean": [
     4,
     2
    ],
-   "Mina en": [
+   "M en": [
     2.67,
     3
    ],
-   "Mina explicit": [
+   "M explicit": [
     3,
     4
    ],
-   "Mina he": [
+   "M he": [
     4,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     4,
     2
    ]
@@ -249,27 +249,27 @@
     1,
     1
    ],
-   "Mina": [
+   "M": [
     1.71,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     3,
     2
    ],
-   "Mina en": [
+   "M en": [
     1.5,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     1.2,
     5
    ],
-   "Mina he": [
+   "M he": [
     1,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2.5,
     2
    ]
@@ -288,27 +288,27 @@
     3,
     1
    ],
-   "Mina": [
+   "M": [
     3.14,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     3,
     2
    ],
-   "Mina en": [
+   "M en": [
     3.75,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     3.2,
     5
    ],
-   "Mina he": [
+   "M he": [
     3,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2,
     2
    ]
@@ -335,27 +335,27 @@
     3,
     2
    ],
-   "Mina": [
+   "M": [
     4,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     3.5,
     2
    ],
-   "Mina en": [
+   "M en": [
     4,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     4.2,
     5
    ],
-   "Mina he": [
+   "M he": [
     3,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     4.5,
     2
    ]
@@ -374,54 +374,54 @@
     2,
     1
    ],
-   "Mina": [
+   "M": [
     2,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     3,
     2
    ],
-   "Mina en": [
+   "M en": [
     2.25,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     1.6,
     5
    ],
-   "Mina he": [
+   "M he": [
     1,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2,
     2
    ]
   },
   "openai/gpt-audio": {
    "p50_s": 1.78,
-   "Mina": [
+   "M": [
     1.75,
     4
    ],
-   "Mina clean": [
+   "M clean": [
     2.5,
     2
    ],
-   "Mina en": [
+   "M en": [
     1.5,
     2
    ],
-   "Mina explicit": [
+   "M explicit": [
     1,
     2
    ],
-   "Mina he": [
+   "M he": [
     1,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     3,
     1
    ]
@@ -440,23 +440,23 @@
     3,
     1
    ],
-   "Mina": [
+   "M": [
     3,
     3
    ],
-   "Mina clean": [
+   "M clean": [
     2,
     2
    ],
-   "Mina en": [
+   "M en": [
     3.5,
     2
    ],
-   "Mina explicit": [
+   "M explicit": [
     5,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2,
     1
    ]
@@ -483,27 +483,27 @@
     2,
     1
    ],
-   "Mina": [
+   "M": [
     3.71,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     3,
     2
    ],
-   "Mina en": [
+   "M en": [
     3.75,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     4,
     5
    ],
-   "Mina he": [
+   "M he": [
     3,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     4,
     2
    ]
@@ -530,27 +530,27 @@
     3,
     1
    ],
-   "Mina": [
+   "M": [
     1.43,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     2.5,
     2
    ],
-   "Mina en": [
+   "M en": [
     1,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     1,
     5
    ],
-   "Mina he": [
+   "M he": [
     1,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     2.5,
     2
    ]
@@ -581,27 +581,27 @@
     1,
     2
    ],
-   "Mina": [
+   "M": [
     1.29,
     7
    ],
-   "Mina clean": [
+   "M clean": [
     2,
     2
    ],
-   "Mina en": [
+   "M en": [
     1.25,
     4
    ],
-   "Mina explicit": [
+   "M explicit": [
     1,
     5
    ],
-   "Mina he": [
+   "M he": [
     1,
     1
    ],
-   "Mina ru": [
+   "M ru": [
     1.5,
     2
    ]
@@ -613,72 +613,72 @@
  },
  "session": {
   "x-ai/grok-4.20:v1": {
-   "Mina variety": 5,
-   "Mina fun": 5,
+   "M variety": 5,
+   "M fun": 5,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 88,
    "lines_reusing_a_trigram": 62
   },
   "x-ai/grok-4.20:v3": {
-   "Mina variety": 5,
-   "Mina fun": 5,
+   "M variety": 5,
+   "M fun": 5,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 70,
    "lines_reusing_a_trigram": 52
   },
   "openai/gpt-6-luna:v1": {
-   "Mina variety": 5,
-   "Mina fun": 3,
+   "M variety": 5,
+   "M fun": 3,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 50,
    "lines_reusing_a_trigram": 30
   },
   "z-ai/glm-5.2:v2": {
-   "Mina variety": 4,
-   "Mina fun": 5,
+   "M variety": 4,
+   "M fun": 5,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 50,
    "lines_reusing_a_trigram": 44
   },
   "x-ai/grok-4.20:v2": {
-   "Mina variety": 4,
-   "Mina fun": 4,
+   "M variety": 4,
+   "M fun": 4,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 99,
    "lines_reusing_a_trigram": 71
   },
   "x-ai/grok-4.3:v2": {
-   "Mina variety": 3,
-   "Mina fun": 4,
+   "M variety": 3,
+   "M fun": 4,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 113,
    "lines_reusing_a_trigram": 72
   },
   "deepseek/deepseek-v4.1-flash-1017:v2": {
-   "Mina variety": 2,
-   "Mina fun": 4,
+   "M variety": 2,
+   "M fun": 4,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 38,
    "lines_reusing_a_trigram": 43
   },
   "openai/gpt-6-luna:v2": {
-   "Mina variety": 2,
-   "Mina fun": 3,
+   "M variety": 2,
+   "M fun": 3,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 48,
    "lines_reusing_a_trigram": 30
   },
   "openai/gpt-6-luna:v3": {
-   "Mina variety": 2,
-   "Mina fun": 3,
+   "M variety": 2,
+   "M fun": 3,
    "Max variety": null,
    "Max fun": null,
    "repeated_openings": 46,
@@ -686,7 +686,7 @@
   }
  },
  "text": {
-  "Mina": {
+  "M": {
    "deepseek v2": {
     "best": 1,
     "bad": 4,
